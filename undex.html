@@ -1,130 +1,2977 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pão para Toda Obra — Padaria Artesanal</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🥖</text></svg>">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
-  <style>
-    :root{--orange:#c1440e;--orange-2:#e8603a;--gold:#e8a020;--gold-2:#f5c842;--cream:#fbf6ee;--cream-2:#f2ead8;--brown:#3d1f0a;--brown-2:#6b3a1f;--muted:#6b5e4f;--white:#fff;--green:#17834b;--red:#ad2d2d;--shadow:0 8px 30px rgba(61,31,10,.12);--shadow-2:0 12px 40px rgba(61,31,10,.2);--radius:16px;--title:'Playfair Display',Georgia,serif;--body:'Inter',Arial,sans-serif}
-    *{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}body{font-family:var(--body);background:var(--cream);color:var(--brown);min-height:100vh;line-height:1.45}a{text-decoration:none;color:inherit}button,input,textarea,select{font:inherit}button{border:0;background:none;cursor:pointer}img{display:block;max-width:100%}.hidden{display:none!important}.container{width:min(1120px,calc(100% - 32px));margin:0 auto}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
-    .header{position:sticky;top:0;z-index:50;background:var(--brown);box-shadow:0 2px 16px rgba(0,0,0,.22)}.header-inner{width:min(1120px,calc(100% - 32px));margin:auto;min-height:68px;display:flex;align-items:center;justify-content:space-between;gap:18px}.logo{display:flex;align-items:center;gap:10px;color:var(--cream)}.logo-icon{font-size:2rem;line-height:1}.logo-title{font:600 1.2rem/1 var(--title)}.logo-sub{font-size:.62rem;letter-spacing:1px;text-transform:uppercase;color:var(--gold-2);margin-top:4px}.nav{display:flex;align-items:center;gap:5px}.nav-btn{display:flex;align-items:center;gap:7px;color:var(--cream);padding:9px 12px;border-radius:9px;font-size:.84rem;font-weight:700;opacity:.88;transition:.2s}.nav-btn:hover{opacity:1;background:rgba(255,255,255,.1)}.nav-btn.admin-link{background:rgba(232,160,32,.16);border:1px solid rgba(245,200,66,.48);color:var(--gold-2);opacity:1}.nav-btn.admin-link:hover{background:rgba(232,160,32,.3)}.nav-btn.cart{background:var(--orange);opacity:1;border-radius:999px;padding:9px 15px}.nav-btn.cart:hover{background:var(--orange-2)}.badge{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 5px;border-radius:999px;background:var(--gold);color:var(--brown);font-size:.7rem;font-weight:800}.api-pill{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,.2);border-radius:999px;color:rgba(255,255,255,.8);font-size:.66rem;font-weight:700;padding:5px 9px;cursor:pointer}.api-dot{width:7px;height:7px;border-radius:50%;background:#fbbf24}.api-pill.ok .api-dot{background:#4ade80}.api-pill.off .api-dot{background:#fb7185}.stripe{height:5px;background:repeating-linear-gradient(90deg,var(--orange) 0 22px,var(--gold) 22px 44px)}
-    .location{background:var(--cream-2);border-bottom:1px solid #ddd6c8}.location button{width:100%;display:flex;align-items:center;gap:8px;text-align:left;padding:10px 0;color:var(--brown-2);font-size:.84rem;font-weight:700}.location button span:last-child{margin-left:auto;font-size:1.3rem}
-    .hero{position:relative;overflow:hidden;background:var(--brown);color:var(--cream);padding:64px 16px 70px;text-align:center}.hero:after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 70% 70% at 50% 110%,rgba(193,68,14,.45),transparent 70%);pointer-events:none}.hero-inner{position:relative;z-index:1;max-width:670px;margin:auto}.eyebrow,.chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;background:var(--orange);color:var(--white);padding:6px 14px;font-size:.7rem;font-weight:800;letter-spacing:1px;text-transform:uppercase}.hero h1{font:600 clamp(2.35rem,7vw,4rem)/1.08 var(--title);margin:18px 0 14px}.hero h1 em{color:var(--gold-2);font-style:italic}.hero p{max-width:560px;margin:0 auto 28px;color:rgba(251,246,238,.78);font-size:1.02rem}.hero-cta,.btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:999px;background:var(--gold);color:var(--brown);padding:13px 25px;font-weight:800;transition:.2s}.hero-cta:hover,.btn-primary:hover{background:var(--gold-2);transform:translateY(-2px)}.hero-stats{display:flex;justify-content:center;gap:38px;flex-wrap:wrap;margin-top:38px}.hero-stat strong{display:block;color:var(--gold-2);font:600 1.6rem var(--title)}.hero-stat span{font-size:.68rem;color:rgba(251,246,238,.62);letter-spacing:.6px;text-transform:uppercase;font-weight:700}
-    .section{padding:48px 0}.section-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:24px}.section-head h2{font:600 2rem var(--title)}.count{background:var(--cream-2);color:var(--muted);padding:5px 13px;border-radius:999px;font-size:.8rem;font-weight:700}.promo-banner{display:flex;align-items:center;gap:10px;background:linear-gradient(90deg,var(--gold),var(--gold-2));border-radius:var(--radius);padding:14px 18px;margin-bottom:26px;box-shadow:var(--shadow);font-size:.9rem}.filters{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:20px}.cat-btn{padding:8px 18px;border-radius:999px;border:2px solid #ddd6c8;background:var(--white);color:var(--brown-2);font-size:.8rem;font-weight:800;transition:.2s}.cat-btn:hover{border-color:var(--orange);color:var(--orange)}.cat-btn.active{background:var(--orange);border-color:var(--orange);color:var(--white)}.search{width:min(420px,100%);padding:12px 17px;border:2px solid #ddd6c8;border-radius:999px;background:var(--white);color:var(--brown);outline:none}.search:focus,.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--orange);box-shadow:0 0 0 4px rgba(193,68,14,.09)}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(245px,1fr));gap:24px}.product{display:flex;flex-direction:column;overflow:hidden;background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);transition:.25s}.product:hover{transform:translateY(-5px);box-shadow:var(--shadow-2)}.product-img{height:200px;position:relative;overflow:hidden;background:#f0ebe3}.product-img img{width:100%;height:100%;object-fit:cover;transition:.4s}.product:hover .product-img img{transform:scale(1.04)}.product-badge{position:absolute;top:12px;left:12px;background:var(--gold);color:var(--brown);padding:4px 11px;border-radius:999px;font-size:.64rem;font-weight:800}.product-badge.new{background:var(--orange);color:var(--white)}.product-body{display:flex;flex-direction:column;flex:1;padding:17px 17px 19px}.category{color:var(--orange);font-size:.64rem;font-weight:800;letter-spacing:.8px;text-transform:uppercase}.product h3{font:600 1.08rem/1.25 var(--title);margin:5px 0 6px}.desc{flex:1;color:var(--muted);font-size:.8rem;line-height:1.55;margin-bottom:14px}.product-foot{display:flex;align-items:center;justify-content:space-between;gap:8px}.price{color:var(--orange);font-size:1.08rem;font-weight:800}.old-price{color:#9c8b79;text-decoration:line-through;font-size:.74rem;font-weight:600;margin-right:4px}.btn-add{background:var(--orange);color:var(--white);padding:8px 13px;border-radius:999px;font-size:.77rem;font-weight:800;white-space:nowrap;transition:.2s}.btn-add:hover{background:var(--orange-2)}.empty{padding:44px 16px;text-align:center;color:var(--muted);grid-column:1/-1}.empty strong{display:block;font-size:2.2rem;margin-bottom:8px}
-    .footer{margin-top:auto;background:var(--brown);color:var(--cream);padding:26px 16px;text-align:center;font-size:.82rem}.footer strong{color:var(--gold-2)}.image-attributions{max-width:980px;margin:18px auto 0;text-align:left;color:rgba(251,246,238,.78);font-size:.72rem}.image-attributions summary{display:inline-block;color:var(--gold-2);cursor:pointer;font-weight:800}.attribution-intro{margin:12px 0;color:rgba(251,246,238,.68)}.image-attributions ol{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px 22px;padding-left:20px}.image-attributions li{padding-left:3px}.image-attributions a{color:var(--gold-2);text-decoration:underline}.image-attributions em{color:rgba(251,246,238,.62)}
-    .overlay{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.54);opacity:0;pointer-events:none;transition:.25s}.overlay.open{opacity:1;pointer-events:auto}.drawer{position:fixed;z-index:81;top:0;right:0;bottom:0;width:min(450px,100vw);background:var(--white);transform:translateX(100%);transition:.3s;display:flex;flex-direction:column;box-shadow:-10px 0 40px rgba(0,0,0,.14)}.drawer.open{transform:translateX(0)}.drawer-head,.drawer-foot{padding:18px 22px;border-bottom:1px solid #eee8e0}.drawer-head{display:flex;align-items:center;justify-content:space-between}.drawer-head h2{font:600 1.35rem var(--title)}.drawer-body{flex:1;overflow:auto;padding:10px 22px}.close{width:34px;height:34px;border-radius:50%;background:#f5f0ea;color:var(--muted);font-size:1rem}.close:hover{background:#e6ddd3;color:var(--brown)}.drawer-foot{border-bottom:0;border-top:1px solid #eee8e0}.cart-item{display:flex;align-items:center;gap:10px;padding:14px 0;border-bottom:1px solid #f0ebe3}.cart-img{width:55px;height:55px;border-radius:10px;overflow:hidden;flex-shrink:0;background:#f0ebe3}.cart-img img{width:100%;height:100%;object-fit:cover}.cart-info{flex:1;min-width:0}.cart-info strong{display:block;font-size:.83rem;line-height:1.2}.cart-info small{display:block;color:var(--muted);font-size:.72rem;margin-top:4px}.qty{display:flex;align-items:center;gap:5px}.qty button{width:27px;height:27px;border:1.5px solid #ddd6c8;border-radius:50%;font-weight:800;color:var(--brown)}.qty span{min-width:20px;text-align:center;font-size:.8rem;font-weight:800}.subtotal{color:var(--orange);font-size:.78rem;font-weight:800;white-space:nowrap}.total-row{display:flex;justify-content:space-between;font-weight:800;margin-bottom:14px}.total-row strong{color:var(--orange);font-size:1.25rem}.wide{width:100%}.cart-empty{text-align:center;color:var(--muted);padding:45px 0}.cart-empty strong{display:block;font-size:2.6rem;margin-bottom:8px}
-    .modal-wrap{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:.25s}.modal-wrap.open{opacity:1;pointer-events:auto}.modal{width:min(560px,100%);max-height:91vh;overflow:auto;position:relative;background:var(--white);border-radius:var(--radius);padding:30px 28px;box-shadow:0 20px 70px rgba(0,0,0,.24)}.modal.large{width:min(1000px,100%)}.modal h2{font:600 1.55rem var(--title);margin-bottom:6px}.modal-sub{color:var(--muted);font-size:.86rem;margin-bottom:20px}.tabs{display:flex;gap:5px;background:#f5f0ea;padding:4px;border-radius:10px;margin-bottom:18px}.tab{flex:1;padding:8px;border-radius:8px;color:var(--muted);font-size:.82rem;font-weight:800}.tab.active{background:var(--white);color:var(--orange);box-shadow:var(--shadow)}.demo{background:var(--cream-2);border:1px solid var(--gold);border-radius:10px;padding:12px 14px;margin-bottom:17px;color:var(--brown-2);font-size:.78rem}.demo strong{display:block;color:var(--brown);font-size:.82rem;margin-bottom:5px}.demo-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:7px}.demo-row code{font-family:ui-monospace,SFMono-Regular,monospace;font-size:.72rem}.demo-row button{background:var(--orange);color:var(--white);padding:5px 9px;border-radius:999px;font-size:.68rem;font-weight:800}.field{margin-bottom:14px}.field label{display:block;color:var(--brown-2);font-size:.78rem;font-weight:800;margin-bottom:5px}.field input,.field textarea,.field select{width:100%;padding:10px 12px;border:2px solid #ddd6c8;border-radius:10px;background:var(--white);color:var(--brown);outline:none;font-size:.88rem}.field textarea{min-height:82px;resize:vertical}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}.full{grid-column:1/-1}.message{padding:10px 12px;border-radius:9px;margin:10px 0;font-size:.8rem;font-weight:700}.error{background:#fee2e2;color:#991b1b;border:1px solid #fecaca}.success{background:#dcfce7;color:#166534;border:1px solid #bbf7d0}.detail-img{height:230px;border-radius:12px;overflow:hidden;background:#f0ebe3;margin-bottom:15px}.detail-img img{width:100%;height:100%;object-fit:cover}.detail h3{font:600 1.55rem var(--title);margin:4px 0 7px}.detail-price{font-size:1.8rem;color:var(--orange);font-weight:800;margin:10px 0 16px}.detail-actions{display:flex;align-items:center;gap:12px}.number{width:66px;padding:10px;text-align:center;border:2px solid #ddd6c8;border-radius:10px;font-weight:800}.toast{position:fixed;z-index:120;left:50%;bottom:22px;transform:translate(-50%,20px);padding:12px 17px;border-radius:999px;background:var(--brown);color:var(--white);font-size:.8rem;font-weight:700;opacity:0;pointer-events:none;transition:.25s;box-shadow:var(--shadow-2)}.toast.show{opacity:1;transform:translate(-50%,0)}
-    .admin-shell{padding:34px 0 58px}.admin-hero{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;background:var(--brown);color:var(--cream);border-radius:var(--radius);padding:24px;margin-bottom:22px}.admin-hero h1{font:600 1.8rem var(--title);margin:5px 0}.admin-hero p{color:rgba(251,246,238,.72);font-size:.84rem}.admin-hero .btn-outline{border:1px solid rgba(255,255,255,.3);color:var(--cream);padding:8px 12px;border-radius:999px;font-size:.75rem;font-weight:800}.admin-hero .btn-outline:hover{background:rgba(255,255,255,.1)}.admin-hero-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.admin-hero-actions .btn-small{background:var(--gold);color:var(--brown)}.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}.kpi{background:var(--white);border-radius:14px;box-shadow:var(--shadow);padding:17px}.kpi small{display:block;color:var(--muted);font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px}.kpi strong{display:block;font:600 1.6rem var(--title);color:var(--orange);margin-top:6px}.admin-card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;margin-bottom:18px}.admin-card-head{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:15px}.admin-card h2{font:600 1.28rem var(--title)}.admin-tabs{display:flex;gap:6px;margin-bottom:18px;border-bottom:1px solid #eee8e0;padding-bottom:8px;flex-wrap:wrap}.admin-tab{display:inline-flex;align-items:center;gap:6px;padding:9px 13px;border-radius:9px;color:var(--muted);font-size:.8rem;font-weight:800}.admin-tab.active{background:var(--orange);color:var(--white)}.admin-tab .badge{min-width:18px;height:18px;background:rgba(255,255,255,.28);color:inherit}.admin-tab:not(.active) .badge{background:var(--cream-2);color:var(--brown-2)}.api-status{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:14px;border-radius:12px;background:#fff8e7;border:1px solid #f3d48b;margin-bottom:18px}.api-status.ok{background:#ecfdf3;border-color:#a7e3be}.api-status.off{background:#fff1f2;border-color:#fecdd3}.api-status strong{display:block;font-size:.86rem;margin-bottom:3px}.api-status p{color:var(--muted);font-size:.76rem}.btn-small{padding:8px 12px;border-radius:999px;background:var(--orange);color:var(--white);font-size:.72rem;font-weight:800;white-space:nowrap}.btn-small.secondary{background:var(--cream-2);color:var(--brown-2)}.btn-small.danger{background:#fee2e2;color:#991b1b}.admin-products{display:grid;grid-template-columns:1fr 1.3fr;gap:20px}.admin-product-list{display:grid;gap:10px}.admin-product{display:flex;align-items:center;gap:10px;border:1px solid #eee8e0;border-radius:12px;padding:9px}.admin-product img{width:56px;height:56px;object-fit:cover;border-radius:9px}.admin-product-main{flex:1;min-width:0}.admin-product-main strong{display:block;font-size:.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.admin-product-main small{color:var(--muted);font-size:.7rem}.admin-product-actions{display:flex;gap:5px}.order-admin{border:1px solid #eee8e0;border-radius:12px;padding:14px;margin-bottom:10px}.order-admin-top{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}.order-admin strong{font-size:.86rem}.order-admin small{color:var(--muted);font-size:.72rem}.order-admin-items{color:var(--brown-2);font-size:.79rem;line-height:1.65;margin:10px 0}.order-status-label{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:999px;font-size:.7rem;font-weight:800}.order-timeline{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin:14px 0 4px}.timeline-step{display:flex;flex-direction:column;align-items:center;gap:4px;color:#b8aa9a;text-align:center;font-size:.68rem}.timeline-step span{width:25px;height:25px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#f1ebe2;filter:grayscale(1)}.timeline-step.active{color:var(--orange);font-weight:800}.timeline-step.active span{background:var(--gold);filter:none}.status-select{width:auto;padding:7px 9px;border:1px solid #ddd6c8;border-radius:8px;color:var(--brown);font-size:.75rem}.credentials{display:grid;grid-template-columns:1fr 1fr;gap:10px}.credential{background:var(--cream);border-radius:11px;padding:12px}.credential strong{display:block;font-size:.75rem}.credential code{display:block;color:var(--brown-2);font-size:.72rem;margin-top:4px;word-break:break-all}
-    .float-cart{position:fixed;z-index:55;left:50%;bottom:-90px;transform:translateX(-50%);width:min(480px,calc(100% - 32px));background:var(--brown);border-radius:999px;color:var(--white);padding:12px 17px;box-shadow:0 8px 30px rgba(0,0,0,.25);display:flex;align-items:center;gap:12px;transition:.3s}.float-cart.show{bottom:18px}.float-count{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.18);font-size:.74rem;font-weight:800}.float-label{flex:1;font-size:.84rem;font-weight:800}.float-total{color:var(--gold-2);font-size:.84rem;font-weight:800}
-    @media(max-width:780px){.api-pill{display:none}.admin-products{grid-template-columns:1fr}.kpis{grid-template-columns:1fr 1fr}.admin-hero{flex-direction:column}.form-grid{grid-template-columns:1fr}.full{grid-column:auto}.credentials{grid-template-columns:1fr}}
-    @media(max-width:560px){.header-inner{min-height:60px}.logo-title{font-size:1rem}.logo-sub{display:none}.nav-btn{padding:8px}.nav-btn .label{display:none}.nav-btn.cart .label{display:inline}.hero{padding:48px 16px 56px}.section{padding:34px 0}.grid{grid-template-columns:1fr 1fr;gap:14px}.product-img{height:145px}.product-body{padding:13px}.product h3{font-size:.98rem}.desc{font-size:.75rem}.product-foot{align-items:flex-start;flex-direction:column}.btn-add{width:100%;text-align:center}.modal{padding:24px 18px}.drawer-body,.drawer-head,.drawer-foot{padding-left:17px;padding-right:17px}}
-    @media(max-width:390px){.grid{grid-template-columns:1fr}}
-  </style>
-</head>
-<body>
-  <header class="header">
-    <div class="header-inner">
-      <a class="logo" href="#" onclick="App.go('home');return false"><span class="logo-icon">🥖</span><span><span class="logo-title">Pão para Toda Obra</span><span class="logo-sub">Padaria artesanal</span></span></a>
-      <nav class="nav" aria-label="Navegação principal">
-        <button class="nav-btn" onclick="App.go('home')"><span>⌂</span><span class="label">Início</span></button>
-        <button class="nav-btn" onclick="App.go('orders')"><span>▣</span><span class="label">Pedidos</span></button>
-        <button class="nav-btn" id="nav-account" onclick="App.openAuth()"><span>◉</span><span id="nav-account-text" class="label">Entrar</span></button>
-        <button class="nav-btn admin-link hidden" id="nav-admin" onclick="App.go('admin')"><span>⚙</span><span class="label">Painel</span></button>
-        <button class="nav-btn cart" onclick="App.openCart()">🛒 <span id="cart-badge" class="badge hidden">0</span></button>
-      </nav>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pão para Toda Obra — Padaria Artesanal</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🥖</text></svg>"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --orange: #c1440e;
+        --orange-2: #e8603a;
+        --gold: #e8a020;
+        --gold-2: #f5c842;
+        --cream: #fbf6ee;
+        --cream-2: #f2ead8;
+        --brown: #3d1f0a;
+        --brown-2: #6b3a1f;
+        --muted: #6b5e4f;
+        --white: #fff;
+        --green: #17834b;
+        --red: #ad2d2d;
+        --shadow: 0 8px 30px rgba(61, 31, 10, 0.12);
+        --shadow-2: 0 12px 40px rgba(61, 31, 10, 0.2);
+        --radius: 16px;
+        --title: "Playfair Display", Georgia, serif;
+        --body: "Inter", Arial, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        font-family: var(--body);
+        background: var(--cream);
+        color: var(--brown);
+        min-height: 100vh;
+        line-height: 1.45;
+      }
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
+      button,
+      input,
+      textarea,
+      select {
+        font: inherit;
+      }
+      button {
+        border: 0;
+        background: none;
+        cursor: pointer;
+      }
+      img {
+        display: block;
+        max-width: 100%;
+      }
+      .hidden {
+        display: none !important;
+      }
+      .container {
+        width: min(1120px, calc(100% - 32px));
+        margin: 0 auto;
+      }
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+      }
+      .header {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background: var(--brown);
+        box-shadow: 0 2px 16px rgba(0, 0, 0, 0.22);
+      }
+      .header-inner {
+        width: min(1120px, calc(100% - 32px));
+        margin: auto;
+        min-height: 68px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+      }
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--cream);
+      }
+      .logo-icon {
+        font-size: 2rem;
+        line-height: 1;
+      }
+      .logo-title {
+        font: 600 1.2rem/1 var(--title);
+      }
+      .logo-sub {
+        font-size: 0.62rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--gold-2);
+        margin-top: 4px;
+      }
+      .nav {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .nav-btn {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        color: var(--cream);
+        padding: 9px 12px;
+        border-radius: 9px;
+        font-size: 0.84rem;
+        font-weight: 700;
+        opacity: 0.88;
+        transition: 0.2s;
+      }
+      .nav-btn:hover {
+        opacity: 1;
+        background: rgba(255, 255, 255, 0.1);
+      }
+      .nav-btn.admin-link {
+        background: rgba(232, 160, 32, 0.16);
+        border: 1px solid rgba(245, 200, 66, 0.48);
+        color: var(--gold-2);
+        opacity: 1;
+      }
+      .nav-btn.admin-link:hover {
+        background: rgba(232, 160, 32, 0.3);
+      }
+      .nav-btn.cart {
+        background: var(--orange);
+        opacity: 1;
+        border-radius: 999px;
+        padding: 9px 15px;
+      }
+      .nav-btn.cart:hover {
+        background: var(--orange-2);
+      }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 20px;
+        height: 20px;
+        padding: 0 5px;
+        border-radius: 999px;
+        background: var(--gold);
+        color: var(--brown);
+        font-size: 0.7rem;
+        font-weight: 800;
+      }
+      .api-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 999px;
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.66rem;
+        font-weight: 700;
+        padding: 5px 9px;
+        cursor: pointer;
+      }
+      .api-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #fbbf24;
+      }
+      .api-pill.ok .api-dot {
+        background: #4ade80;
+      }
+      .api-pill.off .api-dot {
+        background: #fb7185;
+      }
+      .stripe {
+        height: 5px;
+        background: repeating-linear-gradient(
+          90deg,
+          var(--orange) 0 22px,
+          var(--gold) 22px 44px
+        );
+      }
+      .location {
+        background: var(--cream-2);
+        border-bottom: 1px solid #ddd6c8;
+      }
+      .location button {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-align: left;
+        padding: 10px 0;
+        color: var(--brown-2);
+        font-size: 0.84rem;
+        font-weight: 700;
+      }
+      .location button span:last-child {
+        margin-left: auto;
+        font-size: 1.3rem;
+      }
+      .hero {
+        position: relative;
+        overflow: hidden;
+        background: var(--brown);
+        color: var(--cream);
+        padding: 64px 16px 70px;
+        text-align: center;
+      }
+      .hero:after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          ellipse 70% 70% at 50% 110%,
+          rgba(193, 68, 14, 0.45),
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+      .hero-inner {
+        position: relative;
+        z-index: 1;
+        max-width: 670px;
+        margin: auto;
+      }
+      .eyebrow,
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border-radius: 999px;
+        background: var(--orange);
+        color: var(--white);
+        padding: 6px 14px;
+        font-size: 0.7rem;
+        font-weight: 800;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+      .hero h1 {
+        font: 600 clamp(2.35rem, 7vw, 4rem) / 1.08 var(--title);
+        margin: 18px 0 14px;
+      }
+      .hero h1 em {
+        color: var(--gold-2);
+        font-style: italic;
+      }
+      .hero p {
+        max-width: 560px;
+        margin: 0 auto 28px;
+        color: rgba(251, 246, 238, 0.78);
+        font-size: 1.02rem;
+      }
+      .hero-cta,
+      .btn-primary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border-radius: 999px;
+        background: var(--gold);
+        color: var(--brown);
+        padding: 13px 25px;
+        font-weight: 800;
+        transition: 0.2s;
+      }
+      .hero-cta:hover,
+      .btn-primary:hover {
+        background: var(--gold-2);
+        transform: translateY(-2px);
+      }
+      .hero-stats {
+        display: flex;
+        justify-content: center;
+        gap: 38px;
+        flex-wrap: wrap;
+        margin-top: 38px;
+      }
+      .hero-stat strong {
+        display: block;
+        color: var(--gold-2);
+        font: 600 1.6rem var(--title);
+      }
+      .hero-stat span {
+        font-size: 0.68rem;
+        color: rgba(251, 246, 238, 0.62);
+        letter-spacing: 0.6px;
+        text-transform: uppercase;
+        font-weight: 700;
+      }
+      .section {
+        padding: 48px 0;
+      }
+      .section-head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 24px;
+      }
+      .section-head h2 {
+        font: 600 2rem var(--title);
+      }
+      .count {
+        background: var(--cream-2);
+        color: var(--muted);
+        padding: 5px 13px;
+        border-radius: 999px;
+        font-size: 0.8rem;
+        font-weight: 700;
+      }
+      .promo-banner {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: linear-gradient(90deg, var(--gold), var(--gold-2));
+        border-radius: var(--radius);
+        padding: 14px 18px;
+        margin-bottom: 26px;
+        box-shadow: var(--shadow);
+        font-size: 0.9rem;
+      }
+      .filters {
+        display: flex;
+        gap: 9px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+      }
+      .cat-btn {
+        padding: 8px 18px;
+        border-radius: 999px;
+        border: 2px solid #ddd6c8;
+        background: var(--white);
+        color: var(--brown-2);
+        font-size: 0.8rem;
+        font-weight: 800;
+        transition: 0.2s;
+      }
+      .cat-btn:hover {
+        border-color: var(--orange);
+        color: var(--orange);
+      }
+      .cat-btn.active {
+        background: var(--orange);
+        border-color: var(--orange);
+        color: var(--white);
+      }
+      .search {
+        width: min(420px, 100%);
+        padding: 12px 17px;
+        border: 2px solid #ddd6c8;
+        border-radius: 999px;
+        background: var(--white);
+        color: var(--brown);
+        outline: none;
+      }
+      .search:focus,
+      .field input:focus,
+      .field textarea:focus,
+      .field select:focus {
+        border-color: var(--orange);
+        box-shadow: 0 0 0 4px rgba(193, 68, 14, 0.09);
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(245px, 1fr));
+        gap: 24px;
+      }
+      .product {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        background: var(--white);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        transition: 0.25s;
+      }
+      .product:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-2);
+      }
+      .product-img {
+        height: 200px;
+        position: relative;
+        overflow: hidden;
+        background: #f0ebe3;
+      }
+      .product-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: 0.4s;
+      }
+      .product:hover .product-img img {
+        transform: scale(1.04);
+      }
+      .product-badge {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        background: var(--gold);
+        color: var(--brown);
+        padding: 4px 11px;
+        border-radius: 999px;
+        font-size: 0.64rem;
+        font-weight: 800;
+      }
+      .product-badge.new {
+        background: var(--orange);
+        color: var(--white);
+      }
+      .product-body {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        padding: 17px 17px 19px;
+      }
+      .category {
+        color: var(--orange);
+        font-size: 0.64rem;
+        font-weight: 800;
+        letter-spacing: 0.8px;
+        text-transform: uppercase;
+      }
+      .product h3 {
+        font: 600 1.08rem/1.25 var(--title);
+        margin: 5px 0 6px;
+      }
+      .desc {
+        flex: 1;
+        color: var(--muted);
+        font-size: 0.8rem;
+        line-height: 1.55;
+        margin-bottom: 14px;
+      }
+      .product-foot {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .price {
+        color: var(--orange);
+        font-size: 1.08rem;
+        font-weight: 800;
+      }
+      .old-price {
+        color: #9c8b79;
+        text-decoration: line-through;
+        font-size: 0.74rem;
+        font-weight: 600;
+        margin-right: 4px;
+      }
+      .btn-add {
+        background: var(--orange);
+        color: var(--white);
+        padding: 8px 13px;
+        border-radius: 999px;
+        font-size: 0.77rem;
+        font-weight: 800;
+        white-space: nowrap;
+        transition: 0.2s;
+      }
+      .btn-add:hover {
+        background: var(--orange-2);
+      }
+      .empty {
+        padding: 44px 16px;
+        text-align: center;
+        color: var(--muted);
+        grid-column: 1/-1;
+      }
+      .empty strong {
+        display: block;
+        font-size: 2.2rem;
+        margin-bottom: 8px;
+      }
+      .footer {
+        margin-top: auto;
+        background: var(--brown);
+        color: var(--cream);
+        padding: 26px 16px;
+        text-align: center;
+        font-size: 0.82rem;
+      }
+      .footer strong {
+        color: var(--gold-2);
+      }
+      .image-attributions {
+        max-width: 980px;
+        margin: 18px auto 0;
+        text-align: left;
+        color: rgba(251, 246, 238, 0.78);
+        font-size: 0.72rem;
+      }
+      .image-attributions summary {
+        display: inline-block;
+        color: var(--gold-2);
+        cursor: pointer;
+        font-weight: 800;
+      }
+      .attribution-intro {
+        margin: 12px 0;
+        color: rgba(251, 246, 238, 0.68);
+      }
+      .image-attributions ol {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 7px 22px;
+        padding-left: 20px;
+      }
+      .image-attributions li {
+        padding-left: 3px;
+      }
+      .image-attributions a {
+        color: var(--gold-2);
+        text-decoration: underline;
+      }
+      .image-attributions em {
+        color: rgba(251, 246, 238, 0.62);
+      }
+      .overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 80;
+        background: rgba(0, 0, 0, 0.54);
+        opacity: 0;
+        pointer-events: none;
+        transition: 0.25s;
+      }
+      .overlay.open {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .drawer {
+        position: fixed;
+        z-index: 81;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: min(450px, 100vw);
+        background: var(--white);
+        transform: translateX(100%);
+        transition: 0.3s;
+        display: flex;
+        flex-direction: column;
+        box-shadow: -10px 0 40px rgba(0, 0, 0, 0.14);
+      }
+      .drawer.open {
+        transform: translateX(0);
+      }
+      .drawer-head,
+      .drawer-foot {
+        padding: 18px 22px;
+        border-bottom: 1px solid #eee8e0;
+      }
+      .drawer-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .drawer-head h2 {
+        font: 600 1.35rem var(--title);
+      }
+      .drawer-body {
+        flex: 1;
+        overflow: auto;
+        padding: 10px 22px;
+      }
+      .close {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: #f5f0ea;
+        color: var(--muted);
+        font-size: 1rem;
+      }
+      .close:hover {
+        background: #e6ddd3;
+        color: var(--brown);
+      }
+      .drawer-foot {
+        border-bottom: 0;
+        border-top: 1px solid #eee8e0;
+      }
+      .cart-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 0;
+        border-bottom: 1px solid #f0ebe3;
+      }
+      .cart-img {
+        width: 55px;
+        height: 55px;
+        border-radius: 10px;
+        overflow: hidden;
+        flex-shrink: 0;
+        background: #f0ebe3;
+      }
+      .cart-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .cart-info {
+        flex: 1;
+        min-width: 0;
+      }
+      .cart-info strong {
+        display: block;
+        font-size: 0.83rem;
+        line-height: 1.2;
+      }
+      .cart-info small {
+        display: block;
+        color: var(--muted);
+        font-size: 0.72rem;
+        margin-top: 4px;
+      }
+      .qty {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .qty button {
+        width: 27px;
+        height: 27px;
+        border: 1.5px solid #ddd6c8;
+        border-radius: 50%;
+        font-weight: 800;
+        color: var(--brown);
+      }
+      .qty span {
+        min-width: 20px;
+        text-align: center;
+        font-size: 0.8rem;
+        font-weight: 800;
+      }
+      .subtotal {
+        color: var(--orange);
+        font-size: 0.78rem;
+        font-weight: 800;
+        white-space: nowrap;
+      }
+      .total-row {
+        display: flex;
+        justify-content: space-between;
+        font-weight: 800;
+        margin-bottom: 14px;
+      }
+      .total-row strong {
+        color: var(--orange);
+        font-size: 1.25rem;
+      }
+      .wide {
+        width: 100%;
+      }
+      .cart-empty {
+        text-align: center;
+        color: var(--muted);
+        padding: 45px 0;
+      }
+      .cart-empty strong {
+        display: block;
+        font-size: 2.6rem;
+        margin-bottom: 8px;
+      }
+      .modal-wrap {
+        position: fixed;
+        inset: 0;
+        z-index: 90;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+        background: rgba(0, 0, 0, 0.55);
+        opacity: 0;
+        pointer-events: none;
+        transition: 0.25s;
+      }
+      .modal-wrap.open {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .modal {
+        width: min(560px, 100%);
+        max-height: 91vh;
+        overflow: auto;
+        position: relative;
+        background: var(--white);
+        border-radius: var(--radius);
+        padding: 30px 28px;
+        box-shadow: 0 20px 70px rgba(0, 0, 0, 0.24);
+      }
+      .modal.large {
+        width: min(1000px, 100%);
+      }
+      .modal h2 {
+        font: 600 1.55rem var(--title);
+        margin-bottom: 6px;
+      }
+      .modal-sub {
+        color: var(--muted);
+        font-size: 0.86rem;
+        margin-bottom: 20px;
+      }
+      .tabs {
+        display: flex;
+        gap: 5px;
+        background: #f5f0ea;
+        padding: 4px;
+        border-radius: 10px;
+        margin-bottom: 18px;
+      }
+      .tab {
+        flex: 1;
+        padding: 8px;
+        border-radius: 8px;
+        color: var(--muted);
+        font-size: 0.82rem;
+        font-weight: 800;
+      }
+      .tab.active {
+        background: var(--white);
+        color: var(--orange);
+        box-shadow: var(--shadow);
+      }
+      .demo {
+        background: var(--cream-2);
+        border: 1px solid var(--gold);
+        border-radius: 10px;
+        padding: 12px 14px;
+        margin-bottom: 17px;
+        color: var(--brown-2);
+        font-size: 0.78rem;
+      }
+      .demo strong {
+        display: block;
+        color: var(--brown);
+        font-size: 0.82rem;
+        margin-bottom: 5px;
+      }
+      .demo-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin-top: 7px;
+      }
+      .demo-row code {
+        font-family: ui-monospace, SFMono-Regular, monospace;
+        font-size: 0.72rem;
+      }
+      .demo-row button {
+        background: var(--orange);
+        color: var(--white);
+        padding: 5px 9px;
+        border-radius: 999px;
+        font-size: 0.68rem;
+        font-weight: 800;
+      }
+      .field {
+        margin-bottom: 14px;
+      }
+      .field label {
+        display: block;
+        color: var(--brown-2);
+        font-size: 0.78rem;
+        font-weight: 800;
+        margin-bottom: 5px;
+      }
+      .field input,
+      .field textarea,
+      .field select {
+        width: 100%;
+        padding: 10px 12px;
+        border: 2px solid #ddd6c8;
+        border-radius: 10px;
+        background: var(--white);
+        color: var(--brown);
+        outline: none;
+        font-size: 0.88rem;
+      }
+      .field textarea {
+        min-height: 82px;
+        resize: vertical;
+      }
+      .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0 14px;
+      }
+      .full {
+        grid-column: 1/-1;
+      }
+      .message {
+        padding: 10px 12px;
+        border-radius: 9px;
+        margin: 10px 0;
+        font-size: 0.8rem;
+        font-weight: 700;
+      }
+      .error {
+        background: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+      }
+      .success {
+        background: #dcfce7;
+        color: #166534;
+        border: 1px solid #bbf7d0;
+      }
+      .detail-img {
+        height: 230px;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #f0ebe3;
+        margin-bottom: 15px;
+      }
+      .detail-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .detail h3 {
+        font: 600 1.55rem var(--title);
+        margin: 4px 0 7px;
+      }
+      .detail-price {
+        font-size: 1.8rem;
+        color: var(--orange);
+        font-weight: 800;
+        margin: 10px 0 16px;
+      }
+      .detail-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .number {
+        width: 66px;
+        padding: 10px;
+        text-align: center;
+        border: 2px solid #ddd6c8;
+        border-radius: 10px;
+        font-weight: 800;
+      }
+      .toast {
+        position: fixed;
+        z-index: 120;
+        left: 50%;
+        bottom: 22px;
+        transform: translate(-50%, 20px);
+        padding: 12px 17px;
+        border-radius: 999px;
+        background: var(--brown);
+        color: var(--white);
+        font-size: 0.8rem;
+        font-weight: 700;
+        opacity: 0;
+        pointer-events: none;
+        transition: 0.25s;
+        box-shadow: var(--shadow-2);
+      }
+      .toast.show {
+        opacity: 1;
+        transform: translate(-50%, 0);
+      }
+      .admin-shell {
+        padding: 34px 0 58px;
+      }
+      .admin-hero {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 18px;
+        background: var(--brown);
+        color: var(--cream);
+        border-radius: var(--radius);
+        padding: 24px;
+        margin-bottom: 22px;
+      }
+      .admin-hero h1 {
+        font: 600 1.8rem var(--title);
+        margin: 5px 0;
+      }
+      .admin-hero p {
+        color: rgba(251, 246, 238, 0.72);
+        font-size: 0.84rem;
+      }
+      .admin-hero .btn-outline {
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: var(--cream);
+        padding: 8px 12px;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 800;
+      }
+      .admin-hero .btn-outline:hover {
+        background: rgba(255, 255, 255, 0.1);
+      }
+      .admin-hero-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .admin-hero-actions .btn-small {
+        background: var(--gold);
+        color: var(--brown);
+      }
+      .kpis {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+        margin-bottom: 22px;
+      }
+      .kpi {
+        background: var(--white);
+        border-radius: 14px;
+        box-shadow: var(--shadow);
+        padding: 17px;
+      }
+      .kpi small {
+        display: block;
+        color: var(--muted);
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .kpi strong {
+        display: block;
+        font: 600 1.6rem var(--title);
+        color: var(--orange);
+        margin-top: 6px;
+      }
+      .admin-card {
+        background: var(--white);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 20px;
+        margin-bottom: 18px;
+      }
+      .admin-card-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-bottom: 15px;
+      }
+      .admin-card h2 {
+        font: 600 1.28rem var(--title);
+      }
+      .admin-tabs {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 18px;
+        border-bottom: 1px solid #eee8e0;
+        padding-bottom: 8px;
+        flex-wrap: wrap;
+      }
+      .admin-tab {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 9px 13px;
+        border-radius: 9px;
+        color: var(--muted);
+        font-size: 0.8rem;
+        font-weight: 800;
+      }
+      .admin-tab.active {
+        background: var(--orange);
+        color: var(--white);
+      }
+      .admin-tab .badge {
+        min-width: 18px;
+        height: 18px;
+        background: rgba(255, 255, 255, 0.28);
+        color: inherit;
+      }
+      .admin-tab:not(.active) .badge {
+        background: var(--cream-2);
+        color: var(--brown-2);
+      }
+      .api-status {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 14px;
+        border-radius: 12px;
+        background: #fff8e7;
+        border: 1px solid #f3d48b;
+        margin-bottom: 18px;
+      }
+      .api-status.ok {
+        background: #ecfdf3;
+        border-color: #a7e3be;
+      }
+      .api-status.off {
+        background: #fff1f2;
+        border-color: #fecdd3;
+      }
+      .api-status strong {
+        display: block;
+        font-size: 0.86rem;
+        margin-bottom: 3px;
+      }
+      .api-status p {
+        color: var(--muted);
+        font-size: 0.76rem;
+      }
+      .btn-small {
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: var(--orange);
+        color: var(--white);
+        font-size: 0.72rem;
+        font-weight: 800;
+        white-space: nowrap;
+      }
+      .btn-small.secondary {
+        background: var(--cream-2);
+        color: var(--brown-2);
+      }
+      .btn-small.danger {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+      .admin-products {
+        display: grid;
+        grid-template-columns: 1fr 1.3fr;
+        gap: 20px;
+      }
+      .admin-product-list {
+        display: grid;
+        gap: 10px;
+      }
+      .admin-product {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border: 1px solid #eee8e0;
+        border-radius: 12px;
+        padding: 9px;
+      }
+      .admin-product img {
+        width: 56px;
+        height: 56px;
+        object-fit: cover;
+        border-radius: 9px;
+      }
+      .admin-product-main {
+        flex: 1;
+        min-width: 0;
+      }
+      .admin-product-main strong {
+        display: block;
+        font-size: 0.8rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .admin-product-main small {
+        color: var(--muted);
+        font-size: 0.7rem;
+      }
+      .admin-product-actions {
+        display: flex;
+        gap: 5px;
+      }
+      .order-admin {
+        border: 1px solid #eee8e0;
+        border-radius: 12px;
+        padding: 14px;
+        margin-bottom: 10px;
+      }
+      .order-admin-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .order-admin strong {
+        font-size: 0.86rem;
+      }
+      .order-admin small {
+        color: var(--muted);
+        font-size: 0.72rem;
+      }
+      .order-admin-items {
+        color: var(--brown-2);
+        font-size: 0.79rem;
+        line-height: 1.65;
+        margin: 10px 0;
+      }
+      .order-status-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 9px;
+        border-radius: 999px;
+        font-size: 0.7rem;
+        font-weight: 800;
+      }
+      .order-timeline {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 5px;
+        margin: 14px 0 4px;
+      }
+      .timeline-step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        color: #b8aa9a;
+        text-align: center;
+        font-size: 0.68rem;
+      }
+      .timeline-step span {
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f1ebe2;
+        filter: grayscale(1);
+      }
+      .timeline-step.active {
+        color: var(--orange);
+        font-weight: 800;
+      }
+      .timeline-step.active span {
+        background: var(--gold);
+        filter: none;
+      }
+      .status-select {
+        width: auto;
+        padding: 7px 9px;
+        border: 1px solid #ddd6c8;
+        border-radius: 8px;
+        color: var(--brown);
+        font-size: 0.75rem;
+      }
+      .credentials {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .credential {
+        background: var(--cream);
+        border-radius: 11px;
+        padding: 12px;
+      }
+      .credential strong {
+        display: block;
+        font-size: 0.75rem;
+      }
+      .credential code {
+        display: block;
+        color: var(--brown-2);
+        font-size: 0.72rem;
+        margin-top: 4px;
+        word-break: break-all;
+      }
+      .float-cart {
+        position: fixed;
+        z-index: 55;
+        left: 50%;
+        bottom: -90px;
+        transform: translateX(-50%);
+        width: min(480px, calc(100% - 32px));
+        background: var(--brown);
+        border-radius: 999px;
+        color: var(--white);
+        padding: 12px 17px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        transition: 0.3s;
+      }
+      .float-cart.show {
+        bottom: 18px;
+      }
+      .float-count {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.18);
+        font-size: 0.74rem;
+        font-weight: 800;
+      }
+      .float-label {
+        flex: 1;
+        font-size: 0.84rem;
+        font-weight: 800;
+      }
+      .float-total {
+        color: var(--gold-2);
+        font-size: 0.84rem;
+        font-weight: 800;
+      }
+      @media (max-width: 780px) {
+        .api-pill {
+          display: none;
+        }
+        .admin-products {
+          grid-template-columns: 1fr;
+        }
+        .kpis {
+          grid-template-columns: 1fr 1fr;
+        }
+        .admin-hero {
+          flex-direction: column;
+        }
+        .form-grid {
+          grid-template-columns: 1fr;
+        }
+        .full {
+          grid-column: auto;
+        }
+        .credentials {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media (max-width: 560px) {
+        .header-inner {
+          min-height: 60px;
+        }
+        .logo-title {
+          font-size: 1rem;
+        }
+        .logo-sub {
+          display: none;
+        }
+        .nav-btn {
+          padding: 8px;
+        }
+        .nav-btn .label {
+          display: none;
+        }
+        .nav-btn.cart .label {
+          display: inline;
+        }
+        .hero {
+          padding: 48px 16px 56px;
+        }
+        .section {
+          padding: 34px 0;
+        }
+        .grid {
+          grid-template-columns: 1fr 1fr;
+          gap: 14px;
+        }
+        .product-img {
+          height: 145px;
+        }
+        .product-body {
+          padding: 13px;
+        }
+        .product h3 {
+          font-size: 0.98rem;
+        }
+        .desc {
+          font-size: 0.75rem;
+        }
+        .product-foot {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+        .btn-add {
+          width: 100%;
+          text-align: center;
+        }
+        .modal {
+          padding: 24px 18px;
+        }
+        .drawer-body,
+        .drawer-head,
+        .drawer-foot {
+          padding-left: 17px;
+          padding-right: 17px;
+        }
+      }
+      @media (max-width: 390px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <div class="header-inner">
+        <a class="logo" href="#" onclick="App.go('home');return false"
+          ><span class="logo-icon">🥖</span
+          ><span
+            ><span class="logo-title">Pão para Toda Obra</span
+            ><span class="logo-sub">Padaria artesanal</span></span
+          ></a
+        >
+        <nav class="nav" aria-label="Navegação principal">
+          <button class="nav-btn" onclick="App.go('home')">
+            <span>⌂</span><span class="label">Início</span>
+          </button>
+          <button class="nav-btn" onclick="App.go('orders')">
+            <span>▣</span><span class="label">Pedidos</span>
+          </button>
+          <button class="nav-btn" id="nav-account" onclick="App.openAuth()">
+            <span>◉</span
+            ><span id="nav-account-text" class="label">Entrar</span>
+          </button>
+          <button
+            class="nav-btn admin-link hidden"
+            id="nav-admin"
+            onclick="App.go('admin')"
+          >
+            <span>⚙</span><span class="label">Painel</span>
+          </button>
+          <button class="nav-btn cart" onclick="App.openCart()">
+            🛒 <span id="cart-badge" class="badge hidden">0</span>
+          </button>
+        </nav>
+      </div>
+    </header>
+    <div class="stripe"></div>
+    <div class="location">
+      <div class="container">
+        <button onclick="App.setAddress()">
+          <span>📍</span
+          ><span id="location-text">Informar endereço de entrega</span
+          ><span>›</span>
+        </button>
+      </div>
     </div>
-  </header>
-  <div class="stripe"></div>
-  <div class="location"><div class="container"><button onclick="App.setAddress()"><span>📍</span><span id="location-text">Informar endereço de entrega</span><span>›</span></button></div></div>
-  <div id="main"></div>
-  <footer class="footer"><p>© <span id="year"></span> <strong>Pão para Toda Obra</strong> — Feito com amor e fermento natural.</p><details class="image-attributions"><summary>Fontes e licenças das imagens</summary><p class="attribution-intro">As imagens foram pesquisadas por produto. As fontes e os links das licenças são mantidos abaixo; CC BY e CC BY-SA exigem atribuição.</p><ol id="image-attributions"></ol></details></footer>
+    <div id="main"></div>
+    <footer class="footer">
+      <p>
+        © <span id="year"></span> <strong>Pão para Toda Obra</strong> — Feito
+        com amor e fermento natural.
+      </p>
+      <details class="image-attributions">
+        <summary>Fontes e licenças das imagens</summary>
+        <p class="attribution-intro">
+          As imagens foram pesquisadas por produto. As fontes e os links das
+          licenças são mantidos abaixo; CC BY e CC BY-SA exigem atribuição.
+        </p>
+        <ol id="image-attributions"></ol>
+      </details>
+    </footer>
 
-  <div class="overlay" id="cart-overlay" onclick="App.closeCart()"></div>
-  <aside class="drawer" id="cart-drawer" aria-label="Carrinho">
-    <div class="drawer-head"><h2>Seu carrinho</h2><button class="close" onclick="App.closeCart()">✕</button></div>
-    <div class="drawer-body" id="cart-body"></div>
-    <div class="drawer-foot" id="cart-foot"></div>
-  </aside>
+    <div class="overlay" id="cart-overlay" onclick="App.closeCart()"></div>
+    <aside class="drawer" id="cart-drawer" aria-label="Carrinho">
+      <div class="drawer-head">
+        <h2>Seu carrinho</h2>
+        <button class="close" onclick="App.closeCart()">✕</button>
+      </div>
+      <div class="drawer-body" id="cart-body"></div>
+      <div class="drawer-foot" id="cart-foot"></div>
+    </aside>
 
-  <div class="modal-wrap" id="auth-modal"><div class="modal">
-    <button class="close" style="position:absolute;right:16px;top:16px" onclick="App.closeAuth()">✕</button>
-    <h2>Bem-vindo(a)</h2><p class="modal-sub">Entre para pedir ou crie uma conta nova.</p>
-    <div class="tabs"><button class="tab active" data-auth-tab="login" onclick="App.authTab('login')">Entrar</button><button class="tab" data-auth-tab="register" onclick="App.authTab('register')">Criar conta</button></div>
-    <div class="demo" id="demo-box"><strong>Contas prontas para demonstração</strong><div class="demo-row"><code>cliente@pao.com / 123456</code><button onclick="App.fillDemo('user')">Preencher</button></div><div class="demo-row"><code>admin@pao.com / admin123</code><button onclick="App.fillDemo('admin')">Preencher</button></div></div>
-    <form id="login-form" onsubmit="App.login(event)"><div class="field"><label for="login-email">E-mail</label><input id="login-email" type="email" required autocomplete="email"></div><div class="field"><label for="login-password">Senha</label><input id="login-password" type="password" required autocomplete="current-password"></div><div id="login-message"></div><button class="btn-primary wide" type="submit">Entrar</button></form>
-    <form id="register-form" class="hidden" onsubmit="App.register(event)"><div class="field"><label for="register-name">Nome</label><input id="register-name" type="text" required></div><div class="field"><label for="register-email">E-mail</label><input id="register-email" type="email" required></div><div class="field"><label for="register-password">Senha (mínimo 6 caracteres)</label><input id="register-password" type="password" minlength="6" required></div><div id="register-message"></div><button class="btn-primary wide" type="submit">Criar conta</button></form>
-  </div></div>
+    <div class="modal-wrap" id="auth-modal">
+      <div class="modal">
+        <button
+          class="close"
+          style="position: absolute; right: 16px; top: 16px"
+          onclick="App.closeAuth()"
+        >
+          ✕
+        </button>
+        <h2>Bem-vindo(a)</h2>
+        <p class="modal-sub">Entre para pedir ou crie uma conta nova.</p>
+        <div class="tabs">
+          <button
+            class="tab active"
+            data-auth-tab="login"
+            onclick="App.authTab('login')"
+          >
+            Entrar</button
+          ><button
+            class="tab"
+            data-auth-tab="register"
+            onclick="App.authTab('register')"
+          >
+            Criar conta
+          </button>
+        </div>
+        <div class="demo" id="demo-box">
+          <strong>Contas prontas para demonstração</strong>
+          <div class="demo-row">
+            <code>cliente@pao.com / 123456</code
+            ><button onclick="App.fillDemo('user')">Preencher</button>
+          </div>
+          <div class="demo-row">
+            <code>admin@pao.com / admin123</code
+            ><button onclick="App.fillDemo('admin')">Preencher</button>
+          </div>
+        </div>
+        <form id="login-form" onsubmit="App.login(event)">
+          <div class="field">
+            <label for="login-email">E-mail</label
+            ><input
+              id="login-email"
+              type="email"
+              required
+              autocomplete="email"
+            />
+          </div>
+          <div class="field">
+            <label for="login-password">Senha</label
+            ><input
+              id="login-password"
+              type="password"
+              required
+              autocomplete="current-password"
+            />
+          </div>
+          <div id="login-message"></div>
+          <button class="btn-primary wide" type="submit">Entrar</button>
+        </form>
+        <form id="register-form" class="hidden" onsubmit="App.register(event)">
+          <div class="field">
+            <label for="register-name">Nome</label
+            ><input id="register-name" type="text" required />
+          </div>
+          <div class="field">
+            <label for="register-email">E-mail</label
+            ><input id="register-email" type="email" required />
+          </div>
+          <div class="field">
+            <label for="register-password">Senha (mínimo 6 caracteres)</label
+            ><input
+              id="register-password"
+              type="password"
+              minlength="6"
+              required
+            />
+          </div>
+          <div id="register-message"></div>
+          <button class="btn-primary wide" type="submit">Criar conta</button>
+        </form>
+      </div>
+    </div>
 
-  <div class="modal-wrap" id="product-modal"><div class="modal"><button class="close" style="position:absolute;right:16px;top:16px" onclick="App.closeProduct()">✕</button><div id="product-detail"></div></div></div>
-  <div class="modal-wrap" id="checkout-modal"><div class="modal"><button class="close" style="position:absolute;right:16px;top:16px" onclick="App.closeCheckout()">✕</button><h2>Finalizar pedido</h2><p class="modal-sub">Confirme endereço e observações.</p><div class="checkout-summary" id="checkout-summary"></div><form onsubmit="App.checkout(event)"><div class="field"><label for="checkout-address">Endereço de entrega</label><input id="checkout-address" type="text" placeholder="Rua, número, bairro" required></div><div class="field"><label for="checkout-notes">Observações</label><textarea id="checkout-notes" placeholder="Ex.: sem açúcar, troco..."></textarea></div><div id="checkout-message"></div><button class="btn-primary wide" id="checkout-button" type="submit">Confirmar pedido</button></form></div></div>
-  <div class="modal-wrap" id="address-modal"><div class="modal"><button class="close" style="position:absolute;right:16px;top:16px" onclick="App.closeAddress()">✕</button><h2>Endereço de entrega</h2><p class="modal-sub">Salve um endereço para agilizar os próximos pedidos.</p><form onsubmit="App.saveAddress(event)"><div class="field"><label for="address-input">Endereço</label><input id="address-input" type="text" placeholder="Rua, número, bairro" required></div><button class="btn-primary wide" type="submit">Salvar endereço</button></form></div></div>
-  <div class="toast" id="toast"></div>
-  <button class="float-cart" id="float-cart" onclick="App.openCart()"><span class="float-count" id="float-count">0</span><span class="float-label">Ver carrinho</span><span class="float-total" id="float-total">R$ 0,00</span></button>
+    <div class="modal-wrap" id="product-modal">
+      <div class="modal">
+        <button
+          class="close"
+          style="position: absolute; right: 16px; top: 16px"
+          onclick="App.closeProduct()"
+        >
+          ✕
+        </button>
+        <div id="product-detail"></div>
+      </div>
+    </div>
+    <div class="modal-wrap" id="checkout-modal">
+      <div class="modal">
+        <button
+          class="close"
+          style="position: absolute; right: 16px; top: 16px"
+          onclick="App.closeCheckout()"
+        >
+          ✕
+        </button>
+        <h2>Finalizar pedido</h2>
+        <p class="modal-sub">Confirme endereço e observações.</p>
+        <div class="checkout-summary" id="checkout-summary"></div>
+        <form onsubmit="App.checkout(event)">
+          <div class="field">
+            <label for="checkout-address">Endereço de entrega</label
+            ><input
+              id="checkout-address"
+              type="text"
+              placeholder="Rua, número, bairro"
+              required
+            />
+          </div>
+          <div class="field">
+            <label for="checkout-notes">Observações</label
+            ><textarea
+              id="checkout-notes"
+              placeholder="Ex.: sem açúcar, troco..."
+            ></textarea>
+          </div>
+          <div id="checkout-message"></div>
+          <button class="btn-primary wide" id="checkout-button" type="submit">
+            Confirmar pedido
+          </button>
+        </form>
+      </div>
+    </div>
+    <div class="modal-wrap" id="address-modal">
+      <div class="modal">
+        <button
+          class="close"
+          style="position: absolute; right: 16px; top: 16px"
+          onclick="App.closeAddress()"
+        >
+          ✕
+        </button>
+        <h2>Endereço de entrega</h2>
+        <p class="modal-sub">
+          Salve um endereço para agilizar os próximos pedidos.
+        </p>
+        <form onsubmit="App.saveAddress(event)">
+          <div class="field">
+            <label for="address-input">Endereço</label
+            ><input
+              id="address-input"
+              type="text"
+              placeholder="Rua, número, bairro"
+              required
+            />
+          </div>
+          <button class="btn-primary wide" type="submit">
+            Salvar endereço
+          </button>
+        </form>
+      </div>
+    </div>
+    <div class="toast" id="toast"></div>
+    <button class="float-cart" id="float-cart" onclick="App.openCart()">
+      <span class="float-count" id="float-count">0</span
+      ><span class="float-label">Ver carrinho</span
+      ><span class="float-total" id="float-total">R$ 0,00</span>
+    </button>
 
-  <script>
-  'use strict';
-  const API_CONFIG={baseUrl:'https://nest-api-wzc7.onrender.com',docsUrl:'https://nest-api-wzc7.onrender.com/api/docs-json'};
-  const FALLBACK_IMAGE='https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=900&q=82';
-  const DB={prefix:'pao_v2_',get(k){try{const raw=localStorage.getItem(this.prefix+k);return raw===null?null:JSON.parse(raw)}catch(_){return null}},set(k,v){try{localStorage.setItem(this.prefix+k,JSON.stringify(v));return true}catch(_){return false}},remove(k){try{localStorage.removeItem(this.prefix+k)}catch(_){}}};
-  const PRODUCTS_SEED=[
-    {id:1,name:'Pão Francês',description:'Casquinha crocante, miolo macio. Assado várias vezes ao dia.',price:0.75,category:'Pães',image:'https://images.unsplash.com/photo-1586444248902-2f64eddc13df?auto=format&fit=crop&w=900&q=82',featured:true},
-    {id:2,name:'Pão de Queijo (6 un.)',description:'Receita mineira tradicional, quentinho e elástico por dentro.',price:14.90,category:'Pães',image:'https://images.unsplash.com/photo-1574017019416-5b1f68b5a2c1?auto=format&fit=crop&w=900&q=82',featured:true},
-    {id:3,name:'Baguete Artesanal',description:'Fermentação longa, casca crocante e aroma de padaria.',price:12.90,category:'Pães',image:'https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=900&q=82'},
-    {id:4,name:'Pão Integral de Forma',description:'Fatiado, rico em fibras e sem conservantes.',price:16.50,category:'Pães',image:'https://images.unsplash.com/photo-1589367920969-ab8e050bbb04?auto=format&fit=crop&w=900&q=82'},
-    {id:5,name:'Pão Australiano',description:'Massa macia e levemente adocicada, perfeita para sanduíches.',price:18.90,category:'Pães',image:'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=900&q=82',isNew:true},
-    {id:6,name:'Sonho de Creme',description:'Massa fofinha com recheio de creme de confeiteiro.',price:8.50,category:'Doces',image:'https://images.unsplash.com/photo-1550617931-e17a7b70dce2?auto=format&fit=crop&w=900&q=82',featured:true},
-    {id:7,name:'Croissant de Chocolate',description:'Folhado amanteigado com recheio generoso de chocolate.',price:9.90,category:'Doces',image:'https://images.unsplash.com/photo-1587312246397-1c817a8eb86d?auto=format&fit=crop&w=900&q=82',isNew:true},
-    {id:8,name:'Fatia de Bolo de Fubá',description:'Molhadinho com casquinha crocante, receita de família.',price:7.90,category:'Doces',image:'https://images.unsplash.com/photo-1588195538326-c5b1e9f80a1b?auto=format&fit=crop&w=900&q=82'},
-    {id:9,name:'Rocambole de Doce de Leite',description:'Massa fofa enrolada com doce de leite cremoso.',price:8.90,category:'Doces',image:'https://images.unsplash.com/photo-1551024506-0bccd828d307?auto=format&fit=crop&w=900&q=82'},
-    {id:10,name:'Brigadeiro Gourmet',description:'Chocolate intenso com granulado crocante, feito na hora.',price:4.50,category:'Doces',image:'https://images.unsplash.com/photo-1571115177098-24ec42ed204d?auto=format&fit=crop&w=900&q=82'},
-    {id:11,name:'Coxinha de Frango',description:'Massa lisa e recheio cremoso de frango desfiado.',price:7.50,category:'Salgados',image:'https://images.unsplash.com/photo-1626768902589-2ae9efd0fffb?auto=format&fit=crop&w=900&q=82',featured:true},
-    {id:12,name:'Esfiha de Carne',description:'Aberta, com carne temperada e toque de limão.',price:6.90,category:'Salgados',image:'https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=900&q=82'},
-    {id:13,name:'Pastel de Queijo',description:'Massa fina e crocante com queijo derretido.',price:7.00,category:'Salgados',image:'https://images.unsplash.com/photo-1619531045520-d574aca6d54b?auto=format&fit=crop&w=900&q=82'},
-    {id:14,name:'Empada de Palmito',description:'Massa delicada com recheio de palmito e requeijão.',price:8.90,category:'Salgados',image:'https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=900&q=82',isNew:true},
-    {id:15,name:'Cookie de Chocolate',description:'Macio por dentro, crocante por fora, com gotas de chocolate.',price:6.50,category:'Doces',image:'https://images.unsplash.com/photo-1499636136210-6f4ee919583b?auto=format&fit=crop&w=900&q=82',featured:true},
-    {id:16,name:'Café Espresso',description:'Grãos torrados na medida, tirado na hora.',price:5.50,category:'Bebidas',image:'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=82'},
-    {id:17,name:'Suco de Laranja 300 ml',description:'Laranjas espremidas na hora, sem açúcar.',price:8.90,category:'Bebidas',image:'https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=900&q=82'},
-    {id:18,name:'Chá Gelado de Pêssego',description:'Chá preto com suco de pêssego e hortelã.',price:7.50,category:'Bebidas',image:'https://images.unsplash.com/photo-1541795795328-f073b763494e?auto=format&fit=crop&w=900&q=82'},
-    {id:19,name:'Capuccino Cremoso',description:'Café com leite cremoso, chocolate e canela.',price:9.90,category:'Bebidas',image:'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=82',isNew:true},
-    {id:20,name:'Torta de Limão',description:'Massa crocante com mousse de limão e merengue.',price:12.90,category:'Doces',image:'https://images.unsplash.com/photo-1587312246397-1c817a8eb86d?auto=format&fit=crop&w=900&q=82'},
-    {id:21,name:'Pão de Batata com Requeijão',description:'Massa macia com recheio cremoso de requeijão.',price:11.90,category:'Pães',image:'https://images.unsplash.com/photo-1589367920969-ab8e050bbb04?auto=format&fit=crop&w=900&q=82'}
-  ];
-  const State={user:null,token:null,cart:[],address:null,redirect:null,api:{status:'checking',message:'Verificando a documentação pública da API...'},load(){const s=DB.get('session');if(s&&s.user&&s.token){this.user=s.user;this.token=s.token}else{this.user=null;this.token=null}const raw=DB.get('cart');this.cart=Array.isArray(raw)?raw.map(item=>{const product=products().find(p=>String(p.id)===String(item?.product?.id??item?.id));const qty=Math.max(1,Math.min(99,Number(item?.qty)||0));return product&&qty?{product,qty}:null}).filter(Boolean):[];const savedAddress=DB.get('address');this.address=typeof savedAddress==='string'?savedAddress:'';this.saveCart()},saveSession(){DB.set('session',this.user&&this.token?{user:this.user,token:this.token}:null)},saveCart(){DB.set('cart',this.cart.filter(i=>i&&i.product).map(i=>({product:i.product,qty:Math.max(1,Math.min(99,Number(i.qty)||1))})))},logged(){return !!(this.token&&this.user)},isAdmin(){return !!(this.user&&this.user.role==='admin')},totalQty(){return this.cart.reduce((n,i)=>n+(Number(i.qty)||0),0)},total(){return this.cart.reduce((n,i)=>n+(i.product?effectivePrice(i.product):0)*(Number(i.qty)||0),0)}};
-  const Api={async check(){State.api={status:'checking',message:'Tentando obter o JSON OpenAPI real...'};updateApiUi();const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),7000);try{const response=await fetch(API_CONFIG.docsUrl,{method:'GET',cache:'no-store',headers:{Accept:'application/json'},signal:controller.signal});const type=response.headers.get('content-type')||'';const body=await response.text();if(response.ok&&type.includes('json')&&body.trim().startsWith('{')){State.api={status:'ok',message:'A especificação OpenAPI foi encontrada, mas nenhum endpoint de negócio foi executado automaticamente.'}}else{State.api={status:'off',message:'A URL respondeu com uma tela de carregamento do Render ou não entregou JSON OpenAPI.'}}}catch(error){State.api={status:'off',message:error.name==='AbortError'?'A API não respondeu dentro do tempo de verificação.':'A documentação não pôde ser acessada pelo navegador.'}}finally{clearTimeout(timer);updateApiUi();if(document.querySelector('.admin-shell'))Pages.admin()}},confirmed(){return State.api.status==='ok'}};
-  const IMAGE_UPDATE_VERSION='verified-images-2026-08-19-v3';
-  const IMAGE_CATALOG={"1":{"image":"https://images.rawpixel.com/editor_1024/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIzLTAzL2ZyMDM2XzlfMzk5LWltYWdlLmpwZw.jpg","source":"https://www.rawpixel.com/image/8812012/french-bread-rolls","license":"CC0 1.0","licenseUrl":"https://creativecommons.org/publicdomain/zero/1.0/","credit":"Rawpixel — French bread rolls","note":"Correspondência direta com pão francês; fonte declara CC0."},"2":{"image":"https://upload.wikimedia.org/wikipedia/commons/5/50/P%C3%A3o_de_Queijo_%28Brazilian_Cheese_Bread%29.jpg","source":"https://commons.wikimedia.org/wiki/File:P%C3%A3o_de_Queijo_%28Brazilian_Cheese_Bread%29.jpg","license":"CC BY 2.0","licenseUrl":"https://creativecommons.org/licenses/by/2.0/","credit":"Joy/Valereee — Pão de Queijo (Brazilian Cheese Bread)","note":"Correspondência direta com pão de queijo; exige atribuição."},"3":{"image":"https://images.rawpixel.com/editor_1024/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvbGlmZW9mcGl4MDAwMDMtaW1hZ2Uta3d2eWVmbnYuanBn.jpg","source":"https://www.rawpixel.com/image/5926861/photo-image-public-domain-food-free","license":"CC0 1.0","licenseUrl":"https://creativecommons.org/publicdomain/zero/1.0/","credit":"Rawpixel — Free close big baguette bread","note":"Correspondência direta com baguete; fonte declara CC0."},"4":{"image":"https://upload.wikimedia.org/wikipedia/commons/7/79/Vegan_no-knead_whole_wheat_bread_loaf%2C_sliced%2C_September_2010.jpg","source":"https://commons.wikimedia.org/wiki/File:Vegan_no-knead_whole_wheat_bread_loaf,_sliced,_September_2010.jpg","license":"CC BY-SA 2.0","licenseUrl":"https://creativecommons.org/licenses/by-sa/2.0/","credit":"Veganbaking.net — Vegan no-knead whole wheat bread loaf, sliced","note":"Correspondência direta com pão integral de forma; exige atribuição e share-alike."},"5":{"image":"https://commons.wikimedia.org/wiki/Special:FilePath/Wattleseed_Damper_(cropped).jpg?width=1200","source":"https://commons.wikimedia.org/wiki/File:Wattleseed_Damper_(cropped).jpg","license":"CC BY-SA 4.0","licenseUrl":"https://creativecommons.org/licenses/by-sa/4.0/","credit":"Finbar.concaig — Wattleseed Damper (cropped)","note":"Correspondência direta com damper, um pão australiano identificado pela fonte; exige atribuição e share-alike."},"6":{"image":"https://upload.wikimedia.org/wikipedia/commons/1/1a/Puntarenas%2C_Costa_Rica_-_Puntarenas%27_Cream_Filled_Doughnuts.png","source":"https://commons.wikimedia.org/wiki/File:Puntarenas,_Costa_Rica_-_Puntarenas%27_Cream_Filled_Doughnuts.png","license":"CC BY 3.0","licenseUrl":"https://creativecommons.org/licenses/by/3.0/","credit":"Steven Depolo — Puntarenas' Cream Filled Doughnuts","note":"Correspondência visual com massa doce recheada de creme; exige atribuição."},"7":{"image":"https://upload.wikimedia.org/wikipedia/commons/2/22/Croissant_Chocolate.jpg","source":"https://commons.wikimedia.org/wiki/File:Croissant_Chocolate.jpg","license":"CC0","licenseUrl":"https://creativecommons.org/publicdomain/zero/1.0/","credit":"Bajinra — Croissant Chocolate","note":"Correspondência direta com croissant de chocolate; CC0."},"8":{"image":"https://upload.wikimedia.org/wikipedia/commons/2/25/Cornmeal_cake.jpg","source":"https://commons.wikimedia.org/wiki/File:Cornmeal_cake.jpg","license":"CC BY-SA 4.0","licenseUrl":"https://creativecommons.org/licenses/by-sa/4.0/","credit":"Mauro Cateb — Cornmeal cake","note":"A descrição da fonte identifica explicitamente bolo de fubá brasileiro; exige atribuição e share-alike."},"9":{"image":"https://upload.wikimedia.org/wikipedia/commons/2/23/LD-Swiss-Cake-Rolls.jpg","source":"https://commons.wikimedia.org/wiki/File:LD-Swiss-Cake-Rolls.jpg","license":"CC0","licenseUrl":"https://creativecommons.org/publicdomain/zero/1.0/","credit":"Evan-Amos — Swiss Cake Rolls","note":"Correspondência visual direta com rocambole; CC0. O recheio da foto não é confirmado como doce de leite."},"10":{"image":"https://upload.wikimedia.org/wikipedia/commons/a/a4/Brigadeiro.jpg","source":"https://commons.wikimedia.org/wiki/File:Brigadeiro.jpg","license":"CC BY-SA 2.0","licenseUrl":"https://creativecommons.org/licenses/by-sa/2.0/","credit":"Mayra (Maych) — Brigadeiro","note":"Correspondência direta com brigadeiro brasileiro; exige atribuição e share-alike."},"11":{"image":"https://upload.wikimedia.org/wikipedia/commons/6/66/Coxinha_-_iguaria_brasileira_01.jpg","source":"https://commons.wikimedia.org/wiki/File:Coxinha_-_iguaria_brasileira_01.jpg","license":"CC BY-SA 4.0","licenseUrl":"https://creativecommons.org/licenses/by-sa/4.0/","credit":"Sintegrity — Coxinha - iguaria brasileira 01","note":"A fonte descreve explicitamente coxinha brasileira; exige atribuição e share-alike."},"12":{"image":"https://live.staticflickr.com/27/50119721_b18ef723ce_b.jpg","source":"https://www.flickr.com/photos/86791528@N00/50119721","license":"CC BY 2.0","licenseUrl":"https://creativecommons.org/licenses/by/2.0/","credit":"Andreas D. — Esfiha","note":"Correspondência direta com esfiha; exige atribuição."},"13":{"image":"https://upload.wikimedia.org/wikipedia/commons/f/f6/Pastel_-_Brazilian_fried_pastry.jpg","source":"https://commons.wikimedia.org/wiki/File:Pastel_-_Brazilian_fried_pastry.jpg","license":"CC BY-SA 4.0","licenseUrl":"https://creativecommons.org/licenses/by-sa/4.0/","credit":"Mauro Cateb — Pastel - Brazilian fried pastry","note":"A fonte identifica pastel brasileiro; o recheio específico de queijo não é comprovado na página. Exige atribuição e share-alike."},"14":{"image":"https://commons.wikimedia.org/wiki/Special:FilePath/Empada_de_palmito.jpg?width=1200","source":"https://commons.wikimedia.org/wiki/File:Empada_de_palmito.jpg","license":"CC0","licenseUrl":"https://creativecommons.org/publicdomain/zero/1.0/","credit":"Melsj — Empada de palmito","note":"Correspondência direta com empada de palmito; CC0."},"15":{"image":"https://upload.wikimedia.org/wikipedia/commons/2/24/Chocolate_chip_cookie%2C_Massachusetts.jpg","source":"https://commons.wikimedia.org/wiki/File:Chocolate_chip_cookie,_Massachusetts.jpg","license":"CC0","licenseUrl":"https://creativecommons.org/publicdomain/zero/1.0/","credit":"Daderot — Chocolate chip cookie","note":"Correspondência direta com cookie de chocolate; CC0."},"16":{"image":"https://upload.wikimedia.org/wikipedia/commons/2/24/Espresso_Coffee_01.jpg","source":"https://commons.wikimedia.org/wiki/File:Espresso_Coffee_01.jpg","license":"CC0","licenseUrl":"https://creativecommons.org/publicdomain/zero/1.0/","credit":"Jubair1985 — Espresso Coffee 01","note":"Correspondência direta com café espresso; CC0."},"17":{"image":"https://commons.wikimedia.org/wiki/Special:FilePath/JP_%E6%97%A5%E6%9C%AC_Japan_%E6%B2%96%E7%B9%A9_OKINAWA_%E9%82%A3%E9%9C%B8_Naha_%E9%AD%9A%E5%B1%8B%E6%B5%B7%E9%AE%AE_Izakaya_%E5%B1%85%E9%85%92%E5%B1%8B%E9%A3%9F%E5%A0%82_Japanese_seafood_restaurant_lunch_orange_juice_glass_cup_February_2026_N13P.jpg?width=1200","source":"https://commons.wikimedia.org/w/index.php?curid=184242204","license":"CC0 1.0","licenseUrl":"https://creativecommons.org/publicdomain/zero/1.0/","credit":"NORTLAUKAU 26088 JP — orange juice glass cup","note":"Correspondência visual com suco de laranja em copo; CC0. O volume de 300 ml é característica do produto, não da foto."},"18":{"image":"https://live.staticflickr.com/8182/29216394141_5eb085bf7d_b.jpg","source":"https://www.flickr.com/photos/115868834@N02/29216394141","license":"CC0 1.0","licenseUrl":"https://creativecommons.org/publicdomain/zero/1.0/","credit":"TW_Smith — Peach Iced Tea","note":"Correspondência direta com chá gelado de pêssego; CC0."},"19":{"image":"https://live.staticflickr.com/7296/27714541964_a03fffc3a9_b.jpg","source":"https://www.flickr.com/photos/36076466@N08/27714541964","license":"CC BY 2.0","licenseUrl":"https://creativecommons.org/licenses/by/2.0/","credit":"Epicantus — Cappuccino, coffee cup","note":"Correspondência direta com cappuccino; exige atribuição."},"20":{"image":"https://live.staticflickr.com/7240/7308564296_428fc9182a_b.jpg","source":"https://www.flickr.com/photos/47845458@N08/7308564296","license":"CC BY 2.0","licenseUrl":"https://creativecommons.org/licenses/by/2.0/","credit":"Andrea Goh — lemon meringue pie","note":"Correspondência visual com torta de limão com merengue; exige atribuição."},"21":{"image":"https://commons.wikimedia.org/wiki/Special:FilePath/Homemade_potato_bread%2C_half.jpg?width=1200","source":"https://commons.wikimedia.org/wiki/File:Homemade_potato_bread,_half.jpg","license":"CC BY-SA 3.0","licenseUrl":"https://creativecommons.org/licenses/by-sa/3.0/","credit":"Daniel J. Layton — Homemade potato bread, half","note":"Correspondência direta com pão de batata assado, descrita pela fonte como meio pão de batata; o recheio de requeijão não é visível e não será afirmado pela imagem. Exige atribuição e share-alike."}};
-  const DEMO_USERS=[{id:1,role:'user',name:'Cliente Demo',email:'cliente@pao.com',password:'123456'},{id:2,role:'admin',name:'Admin Demo',email:'admin@pao.com',password:'admin123'}];
-  function catalogSeed(){return PRODUCTS_SEED.map(p=>{const item=IMAGE_CATALOG[String(p.id)];return item?{...p,image:item.image,imageSource:item.source,imageLicense:item.license,imageLicenseUrl:item.licenseUrl,imageCredit:item.credit,imageNote:item.note}:{...p}})}
-  function validProduct(p){return !!p&&p.id!==undefined&&String(p.name||'').trim()!==''&&Number.isFinite(Number(p.price))}
-  function normalizeProducts(list){return Array.isArray(list)?list.filter(validProduct).map(p=>({...p,id:Number(p.id),name:String(p.name).trim(),description:String(p.description||''),price:Math.max(0,Number(p.price)||0),category:String(p.category||'Outros'),image:String(p.image||''),promo:p.promo&&typeof p.promo==='object'?{active:!!p.promo.active,type:p.promo.type==='fixed'?'fixed':'percent',value:Math.max(0,Number(p.promo.value)||0)}:undefined})):[]}
-  function seed(){const savedUsers=DB.get('users');if(!Array.isArray(savedUsers)||!savedUsers.length)DB.set('users',DEMO_USERS);const savedProducts=DB.get('products');const normalized=normalizeProducts(savedProducts);if(!Array.isArray(savedProducts)||!normalized.length)DB.set('products',catalogSeed());else if(JSON.stringify(normalized)!==JSON.stringify(savedProducts))DB.set('products',normalized);const savedOrders=DB.get('orders');if(!Array.isArray(savedOrders))DB.set('orders',[]);const savedCart=DB.get('cart');if(!Array.isArray(savedCart))DB.set('cart',[])}
-  function applyVerifiedImageCatalog(){const existing=normalizeProducts(DB.get('products'));const rawSeedById=Object.fromEntries(PRODUCTS_SEED.map(p=>[String(p.id),p]));const legacySources={'5':'https://commons.wikimedia.org/wiki/File:Boston_Brown_Bread_loaf_-_Massachusetts.jpg','21':'https://commons.wikimedia.org/wiki/File:Homemade_sweet_potato_bread_1.jpg'};const oldVersion=DB.get('imageCatalogVersion');let changed=false;const updated=(existing.length?existing:catalogSeed()).map(p=>{const key=String(p.id),item=IMAGE_CATALOG[key],seed=rawSeedById[key];if(!item||!seed)return p;const isOriginalSeed=!p.imageSource&&(!p.image||p.image===seed.image||p.image===FALLBACK_IMAGE);const isKnownLegacy=legacySources[key]&&p.imageSource===legacySources[key];const isAlreadyVerified=p.imageSource===item.source&&p.image===item.image;if((oldVersion!==IMAGE_UPDATE_VERSION&&isOriginalSeed)||isKnownLegacy){changed=true;return {...p,image:item.image,imageSource:item.source,imageLicense:item.license,imageLicenseUrl:item.licenseUrl,imageCredit:item.credit,imageNote:item.note}}if(isAlreadyVerified&&!p.imageLicense){changed=true;return {...p,imageLicense:item.license,imageLicenseUrl:item.licenseUrl,imageCredit:item.credit,imageNote:item.note}}return p});if(changed||!Array.isArray(DB.get('products'))||!DB.get('products')?.length)DB.set('products',updated);DB.set('imageCatalogVersion',IMAGE_UPDATE_VERSION)}
-  function products(){const list=DB.get('products');return Array.isArray(list)&&list.length?list:catalogSeed()}function saveProducts(list){const normalized=normalizeProducts(list);DB.set('products',normalized.length?normalized:catalogSeed())}function orders(){const list=DB.get('orders');return Array.isArray(list)?list:[]}function saveOrders(list){DB.set('orders',Array.isArray(list)?list:[])}function users(){const list=DB.get('users');return Array.isArray(list)?list:DEMO_USERS}function money(v){return (Number(v)||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}function esc(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;')}function fmtDate(v){const d=new Date(v);return Number.isNaN(d.getTime())?'':d.toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'})}function get(id){return document.getElementById(id)}function toast(text){const el=get('toast');if(!el)return;el.textContent=text;el.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.remove('show'),2600)}function imageOf(p){return p?.image||IMAGE_CATALOG[String(p?.id)]?.image||FALLBACK_IMAGE}function promoActive(p){return !!(p&&p.promo&&p.promo.active&&Number(p.promo.value)>0)}function effectivePrice(p){if(!p)return 0;if(!promoActive(p))return Number(p.price)||0;return p.promo.type==='percent'?Math.max(0,(Number(p.price)||0)*(1-Number(p.promo.value)/100)):Math.max(0,(Number(p.price)||0)-Number(p.promo.value))}function promoText(p){if(!promoActive(p))return '';return p.promo.type==='percent'?`-${Number(p.promo.value)}%`:`-${money(p.promo.value)}`}
-  function productImg(p,extra=''){return `<img src="${esc(imageOf(p))}" alt="${esc(p.name)}" loading="lazy" onerror="this.onerror=null;this.src='${FALLBACK_IMAGE}'" ${extra}>`}
-  function renderImageAttributions(){const el=get('image-attributions');if(!el)return;const byId=Object.fromEntries(products().map(p=>[String(p.id),p]));el.innerHTML=Object.entries(IMAGE_CATALOG).map(([id,item])=>{const name=byId[id]?.name||`Produto ${id}`;return `<li><strong>${esc(name)}</strong> — <a href="${esc(item.source)}" target="_blank" rel="noreferrer">fonte</a> · <a href="${esc(item.licenseUrl)}" target="_blank" rel="license noreferrer">${esc(item.license)}</a> — ${esc(item.credit)}${item.note?` <em>(${esc(item.note)})</em>`:''}</li>`}).join('')}
-  function imageCreditLine(p){const item=IMAGE_CATALOG[String(p.id)]||p;if(!item?.source||!item?.license)return '';return `<small class="image-credit">Imagem: <a href="${esc(item.source)}" target="_blank" rel="noreferrer">fonte</a> · <a href="${esc(item.licenseUrl)}" target="_blank" rel="license noreferrer">${esc(item.license)}</a></small>`}
-  function updateApiUi(){document.querySelectorAll('[data-api-pill]').forEach(el=>{el.classList.toggle('ok',State.api.status==='ok');el.classList.toggle('off',State.api.status==='off');const label=el.querySelector('[data-api-label]');if(label)label.textContent=State.api.status==='checking'?'Verificando API':State.api.status==='ok'?'API verificada':'API não confirmada'});const box=get('api-status-box');if(box){box.className='api-status '+(State.api.status==='ok'?'ok':State.api.status==='off'?'off':'');const title=box.querySelector('[data-api-title]');const text=box.querySelector('[data-api-text]');if(title)title.textContent=State.api.status==='ok'?'Documentação OpenAPI encontrada':'API não confirmada';if(text)text.textContent=State.api.message}}
-  function renderHeader(){const qty=State.totalQty();get('cart-badge').textContent=qty;get('cart-badge').classList.toggle('hidden',qty===0);get('float-count').textContent=qty;get('float-total').textContent=money(State.total());get('float-cart').classList.toggle('show',qty>0);get('location-text').textContent=State.address||'Informar endereço de entrega';const nav=get('nav-account'),label=get('nav-account-text'),adminNav=get('nav-admin');if(adminNav)adminNav.classList.toggle('hidden',!State.isAdmin());if(State.logged()){label.textContent=(State.user.name||'Conta').split(' ')[0];nav.title=State.isAdmin()?'Abrir painel administrativo':'Sair';nav.onclick=State.isAdmin()?()=>App.go('admin'):App.logout}else{label.textContent='Entrar';nav.title='';nav.onclick=()=>App.openAuth()}}
-  const ORDER_STAGES=[{key:'pendente',label:'Novo pedido',icon:'🧾'},{key:'preparando',label:'Em preparo',icon:'👩‍🍳'},{key:'saiu_entrega',label:'Saiu para entrega',icon:'🛵'},{key:'entregue',label:'Entregue',icon:'✅'},{key:'cancelado',label:'Cancelado',icon:'✕'}];
-  function normalizeOrderStatus(status){const key=String(status||'pendente').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[\s-]+/g,'_');if(['saiu_entrega','saiu_para_entrega','em_entrega','out_for_delivery'].includes(key))return'saiu_entrega';if(['preparando','em_preparo','preparing'].includes(key))return'preparando';if(['entregue','delivered'].includes(key))return'entregue';if(['cancelado','canceled','cancelled'].includes(key))return'cancelado';return'pendente'}
-  function statusMeta(status){return ORDER_STAGES.find(s=>s.key===normalizeOrderStatus(status))||ORDER_STAGES[0]}
-  function statusCounts(list=orders()){return ORDER_STAGES.reduce((acc,s)=>{acc[s.key]=list.filter(o=>normalizeOrderStatus(o.status)===s.key).length;return acc},{})}
-  function orderTimeline(o){const current=normalizeOrderStatus(o.status);if(current==='cancelado')return'<div class="message error" style="margin:12px 0 0">Este pedido foi cancelado.</div>';const currentIndex=ORDER_STAGES.filter(s=>s.key!=='cancelado').findIndex(s=>s.key===current);return`<div class="order-timeline">${ORDER_STAGES.filter(s=>s.key!=='cancelado').map((s,i)=>`<div class="timeline-step ${i<=currentIndex?'active':''}"><span>${s.icon}</span><small>${s.label}</small></div>`).join('')}</div>`}
-  function activePromos(){return products().filter(p=>promoActive(p))}
-  const Pages={home(){const list=products();const cats=['Todos',...new Set(list.map(p=>p.category))];const promo=activePromos()[0];get('main').innerHTML=`<section class="hero"><div class="hero-inner"><span class="eyebrow">🍞 Padaria artesanal</span><h1>Pão fresquinho, <em>entrega rápida</em></h1><p>Escolha seus produtos favoritos, monte seu pedido e receba em casa com todo o carinho.</p><a class="hero-cta" href="#catalogo">Ver cardápio ↓</a><div class="hero-stats"><div class="hero-stat"><strong>4.8★</strong><span>Avaliação média</span></div><div class="hero-stat"><strong>30 min</strong><span>Entrega média</span></div><div class="hero-stat"><strong>100%</strong><span>Assados no dia</span></div></div></div></section><section class="section container" id="catalogo">${promo?`<div class="promo-banner">🎉 <strong>Promoção ativa:</strong> ${esc(promo.name)} por ${money(effectivePrice(promo))}</div>`:'<div class="promo-banner">🎉 <strong>Frete grátis</strong> em pedidos acima de R$ 50,00</div>'}<div class="section-head"><h2>Nosso cardápio</h2><span class="count">${list.length} itens</span></div><div class="filters" id="filters">${cats.map((c,i)=>`<button class="cat-btn ${i===0?'active':''}" data-cat="${esc(c)}">${esc(c)}</button>`).join('')}</div><input class="search" id="product-search" placeholder="🔍 Buscar produto..." oninput="Pages.filter()"><div style="height:22px"></div><div class="grid" id="product-grid"></div></section>`;document.querySelectorAll('#filters .cat-btn').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('#filters .cat-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');Pages.filter()}));Pages.filter()},filter(){const grid=get('product-grid');if(!grid)return;const cat=document.querySelector('#filters .cat-btn.active')?.dataset.cat||'Todos';const term=(get('product-search')?.value||'').toLowerCase().trim();let list=products();if(cat!=='Todos')list=list.filter(p=>p.category===cat);if(term)list=list.filter(p=>(p.name+' '+(p.description||'')).toLowerCase().includes(term));grid.innerHTML=list.length?list.map(cardProduct).join(''):`<div class="empty"><strong>😕</strong><p>Nenhum produto encontrado.</p></div>`},orders(){if(!State.logged()){State.redirect='orders';App.openAuth();return}const list=orders().filter(o=>o.userId===State.user.id).sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)));get('main').innerHTML=`<section class="section container"><div class="section-head"><h2>▣ Meus pedidos</h2><span class="count">${list.length} pedidos</span></div><div>${list.length?list.map(cardOrder).join(''):`<div class="empty"><strong>📭</strong><p>Você ainda não fez nenhum pedido.</p><button class="hero-cta" style="margin-top:18px" onclick="App.go('home')">Ver cardápio →</button></div>`}</div></section>`},admin(){if(!State.isAdmin()){App.openAuth();return}const list=products();const orderList=orders();const counts=statusCounts(orderList);const pending=counts.pendente;const revenue=orderList.filter(o=>normalizeOrderStatus(o.status)!=='cancelado').reduce((s,o)=>s+Number(o.total||0),0);get('main').innerHTML=`<section class="admin-shell container"><div class="admin-hero"><div><span class="chip">Área restrita</span><h1>Painel administrativo</h1><p>Gerencie o cardápio e acompanhe cada pedido até a entrega.</p></div><div class="admin-hero-actions"><button class="btn-small" onclick="Pages.adminTab('products');setTimeout(()=>get('admin-name')?.focus(),0)">＋ Adicionar produto</button><button class="btn-outline" onclick="App.logout()">Sair da conta</button></div></div><div class="kpis"><div class="kpi"><small>Produtos</small><strong>${list.length}</strong></div><div class="kpi"><small>Novos pedidos</small><strong>${pending}</strong></div><div class="kpi"><small>Em preparo</small><strong>${counts.preparando}</strong></div><div class="kpi"><small>Saiu para entrega</small><strong>${counts.saiu_entrega}</strong></div></div><div id="api-status-box" class="api-status"><div><strong data-api-title>API não confirmada</strong><p data-api-text>${esc(State.api.message)}</p></div><button class="btn-small" onclick="Api.check()">Verificar novamente</button></div><div class="admin-card"><div class="admin-tabs"><button class="admin-tab active" data-admin-tab="products" onclick="Pages.adminTab('products')">Cardápio e promoções</button><button class="admin-tab" data-admin-tab="orders" onclick="Pages.adminTab('orders')">Pedidos</button><button class="admin-tab" data-admin-tab="delivery" onclick="Pages.adminTab('delivery')">🛵 Saiu para entrega <span class="badge">${counts.saiu_entrega}</span></button></div><div id="admin-content"></div></div><div class="admin-card"><div class="admin-card-head"><h2>Contas pré-prontas</h2></div><div class="credentials"><div class="credential"><strong>Cliente de demonstração</strong><code>cliente@pao.com</code><code>senha: 123456</code></div><div class="credential"><strong>Administrador de demonstração</strong><code>admin@pao.com</code><code>senha: admin123</code></div></div><p style="color:var(--muted);font-size:.73rem;margin-top:12px">As contas são demonstrativas e ficam salvas localmente neste arquivo quando a API não está disponível.</p></div></section>`;Pages.adminTab('products');updateApiUi()},adminTab(tab){document.querySelectorAll('[data-admin-tab]').forEach(b=>b.classList.toggle('active',b.dataset.adminTab===tab));const el=get('admin-content');if(!el)return;if(tab==='orders'||tab==='delivery'){const all=orders().sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)));const list=tab==='delivery'?all.filter(o=>normalizeOrderStatus(o.status)==='saiu_entrega'):all;el.innerHTML=`<div class="admin-card-head"><div><h2>${tab==='delivery'?'Pedidos que saíram para entrega':'Todos os pedidos'}</h2><small style="color:var(--muted)">${tab==='delivery'?'Aparecem aqui somente após o status ser marcado como “Saiu para entrega”.':'Atualize o status de cada pedido sem sair desta tela.'}</small></div><button class="btn-small secondary" onclick="Pages.adminTab('${tab}')">Atualizar</button></div>${list.length?list.map(adminOrder).join(''):`<div class="empty"><strong>${tab==='delivery'?'🛵':'📭'}</strong><p>${tab==='delivery'?'Nenhum pedido saiu para entrega ainda.':'Nenhum pedido registrado.'}</p></div>`}`;return}el.innerHTML=`<div class="admin-products"><div><div class="admin-card-head"><h2>Adicionar produto</h2><button class="btn-small secondary" onclick="Admin.clearForm()">Limpar</button></div><form id="admin-product-form" onsubmit="Admin.save(event)"><input type="hidden" id="admin-id"><div class="field"><label for="admin-name">Nome</label><input id="admin-name" required></div><div class="field"><label for="admin-description">Descrição</label><textarea id="admin-description" required></textarea></div><div class="form-grid"><div class="field"><label for="admin-price">Preço (R$)</label><input id="admin-price" type="number" min="0" step="0.01" required></div><div class="field"><label for="admin-category">Categoria</label><select id="admin-category"><option>Pães</option><option>Doces</option><option>Salgados</option><option>Bebidas</option><option>Outros</option></select></div><div class="field full"><label for="admin-image">URL da imagem</label><input id="admin-image" type="url" placeholder="https://..."></div><div class="field"><label for="admin-promo-type">Tipo de promoção</label><select id="admin-promo-type"><option value="percent">Percentual (%)</option><option value="fixed">Desconto fixo (R$)</option></select></div><div class="field"><label for="admin-promo-value">Desconto</label><input id="admin-promo-value" type="number" min="0" step="0.01" value="0"></div><div class="field full"><label><input id="admin-promo-active" type="checkbox" style="width:auto;margin-right:7px"> Ativar promoção neste produto</label></div></div><div id="admin-form-message"></div><button class="btn-primary wide" type="submit">Salvar produto</button></form></div><div><div class="admin-card-head"><h2>Produtos cadastrados</h2><span class="count">${products().length} itens</span></div><div class="admin-product-list">${products().map(adminProduct).join('')}</div></div></div>`},};
-  function cardProduct(p){const badge=promoActive(p)?`<span class="product-badge">${esc(promoText(p))}</span>`:p.featured?'<span class="product-badge">🔥 Mais vendido</span>':p.isNew?'<span class="product-badge new">✨ Novo</span>':'';const discounted=promoActive(p);return `<article class="product"><div class="product-img">${productImg(p)}${badge}</div><div class="product-body"><div class="category">${esc(p.category)}</div><h3>${esc(p.name)}</h3><p class="desc">${esc(p.description)}</p>${imageCreditLine(p)}<div class="product-foot"><span class="price">${discounted?`<span class="old-price">${money(p.price)}</span>`:''}${money(effectivePrice(p))}</span><button class="btn-add" onclick="App.openProduct(${Number(p.id)})">Ver + adicionar</button></div></div></article>`}
-  function cardOrder(o){const meta=statusMeta(o.status);const status=normalizeOrderStatus(o.status);const cls=status==='entregue'?'success':status==='cancelado'?'error':'';return `<article class="admin-card" style="margin-bottom:14px"><div class="order-admin-top"><strong>Pedido #${esc(o.id)}</strong><span class="order-status-label ${cls}" style="background:${status==='entregue'?'#dcfce7':status==='cancelado'?'#fee2e2':status==='saiu_entrega'?'#dbeafe':'#fef3c7'};color:${status==='entregue'?'#166534':status==='cancelado'?'#991b1b':status==='saiu_entrega'?'#1d4ed8':'#92400e'}">${meta.icon} ${meta.label}</span></div><small style="color:var(--muted)">${fmtDate(o.createdAt)} · ${esc(o.address||'Sem endereço')}</small>${orderTimeline(o)}<div class="order-admin-items">${(o.items||[]).map(i=>`${i.qty}× ${esc(i.name)} — ${money(i.price*i.qty)}`).join('<br>')}</div><div class="order-admin-top"><strong style="color:var(--orange)">${money(o.total)}</strong>${status==='pendente'?`<button class="btn-small danger" onclick="App.cancelOrder('${esc(o.id)}')">Cancelar pedido</button>`:''}</div></article>`}
-  function adminProduct(p){return `<div class="admin-product"><img src="${esc(imageOf(p))}" alt="${esc(p.name)}" onerror="this.onerror=null;this.src='${FALLBACK_IMAGE}'"><div class="admin-product-main"><strong>${esc(p.name)}</strong><small>${esc(p.category)} · ${money(effectivePrice(p))}${promoActive(p)?` · ${esc(promoText(p))}`:''}</small></div><div class="admin-product-actions"><button class="btn-small secondary" onclick="Admin.edit(${Number(p.id)})">Editar</button><button class="btn-small danger" onclick="Admin.remove(${Number(p.id)})">Excluir</button></div></div>`}
-  function adminOrder(o){const status=normalizeOrderStatus(o.status);const meta=statusMeta(status);return `<article class="order-admin"><div class="order-admin-top"><div><strong>Pedido #${esc(o.id)}</strong><br><small>${fmtDate(o.createdAt)} · ${esc(o.userEmail||'cliente')}</small></div><select class="status-select" aria-label="Status do pedido ${esc(o.id)}" onchange="Admin.updateOrder('${esc(o.id)}',this.value)"><option value="pendente" ${status==='pendente'?'selected':''}>Novo pedido</option><option value="preparando" ${status==='preparando'?'selected':''}>Em preparo</option><option value="saiu_entrega" ${status==='saiu_entrega'?'selected':''}>Saiu para entrega</option><option value="entregue" ${status==='entregue'?'selected':''}>Entregue</option><option value="cancelado" ${status==='cancelado'?'selected':''}>Cancelado</option></select></div><div style="margin-top:9px"><span class="order-status-label" style="background:${status==='entregue'?'#dcfce7':status==='cancelado'?'#fee2e2':status==='saiu_entrega'?'#dbeafe':'#fef3c7'};color:${status==='entregue'?'#166534':status==='cancelado'?'#991b1b':status==='saiu_entrega'?'#1d4ed8':'#92400e'}">${meta.icon} ${meta.label}</span></div>${orderTimeline(o)}<div class="order-admin-items">${(o.items||[]).map(i=>`${i.qty}× ${esc(i.name)}`).join('<br>')}</div><div class="order-admin-top"><small>${esc(o.address||'Sem endereço')} </small><strong style="color:var(--orange)">${money(o.total)}</strong></div></article>`}
-  const Admin={clearForm(){const f=get('admin-product-form');if(f)f.reset();get('admin-id').value='';get('admin-promo-value').value='0'},save(e){e.preventDefault();const id=get('admin-id').value;const data={id:id?Number(id):Date.now(),name:get('admin-name').value.trim(),description:get('admin-description').value.trim(),price:Number(get('admin-price').value),category:get('admin-category').value,image:get('admin-image').value.trim()||FALLBACK_IMAGE,promo:{active:get('admin-promo-active').checked,type:get('admin-promo-type').value,value:Number(get('admin-promo-value').value)||0}};const list=products();const idx=list.findIndex(p=>String(p.id)===String(data.id));if(idx>=0)list[idx]={...list[idx],...data};else list.unshift(data);saveProducts(list);toast(id?'Produto atualizado.':'Produto adicionado.');Pages.admin()},edit(id){const p=products().find(x=>Number(x.id)===Number(id));if(!p)return;get('admin-id').value=p.id;get('admin-name').value=p.name;get('admin-description').value=p.description||'';get('admin-price').value=p.price;get('admin-category').value=p.category;get('admin-image').value=p.image||'';get('admin-promo-type').value=p.promo?.type||'percent';get('admin-promo-value').value=p.promo?.value||0;get('admin-promo-active').checked=!!p.promo?.active;document.querySelector('#admin-product-form')?.scrollIntoView({behavior:'smooth',block:'start'})},remove(id){if(!confirm('Excluir este produto do cardápio local?'))return;saveProducts(products().filter(p=>Number(p.id)!==Number(id)));toast('Produto excluído.');Pages.admin()},updateOrder(id,status){const list=orders();const order=list.find(o=>String(o.id)===String(id));if(!order)return;const next=normalizeOrderStatus(status);order.status=next;if(next==='saiu_entrega'&&!order.outForDeliveryAt)order.outForDeliveryAt=new Date().toISOString();saveOrders(list);toast(`Pedido marcado como: ${statusMeta(next).label}.`);Pages.admin();setTimeout(()=>Pages.adminTab(next==='saiu_entrega'?'delivery':'orders'),0)}};
-  const App={go(page){if(page==='home')Pages.home();else if(page==='orders')Pages.orders();else if(page==='admin')Pages.admin();window.scrollTo({top:0,behavior:'smooth'});renderHeader()},openAuth(){get('auth-modal').classList.add('open');document.body.style.overflow='hidden';setTimeout(()=>get('login-email')?.focus(),100)},closeAuth(){get('auth-modal').classList.remove('open');document.body.style.overflow=''},authTab(tab){document.querySelectorAll('[data-auth-tab]').forEach(b=>b.classList.toggle('active',b.dataset.authTab===tab));get('login-form').classList.toggle('hidden',tab!=='login');get('register-form').classList.toggle('hidden',tab!=='register');get('demo-box').classList.toggle('hidden',tab!=='login')},fillDemo(role){get('login-email').value=role==='admin'?'admin@pao.com':'cliente@pao.com';get('login-password').value=role==='admin'?'admin123':'123456'},login(e){e.preventDefault();const email=get('login-email').value.trim().toLowerCase();const password=get('login-password').value;const user=users().find(u=>u.email.toLowerCase()===email&&u.password===password);if(!user){get('login-message').innerHTML='<div class="message error">E-mail ou senha inválidos.</div>';return}State.user={id:user.id,role:user.role,name:user.name,email:user.email};State.token='local_'+Date.now();State.saveSession();this.closeAuth();renderHeader();const target=State.redirect||'home';State.redirect=null;this.go(target);toast(user.role==='admin'?'Login de administrador realizado.':'Login realizado.')},register(e){e.preventDefault();const name=get('register-name').value.trim();const email=get('register-email').value.trim().toLowerCase();const password=get('register-password').value;if(password.length<6){get('register-message').innerHTML='<div class="message error">A senha precisa ter ao menos 6 caracteres.</div>';return}if(users().some(u=>u.email.toLowerCase()===email)){get('register-message').innerHTML='<div class="message error">Este e-mail já está cadastrado.</div>';return}const list=users();list.push({id:Date.now(),role:'user',name,email,password});DB.set('users',list);get('register-message').innerHTML='<div class="message success">Conta criada. Agora faça login.</div>';get('login-email').value=email;get('login-password').value='';this.authTab('login')},logout(){State.user=null;State.token=null;State.saveSession();renderHeader();this.go('home');toast('Sessão encerrada.')},openCart(){renderCart();get('cart-overlay').classList.add('open');get('cart-drawer').classList.add('open');document.body.style.overflow='hidden'},closeCart(){get('cart-overlay').classList.remove('open');get('cart-drawer').classList.remove('open');document.body.style.overflow=''},openProduct(id){const p=products().find(x=>Number(x.id)===Number(id));if(!p)return;get('product-detail').innerHTML=`<div class="detail"><div class="detail-img">${productImg(p)}</div><div class="category">${esc(p.category)}</div><h3>${esc(p.name)}</h3><p class="desc">${esc(p.description)}</p>${imageCreditLine(p)}<div class="detail-price">${promoActive(p)?`<span class="old-price">${money(p.price)}</span>`:''}${money(effectivePrice(p))}</div><div class="detail-actions"><label for="product-qty" class="sr-only">Quantidade</label><button class="qty" type="button" onclick="App.changeDetailQty(-1)">−</button><input id="product-qty" class="number" type="number" min="1" max="99" value="1"><button class="qty" type="button" onclick="App.changeDetailQty(1)">+</button><button class="btn-primary" style="flex:1" onclick="App.addDetail(${Number(p.id)})">Adicionar ao carrinho</button></div></div>`;get('product-modal').classList.add('open');document.body.style.overflow='hidden'},changeDetailQty(delta){const input=get('product-qty');input.value=Math.max(1,Math.min(99,(Number(input.value)||1)+delta))},closeProduct(){get('product-modal').classList.remove('open');document.body.style.overflow=''},addDetail(id){const p=products().find(x=>Number(x.id)===Number(id));const qty=Math.max(1,Number(get('product-qty').value)||1);const item=State.cart.find(i=>Number(i.product.id)===Number(id));if(item)item.qty+=qty;else State.cart.push({product:p,qty});State.saveCart();renderHeader();this.closeProduct();toast(`${p.name} adicionado ao carrinho.`)},setAddress(){get('address-input').value=State.address||'';get('address-modal').classList.add('open');document.body.style.overflow='hidden'},closeAddress(){get('address-modal').classList.remove('open');document.body.style.overflow=''},saveAddress(e){e.preventDefault();State.address=get('address-input').value.trim();DB.set('address',State.address);this.closeAddress();renderHeader();toast('Endereço salvo.')},openCheckout(){if(!State.logged()){State.redirect='checkout';this.closeCart();this.openAuth();return}if(!State.cart.length){toast('Seu carrinho está vazio.');return}get('checkout-address').value=State.address||'';get('checkout-summary').innerHTML=State.cart.map(i=>`<div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:6px"><span>${i.qty}× ${esc(i.product.name)}</span><strong>${money(effectivePrice(i.product)*i.qty)}</strong></div>`).join('')+`<div style="border-top:1px solid #ddd6c8;padding-top:10px;margin-top:8px;display:flex;justify-content:space-between;font-weight:800"><span>Total</span><strong style="color:var(--orange)">${money(State.total())}</strong></div>`;get('checkout-modal').classList.add('open');document.body.style.overflow='hidden'},closeCheckout(){get('checkout-modal').classList.remove('open');document.body.style.overflow=''},checkout(e){e.preventDefault();const address=get('checkout-address').value.trim();if(!address){get('checkout-message').innerHTML='<div class="message error">Informe o endereço de entrega.</div>';return}const order={id:String(Date.now()).slice(-7),userId:State.user.id,userEmail:State.user.email,items:State.cart.map(i=>({id:i.product.id,name:i.product.name,qty:i.qty,price:effectivePrice(i.product)})),total:State.total(),status:'pendente',createdAt:new Date().toISOString(),address,notes:get('checkout-notes').value.trim()};const list=orders();list.push(order);saveOrders(list);State.address=address;DB.set('address',address);State.cart=[];State.saveCart();this.closeCheckout();renderHeader();get('checkout-notes').value='';this.go('orders');toast('Pedido confirmado localmente.')},cancelOrder(id){if(!confirm('Cancelar este pedido?'))return;const list=orders();const o=list.find(x=>String(x.id)===String(id));if(o&&o.status==='pendente'){o.status='cancelado';saveOrders(list);Pages.orders();toast('Pedido cancelado.')}},closeAll(){this.closeCart();this.closeAuth();this.closeProduct();this.closeCheckout();this.closeAddress()}};
-  function renderCart(){const body=get('cart-body'),foot=get('cart-foot');if(!State.cart.length){body.innerHTML='<div class="cart-empty"><strong>🛒</strong><p>Seu carrinho está vazio.</p><small>Adicione produtos do cardápio.</small></div>';foot.innerHTML='';return}body.innerHTML=State.cart.map(i=>`<div class="cart-item"><div class="cart-img">${productImg(i.product)}</div><div class="cart-info"><strong>${esc(i.product.name)}</strong><small>${money(effectivePrice(i.product))} / un.</small></div><div class="qty"><button onclick="Cart.change(${Number(i.product.id)},-1)">−</button><span>${i.qty}</span><button onclick="Cart.change(${Number(i.product.id)},1)">+</button></div><span class="subtotal">${money(effectivePrice(i.product)*i.qty)}</span></div>`).join('');foot.innerHTML=`<div class="total-row"><span>Total</span><strong>${money(State.total())}</strong></div><button class="btn-primary wide" onclick="App.openCheckout()">Finalizar pedido →</button>`}const Cart={change(id,delta){const item=State.cart.find(i=>Number(i.product.id)===Number(id));if(!item)return;item.qty+=delta;if(item.qty<=0)State.cart=State.cart.filter(i=>Number(i.product.id)!==Number(id));State.saveCart();renderHeader();renderCart()}};
-  document.addEventListener('keydown',e=>{if(e.key==='Escape')App.closeAll()});document.querySelectorAll('.modal-wrap').forEach(m=>m.addEventListener('click',e=>{if(e.target===m){m.classList.remove('open');document.body.style.overflow=''}}));
-  document.addEventListener('DOMContentLoaded',()=>{seed();applyVerifiedImageCatalog();State.load();get('year').textContent=new Date().getFullYear();renderImageAttributions();renderHeader();Pages.home();updateApiUi();Api.check()});
-  </script>
-</body>
+    <script>
+      "use strict";
+      const API_CONFIG = {
+        baseUrl: "https://nest-api-wzc7.onrender.com",
+        docsUrl: "https://nest-api-wzc7.onrender.com/api/docs-json",
+      };
+      const FALLBACK_IMAGE =
+        "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=900&q=82";
+      const DB = {
+        prefix: "pao_v2_",
+        get(k) {
+          try {
+            const raw = localStorage.getItem(this.prefix + k);
+            return raw === null ? null : JSON.parse(raw);
+          } catch (_) {
+            return null;
+          }
+        },
+        set(k, v) {
+          try {
+            localStorage.setItem(this.prefix + k, JSON.stringify(v));
+            return true;
+          } catch (_) {
+            return false;
+          }
+        },
+        remove(k) {
+          try {
+            localStorage.removeItem(this.prefix + k);
+          } catch (_) {}
+        },
+      };
+      const PRODUCTS_SEED = [
+        {
+          id: 1,
+          name: "Pão Francês",
+          description:
+            "Casquinha crocante, miolo macio. Assado várias vezes ao dia.",
+          price: 0.75,
+          category: "Pães",
+          image:
+            "https://images.unsplash.com/photo-1586444248902-2f64eddc13df?auto=format&fit=crop&w=900&q=82",
+          featured: true,
+        },
+        {
+          id: 2,
+          name: "Pão de Queijo (6 un.)",
+          description:
+            "Receita mineira tradicional, quentinho e elástico por dentro.",
+          price: 14.9,
+          category: "Pães",
+          image:
+            "https://images.unsplash.com/photo-1574017019416-5b1f68b5a2c1?auto=format&fit=crop&w=900&q=82",
+          featured: true,
+        },
+        {
+          id: 3,
+          name: "Baguete Artesanal",
+          description: "Fermentação longa, casca crocante e aroma de padaria.",
+          price: 12.9,
+          category: "Pães",
+          image:
+            "https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=900&q=82",
+        },
+        {
+          id: 4,
+          name: "Pão Integral de Forma",
+          description: "Fatiado, rico em fibras e sem conservantes.",
+          price: 16.5,
+          category: "Pães",
+          image:
+            "https://images.unsplash.com/photo-1589367920969-ab8e050bbb04?auto=format&fit=crop&w=900&q=82",
+        },
+        {
+          id: 5,
+          name: "Pão Australiano",
+          description:
+            "Massa macia e levemente adocicada, perfeita para sanduíches.",
+          price: 18.9,
+          category: "Pães",
+          image:
+            "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=900&q=82",
+          isNew: true,
+        },
+        {
+          id: 6,
+          name: "Sonho de Creme",
+          description: "Massa fofinha com recheio de creme de confeiteiro.",
+          price: 8.5,
+          category: "Doces",
+          image:
+            "https://images.unsplash.com/photo-1550617931-e17a7b70dce2?auto=format&fit=crop&w=900&q=82",
+          featured: true,
+        },
+        {
+          id: 7,
+          name: "Croissant de Chocolate",
+          description: "Folhado amanteigado com recheio generoso de chocolate.",
+          price: 9.9,
+          category: "Doces",
+          image:
+            "https://images.unsplash.com/photo-1587312246397-1c817a8eb86d?auto=format&fit=crop&w=900&q=82",
+          isNew: true,
+        },
+        {
+          id: 8,
+          name: "Fatia de Bolo de Fubá",
+          description: "Molhadinho com casquinha crocante, receita de família.",
+          price: 7.9,
+          category: "Doces",
+          image:
+            "https://images.unsplash.com/photo-1588195538326-c5b1e9f80a1b?auto=format&fit=crop&w=900&q=82",
+        },
+        {
+          id: 9,
+          name: "Rocambole de Doce de Leite",
+          description: "Massa fofa enrolada com doce de leite cremoso.",
+          price: 8.9,
+          category: "Doces",
+          image:
+            "https://images.unsplash.com/photo-1551024506-0bccd828d307?auto=format&fit=crop&w=900&q=82",
+        },
+        {
+          id: 10,
+          name: "Brigadeiro Gourmet",
+          description:
+            "Chocolate intenso com granulado crocante, feito na hora.",
+          price: 4.5,
+          category: "Doces",
+          image:
+            "https://images.unsplash.com/photo-1571115177098-24ec42ed204d?auto=format&fit=crop&w=900&q=82",
+        },
+        {
+          id: 11,
+          name: "Coxinha de Frango",
+          description: "Massa lisa e recheio cremoso de frango desfiado.",
+          price: 7.5,
+          category: "Salgados",
+          image:
+            "https://images.unsplash.com/photo-1626768902589-2ae9efd0fffb?auto=format&fit=crop&w=900&q=82",
+          featured: true,
+        },
+        {
+          id: 12,
+          name: "Esfiha de Carne",
+          description: "Aberta, com carne temperada e toque de limão.",
+          price: 6.9,
+          category: "Salgados",
+          image:
+            "https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=900&q=82",
+        },
+        {
+          id: 13,
+          name: "Pastel de Queijo",
+          description: "Massa fina e crocante com queijo derretido.",
+          price: 7.0,
+          category: "Salgados",
+          image:
+            "https://images.unsplash.com/photo-1619531045520-d574aca6d54b?auto=format&fit=crop&w=900&q=82",
+        },
+        {
+          id: 14,
+          name: "Empada de Palmito",
+          description: "Massa delicada com recheio de palmito e requeijão.",
+          price: 8.9,
+          category: "Salgados",
+          image:
+            "https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=900&q=82",
+          isNew: true,
+        },
+        {
+          id: 15,
+          name: "Cookie de Chocolate",
+          description:
+            "Macio por dentro, crocante por fora, com gotas de chocolate.",
+          price: 6.5,
+          category: "Doces",
+          image:
+            "https://images.unsplash.com/photo-1499636136210-6f4ee919583b?auto=format&fit=crop&w=900&q=82",
+          featured: true,
+        },
+        {
+          id: 16,
+          name: "Café Espresso",
+          description: "Grãos torrados na medida, tirado na hora.",
+          price: 5.5,
+          category: "Bebidas",
+          image:
+            "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=82",
+        },
+        {
+          id: 17,
+          name: "Suco de Laranja 300 ml",
+          description: "Laranjas espremidas na hora, sem açúcar.",
+          price: 8.9,
+          category: "Bebidas",
+          image:
+            "https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=900&q=82",
+        },
+        {
+          id: 18,
+          name: "Chá Gelado de Pêssego",
+          description: "Chá preto com suco de pêssego e hortelã.",
+          price: 7.5,
+          category: "Bebidas",
+          image:
+            "https://images.unsplash.com/photo-1541795795328-f073b763494e?auto=format&fit=crop&w=900&q=82",
+        },
+        {
+          id: 19,
+          name: "Capuccino Cremoso",
+          description: "Café com leite cremoso, chocolate e canela.",
+          price: 9.9,
+          category: "Bebidas",
+          image:
+            "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=82",
+          isNew: true,
+        },
+        {
+          id: 20,
+          name: "Torta de Limão",
+          description: "Massa crocante com mousse de limão e merengue.",
+          price: 12.9,
+          category: "Doces",
+          image:
+            "https://images.unsplash.com/photo-1587312246397-1c817a8eb86d?auto=format&fit=crop&w=900&q=82",
+        },
+        {
+          id: 21,
+          name: "Pão de Batata com Requeijão",
+          description: "Massa macia com recheio cremoso de requeijão.",
+          price: 11.9,
+          category: "Pães",
+          image:
+            "https://images.unsplash.com/photo-1589367920969-ab8e050bbb04?auto=format&fit=crop&w=900&q=82",
+        },
+      ];
+      const State = {
+        user: null,
+        token: null,
+        cart: [],
+        address: null,
+        redirect: null,
+        api: {
+          status: "checking",
+          message: "Verificando a documentação pública da API...",
+        },
+        load() {
+          const s = DB.get("session");
+          if (s && s.user && s.token) {
+            this.user = s.user;
+            this.token = s.token;
+          } else {
+            this.user = null;
+            this.token = null;
+          }
+          const raw = DB.get("cart");
+          this.cart = Array.isArray(raw)
+            ? raw
+                .map((item) => {
+                  const product = products().find(
+                    (p) =>
+                      String(p.id) === String(item?.product?.id ?? item?.id),
+                  );
+                  const qty = Math.max(1, Math.min(99, Number(item?.qty) || 0));
+                  return product && qty ? { product, qty } : null;
+                })
+                .filter(Boolean)
+            : [];
+          const savedAddress = DB.get("address");
+          this.address = typeof savedAddress === "string" ? savedAddress : "";
+          this.saveCart();
+        },
+        saveSession() {
+          DB.set(
+            "session",
+            this.user && this.token
+              ? { user: this.user, token: this.token }
+              : null,
+          );
+        },
+        saveCart() {
+          DB.set(
+            "cart",
+            this.cart
+              .filter((i) => i && i.product)
+              .map((i) => ({
+                product: i.product,
+                qty: Math.max(1, Math.min(99, Number(i.qty) || 1)),
+              })),
+          );
+        },
+        logged() {
+          return !!(this.token && this.user);
+        },
+        isAdmin() {
+          return !!(this.user && this.user.role === "admin");
+        },
+        totalQty() {
+          return this.cart.reduce((n, i) => n + (Number(i.qty) || 0), 0);
+        },
+        total() {
+          return this.cart.reduce(
+            (n, i) =>
+              n +
+              (i.product ? effectivePrice(i.product) : 0) *
+                (Number(i.qty) || 0),
+            0,
+          );
+        },
+      };
+      const Api = {
+        async check() {
+          State.api = {
+            status: "checking",
+            message: "Tentando obter o JSON OpenAPI real...",
+          };
+          updateApiUi();
+          const controller = new AbortController();
+          const timer = setTimeout(() => controller.abort(), 7000);
+          try {
+            const response = await fetch(API_CONFIG.docsUrl, {
+              method: "GET",
+              cache: "no-store",
+              headers: { Accept: "application/json" },
+              signal: controller.signal,
+            });
+            const type = response.headers.get("content-type") || "";
+            const body = await response.text();
+            if (
+              response.ok &&
+              type.includes("json") &&
+              body.trim().startsWith("{")
+            ) {
+              State.api = {
+                status: "ok",
+                message:
+                  "A especificação OpenAPI foi encontrada, mas nenhum endpoint de negócio foi executado automaticamente.",
+              };
+            } else {
+              State.api = {
+                status: "off",
+                message:
+                  "A URL respondeu com uma tela de carregamento do Render ou não entregou JSON OpenAPI.",
+              };
+            }
+          } catch (error) {
+            State.api = {
+              status: "off",
+              message:
+                error.name === "AbortError"
+                  ? "A API não respondeu dentro do tempo de verificação."
+                  : "A documentação não pôde ser acessada pelo navegador.",
+            };
+          } finally {
+            clearTimeout(timer);
+            updateApiUi();
+            if (document.querySelector(".admin-shell")) Pages.admin();
+          }
+        },
+        confirmed() {
+          return State.api.status === "ok";
+        },
+      };
+      const IMAGE_UPDATE_VERSION = "verified-images-2026-08-19-v3";
+      const IMAGE_CATALOG = {
+        1: {
+          image:
+            "https://images.rawpixel.com/editor_1024/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIzLTAzL2ZyMDM2XzlfMzk5LWltYWdlLmpwZw.jpg",
+          source: "https://www.rawpixel.com/image/8812012/french-bread-rolls",
+          license: "CC0 1.0",
+          licenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/",
+          credit: "Rawpixel — French bread rolls",
+          note: "Correspondência direta com pão francês; fonte declara CC0.",
+        },
+        2: {
+          image:
+            "https://upload.wikimedia.org/wikipedia/commons/5/50/P%C3%A3o_de_Queijo_%28Brazilian_Cheese_Bread%29.jpg",
+          source:
+            "https://commons.wikimedia.org/wiki/File:P%C3%A3o_de_Queijo_%28Brazilian_Cheese_Bread%29.jpg",
+          license: "CC BY 2.0",
+          licenseUrl: "https://creativecommons.org/licenses/by/2.0/",
+          credit: "Joy/Valereee — Pão de Queijo (Brazilian Cheese Bread)",
+          note: "Correspondência direta com pão de queijo; exige atribuição.",
+        },
+        3: {
+          image:
+            "https://images.rawpixel.com/editor_1024/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvbGlmZW9mcGl4MDAwMDMtaW1hZ2Uta3d2eWVmbnYuanBn.jpg",
+          source:
+            "https://www.rawpixel.com/image/5926861/photo-image-public-domain-food-free",
+          license: "CC0 1.0",
+          licenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/",
+          credit: "Rawpixel — Free close big baguette bread",
+          note: "Correspondência direta com baguete; fonte declara CC0.",
+        },
+        4: {
+          image:
+            "https://upload.wikimedia.org/wikipedia/commons/7/79/Vegan_no-knead_whole_wheat_bread_loaf%2C_sliced%2C_September_2010.jpg",
+          source:
+            "https://commons.wikimedia.org/wiki/File:Vegan_no-knead_whole_wheat_bread_loaf,_sliced,_September_2010.jpg",
+          license: "CC BY-SA 2.0",
+          licenseUrl: "https://creativecommons.org/licenses/by-sa/2.0/",
+          credit:
+            "Veganbaking.net — Vegan no-knead whole wheat bread loaf, sliced",
+          note: "Correspondência direta com pão integral de forma; exige atribuição e share-alike.",
+        },
+        5: {
+          image:
+            "https://commons.wikimedia.org/wiki/Special:FilePath/Wattleseed_Damper_(cropped).jpg?width=1200",
+          source:
+            "https://commons.wikimedia.org/wiki/File:Wattleseed_Damper_(cropped).jpg",
+          license: "CC BY-SA 4.0",
+          licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/",
+          credit: "Finbar.concaig — Wattleseed Damper (cropped)",
+          note: "Correspondência direta com damper, um pão australiano identificado pela fonte; exige atribuição e share-alike.",
+        },
+        6: {
+          image:
+            "https://upload.wikimedia.org/wikipedia/commons/1/1a/Puntarenas%2C_Costa_Rica_-_Puntarenas%27_Cream_Filled_Doughnuts.png",
+          source:
+            "https://commons.wikimedia.org/wiki/File:Puntarenas,_Costa_Rica_-_Puntarenas%27_Cream_Filled_Doughnuts.png",
+          license: "CC BY 3.0",
+          licenseUrl: "https://creativecommons.org/licenses/by/3.0/",
+          credit: "Steven Depolo — Puntarenas' Cream Filled Doughnuts",
+          note: "Correspondência visual com massa doce recheada de creme; exige atribuição.",
+        },
+        7: {
+          image:
+            "https://upload.wikimedia.org/wikipedia/commons/2/22/Croissant_Chocolate.jpg",
+          source:
+            "https://commons.wikimedia.org/wiki/File:Croissant_Chocolate.jpg",
+          license: "CC0",
+          licenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/",
+          credit: "Bajinra — Croissant Chocolate",
+          note: "Correspondência direta com croissant de chocolate; CC0.",
+        },
+        8: {
+          image:
+            "https://upload.wikimedia.org/wikipedia/commons/2/25/Cornmeal_cake.jpg",
+          source: "https://commons.wikimedia.org/wiki/File:Cornmeal_cake.jpg",
+          license: "CC BY-SA 4.0",
+          licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/",
+          credit: "Mauro Cateb — Cornmeal cake",
+          note: "A descrição da fonte identifica explicitamente bolo de fubá brasileiro; exige atribuição e share-alike.",
+        },
+        9: {
+          image:
+            "https://upload.wikimedia.org/wikipedia/commons/2/23/LD-Swiss-Cake-Rolls.jpg",
+          source:
+            "https://commons.wikimedia.org/wiki/File:LD-Swiss-Cake-Rolls.jpg",
+          license: "CC0",
+          licenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/",
+          credit: "Evan-Amos — Swiss Cake Rolls",
+          note: "Correspondência visual direta com rocambole; CC0. O recheio da foto não é confirmado como doce de leite.",
+        },
+        10: {
+          image:
+            "https://upload.wikimedia.org/wikipedia/commons/a/a4/Brigadeiro.jpg",
+          source: "https://commons.wikimedia.org/wiki/File:Brigadeiro.jpg",
+          license: "CC BY-SA 2.0",
+          licenseUrl: "https://creativecommons.org/licenses/by-sa/2.0/",
+          credit: "Mayra (Maych) — Brigadeiro",
+          note: "Correspondência direta com brigadeiro brasileiro; exige atribuição e share-alike.",
+        },
+        11: {
+          image:
+            "https://upload.wikimedia.org/wikipedia/commons/6/66/Coxinha_-_iguaria_brasileira_01.jpg",
+          source:
+            "https://commons.wikimedia.org/wiki/File:Coxinha_-_iguaria_brasileira_01.jpg",
+          license: "CC BY-SA 4.0",
+          licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/",
+          credit: "Sintegrity — Coxinha - iguaria brasileira 01",
+          note: "A fonte descreve explicitamente coxinha brasileira; exige atribuição e share-alike.",
+        },
+        12: {
+          image: "https://live.staticflickr.com/27/50119721_b18ef723ce_b.jpg",
+          source: "https://www.flickr.com/photos/86791528@N00/50119721",
+          license: "CC BY 2.0",
+          licenseUrl: "https://creativecommons.org/licenses/by/2.0/",
+          credit: "Andreas D. — Esfiha",
+          note: "Correspondência direta com esfiha; exige atribuição.",
+        },
+        13: {
+          image:
+            "https://upload.wikimedia.org/wikipedia/commons/f/f6/Pastel_-_Brazilian_fried_pastry.jpg",
+          source:
+            "https://commons.wikimedia.org/wiki/File:Pastel_-_Brazilian_fried_pastry.jpg",
+          license: "CC BY-SA 4.0",
+          licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/",
+          credit: "Mauro Cateb — Pastel - Brazilian fried pastry",
+          note: "A fonte identifica pastel brasileiro; o recheio específico de queijo não é comprovado na página. Exige atribuição e share-alike.",
+        },
+        14: {
+          image:
+            "https://commons.wikimedia.org/wiki/Special:FilePath/Empada_de_palmito.jpg?width=1200",
+          source:
+            "https://commons.wikimedia.org/wiki/File:Empada_de_palmito.jpg",
+          license: "CC0",
+          licenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/",
+          credit: "Melsj — Empada de palmito",
+          note: "Correspondência direta com empada de palmito; CC0.",
+        },
+        15: {
+          image:
+            "https://upload.wikimedia.org/wikipedia/commons/2/24/Chocolate_chip_cookie%2C_Massachusetts.jpg",
+          source:
+            "https://commons.wikimedia.org/wiki/File:Chocolate_chip_cookie,_Massachusetts.jpg",
+          license: "CC0",
+          licenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/",
+          credit: "Daderot — Chocolate chip cookie",
+          note: "Correspondência direta com cookie de chocolate; CC0.",
+        },
+        16: {
+          image:
+            "https://upload.wikimedia.org/wikipedia/commons/2/24/Espresso_Coffee_01.jpg",
+          source:
+            "https://commons.wikimedia.org/wiki/File:Espresso_Coffee_01.jpg",
+          license: "CC0",
+          licenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/",
+          credit: "Jubair1985 — Espresso Coffee 01",
+          note: "Correspondência direta com café espresso; CC0.",
+        },
+        17: {
+          image:
+            "https://commons.wikimedia.org/wiki/Special:FilePath/JP_%E6%97%A5%E6%9C%AC_Japan_%E6%B2%96%E7%B9%A9_OKINAWA_%E9%82%A3%E9%9C%B8_Naha_%E9%AD%9A%E5%B1%8B%E6%B5%B7%E9%AE%AE_Izakaya_%E5%B1%85%E9%85%92%E5%B1%8B%E9%A3%9F%E5%A0%82_Japanese_seafood_restaurant_lunch_orange_juice_glass_cup_February_2026_N13P.jpg?width=1200",
+          source: "https://commons.wikimedia.org/w/index.php?curid=184242204",
+          license: "CC0 1.0",
+          licenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/",
+          credit: "NORTLAUKAU 26088 JP — orange juice glass cup",
+          note: "Correspondência visual com suco de laranja em copo; CC0. O volume de 300 ml é característica do produto, não da foto.",
+        },
+        18: {
+          image:
+            "https://live.staticflickr.com/8182/29216394141_5eb085bf7d_b.jpg",
+          source: "https://www.flickr.com/photos/115868834@N02/29216394141",
+          license: "CC0 1.0",
+          licenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/",
+          credit: "TW_Smith — Peach Iced Tea",
+          note: "Correspondência direta com chá gelado de pêssego; CC0.",
+        },
+        19: {
+          image:
+            "https://live.staticflickr.com/7296/27714541964_a03fffc3a9_b.jpg",
+          source: "https://www.flickr.com/photos/36076466@N08/27714541964",
+          license: "CC BY 2.0",
+          licenseUrl: "https://creativecommons.org/licenses/by/2.0/",
+          credit: "Epicantus — Cappuccino, coffee cup",
+          note: "Correspondência direta com cappuccino; exige atribuição.",
+        },
+        20: {
+          image:
+            "https://live.staticflickr.com/7240/7308564296_428fc9182a_b.jpg",
+          source: "https://www.flickr.com/photos/47845458@N08/7308564296",
+          license: "CC BY 2.0",
+          licenseUrl: "https://creativecommons.org/licenses/by/2.0/",
+          credit: "Andrea Goh — lemon meringue pie",
+          note: "Correspondência visual com torta de limão com merengue; exige atribuição.",
+        },
+        21: {
+          image:
+            "https://commons.wikimedia.org/wiki/Special:FilePath/Homemade_potato_bread%2C_half.jpg?width=1200",
+          source:
+            "https://commons.wikimedia.org/wiki/File:Homemade_potato_bread,_half.jpg",
+          license: "CC BY-SA 3.0",
+          licenseUrl: "https://creativecommons.org/licenses/by-sa/3.0/",
+          credit: "Daniel J. Layton — Homemade potato bread, half",
+          note: "Correspondência direta com pão de batata assado, descrita pela fonte como meio pão de batata; o recheio de requeijão não é visível e não será afirmado pela imagem. Exige atribuição e share-alike.",
+        },
+      };
+      const DEMO_USERS = [
+        {
+          id: 1,
+          role: "user",
+          name: "Cliente Demo",
+          email: "cliente@pao.com",
+          password: "123456",
+        },
+        {
+          id: 2,
+          role: "admin",
+          name: "Admin Demo",
+          email: "admin@pao.com",
+          password: "admin123",
+        },
+      ];
+      function catalogSeed() {
+        return PRODUCTS_SEED.map((p) => {
+          const item = IMAGE_CATALOG[String(p.id)];
+          return item
+            ? {
+                ...p,
+                image: item.image,
+                imageSource: item.source,
+                imageLicense: item.license,
+                imageLicenseUrl: item.licenseUrl,
+                imageCredit: item.credit,
+                imageNote: item.note,
+              }
+            : { ...p };
+        });
+      }
+      function validProduct(p) {
+        return (
+          !!p &&
+          p.id !== undefined &&
+          String(p.name || "").trim() !== "" &&
+          Number.isFinite(Number(p.price))
+        );
+      }
+      function normalizeProducts(list) {
+        return Array.isArray(list)
+          ? list.filter(validProduct).map((p) => ({
+              ...p,
+              id: Number(p.id),
+              name: String(p.name).trim(),
+              description: String(p.description || ""),
+              price: Math.max(0, Number(p.price) || 0),
+              category: String(p.category || "Outros"),
+              image: String(p.image || ""),
+              promo:
+                p.promo && typeof p.promo === "object"
+                  ? {
+                      active: !!p.promo.active,
+                      type: p.promo.type === "fixed" ? "fixed" : "percent",
+                      value: Math.max(0, Number(p.promo.value) || 0),
+                    }
+                  : undefined,
+            }))
+          : [];
+      }
+      function seed() {
+        const savedUsers = DB.get("users");
+        if (!Array.isArray(savedUsers) || !savedUsers.length)
+          DB.set("users", DEMO_USERS);
+        const savedProducts = DB.get("products");
+        const normalized = normalizeProducts(savedProducts);
+        if (!Array.isArray(savedProducts) || !normalized.length)
+          DB.set("products", catalogSeed());
+        else if (JSON.stringify(normalized) !== JSON.stringify(savedProducts))
+          DB.set("products", normalized);
+        const savedOrders = DB.get("orders");
+        if (!Array.isArray(savedOrders)) DB.set("orders", []);
+        const savedCart = DB.get("cart");
+        if (!Array.isArray(savedCart)) DB.set("cart", []);
+      }
+      function applyVerifiedImageCatalog() {
+        const existing = normalizeProducts(DB.get("products"));
+        const rawSeedById = Object.fromEntries(
+          PRODUCTS_SEED.map((p) => [String(p.id), p]),
+        );
+        const legacySources = {
+          5: "https://commons.wikimedia.org/wiki/File:Boston_Brown_Bread_loaf_-_Massachusetts.jpg",
+          21: "https://commons.wikimedia.org/wiki/File:Homemade_sweet_potato_bread_1.jpg",
+        };
+        const oldVersion = DB.get("imageCatalogVersion");
+        let changed = false;
+        const updated = (existing.length ? existing : catalogSeed()).map(
+          (p) => {
+            const key = String(p.id),
+              item = IMAGE_CATALOG[key],
+              seed = rawSeedById[key];
+            if (!item || !seed) return p;
+            const isOriginalSeed =
+              !p.imageSource &&
+              (!p.image ||
+                p.image === seed.image ||
+                p.image === FALLBACK_IMAGE);
+            const isKnownLegacy =
+              legacySources[key] && p.imageSource === legacySources[key];
+            const isAlreadyVerified =
+              p.imageSource === item.source && p.image === item.image;
+            if (
+              (oldVersion !== IMAGE_UPDATE_VERSION && isOriginalSeed) ||
+              isKnownLegacy
+            ) {
+              changed = true;
+              return {
+                ...p,
+                image: item.image,
+                imageSource: item.source,
+                imageLicense: item.license,
+                imageLicenseUrl: item.licenseUrl,
+                imageCredit: item.credit,
+                imageNote: item.note,
+              };
+            }
+            if (isAlreadyVerified && !p.imageLicense) {
+              changed = true;
+              return {
+                ...p,
+                imageLicense: item.license,
+                imageLicenseUrl: item.licenseUrl,
+                imageCredit: item.credit,
+                imageNote: item.note,
+              };
+            }
+            return p;
+          },
+        );
+        if (
+          changed ||
+          !Array.isArray(DB.get("products")) ||
+          !DB.get("products")?.length
+        )
+          DB.set("products", updated);
+        DB.set("imageCatalogVersion", IMAGE_UPDATE_VERSION);
+      }
+      function products() {
+        const list = DB.get("products");
+        return Array.isArray(list) && list.length ? list : catalogSeed();
+      }
+      function saveProducts(list) {
+        const normalized = normalizeProducts(list);
+        DB.set("products", normalized.length ? normalized : catalogSeed());
+      }
+      function orders() {
+        const list = DB.get("orders");
+        return Array.isArray(list) ? list : [];
+      }
+      function saveOrders(list) {
+        DB.set("orders", Array.isArray(list) ? list : []);
+      }
+      function users() {
+        const list = DB.get("users");
+        return Array.isArray(list) ? list : DEMO_USERS;
+      }
+      function money(v) {
+        return (Number(v) || 0).toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        });
+      }
+      function esc(v) {
+        return String(v ?? "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+      function fmtDate(v) {
+        const d = new Date(v);
+        return Number.isNaN(d.getTime())
+          ? ""
+          : d.toLocaleString("pt-BR", {
+              dateStyle: "short",
+              timeStyle: "short",
+            });
+      }
+      function get(id) {
+        return document.getElementById(id);
+      }
+      function toast(text) {
+        const el = get("toast");
+        if (!el) return;
+        el.textContent = text;
+        el.classList.add("show");
+        clearTimeout(toast.timer);
+        toast.timer = setTimeout(() => el.classList.remove("show"), 2600);
+      }
+      function imageOf(p) {
+        return (
+          p?.image || IMAGE_CATALOG[String(p?.id)]?.image || FALLBACK_IMAGE
+        );
+      }
+      function promoActive(p) {
+        return !!(p && p.promo && p.promo.active && Number(p.promo.value) > 0);
+      }
+      function effectivePrice(p) {
+        if (!p) return 0;
+        if (!promoActive(p)) return Number(p.price) || 0;
+        return p.promo.type === "percent"
+          ? Math.max(
+              0,
+              (Number(p.price) || 0) * (1 - Number(p.promo.value) / 100),
+            )
+          : Math.max(0, (Number(p.price) || 0) - Number(p.promo.value));
+      }
+      function promoText(p) {
+        if (!promoActive(p)) return "";
+        return p.promo.type === "percent"
+          ? `-${Number(p.promo.value)}%`
+          : `-${money(p.promo.value)}`;
+      }
+      function productImg(p, extra = "") {
+        return `<img src="${esc(imageOf(p))}" alt="${esc(p.name)}" loading="lazy" onerror="this.onerror=null;this.src='${FALLBACK_IMAGE}'" ${extra}>`;
+      }
+      function renderImageAttributions() {
+        const el = get("image-attributions");
+        if (!el) return;
+        const byId = Object.fromEntries(
+          products().map((p) => [String(p.id), p]),
+        );
+        el.innerHTML = Object.entries(IMAGE_CATALOG)
+          .map(([id, item]) => {
+            const name = byId[id]?.name || `Produto ${id}`;
+            return `<li><strong>${esc(name)}</strong> — <a href="${esc(item.source)}" target="_blank" rel="noreferrer">fonte</a> · <a href="${esc(item.licenseUrl)}" target="_blank" rel="license noreferrer">${esc(item.license)}</a> — ${esc(item.credit)}${item.note ? ` <em>(${esc(item.note)})</em>` : ""}</li>`;
+          })
+          .join("");
+      }
+      function imageCreditLine(p) {
+        const item = IMAGE_CATALOG[String(p.id)] || p;
+        if (!item?.source || !item?.license) return "";
+        return `<small class="image-credit">Imagem: <a href="${esc(item.source)}" target="_blank" rel="noreferrer">fonte</a> · <a href="${esc(item.licenseUrl)}" target="_blank" rel="license noreferrer">${esc(item.license)}</a></small>`;
+      }
+      function updateApiUi() {
+        document.querySelectorAll("[data-api-pill]").forEach((el) => {
+          el.classList.toggle("ok", State.api.status === "ok");
+          el.classList.toggle("off", State.api.status === "off");
+          const label = el.querySelector("[data-api-label]");
+          if (label)
+            label.textContent =
+              State.api.status === "checking"
+                ? "Verificando API"
+                : State.api.status === "ok"
+                  ? "API verificada"
+                  : "API não confirmada";
+        });
+        const box = get("api-status-box");
+        if (box) {
+          box.className =
+            "api-status " +
+            (State.api.status === "ok"
+              ? "ok"
+              : State.api.status === "off"
+                ? "off"
+                : "");
+          const title = box.querySelector("[data-api-title]");
+          const text = box.querySelector("[data-api-text]");
+          if (title)
+            title.textContent =
+              State.api.status === "ok"
+                ? "Documentação OpenAPI encontrada"
+                : "API não confirmada";
+          if (text) text.textContent = State.api.message;
+        }
+      }
+      function renderHeader() {
+        const qty = State.totalQty();
+        get("cart-badge").textContent = qty;
+        get("cart-badge").classList.toggle("hidden", qty === 0);
+        get("float-count").textContent = qty;
+        get("float-total").textContent = money(State.total());
+        get("float-cart").classList.toggle("show", qty > 0);
+        get("location-text").textContent =
+          State.address || "Informar endereço de entrega";
+        const nav = get("nav-account"),
+          label = get("nav-account-text"),
+          adminNav = get("nav-admin");
+        if (adminNav) adminNav.classList.toggle("hidden", !State.isAdmin());
+        if (State.logged()) {
+          label.textContent = (State.user.name || "Conta").split(" ")[0];
+          nav.title = State.isAdmin() ? "Abrir painel administrativo" : "Sair";
+          nav.onclick = State.isAdmin() ? () => App.go("admin") : App.logout;
+        } else {
+          label.textContent = "Entrar";
+          nav.title = "";
+          nav.onclick = () => App.openAuth();
+        }
+      }
+      const ORDER_STAGES = [
+        { key: "pendente", label: "Novo pedido", icon: "🧾" },
+        { key: "preparando", label: "Em preparo", icon: "👩‍🍳" },
+        { key: "saiu_entrega", label: "Saiu para entrega", icon: "🛵" },
+        { key: "entregue", label: "Entregue", icon: "✅" },
+        { key: "cancelado", label: "Cancelado", icon: "✕" },
+      ];
+      function normalizeOrderStatus(status) {
+        const key = String(status || "pendente")
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .replace(/[\s-]+/g, "_");
+        if (
+          [
+            "saiu_entrega",
+            "saiu_para_entrega",
+            "em_entrega",
+            "out_for_delivery",
+          ].includes(key)
+        )
+          return "saiu_entrega";
+        if (["preparando", "em_preparo", "preparing"].includes(key))
+          return "preparando";
+        if (["entregue", "delivered"].includes(key)) return "entregue";
+        if (["cancelado", "canceled", "cancelled"].includes(key))
+          return "cancelado";
+        return "pendente";
+      }
+      function statusMeta(status) {
+        return (
+          ORDER_STAGES.find((s) => s.key === normalizeOrderStatus(status)) ||
+          ORDER_STAGES[0]
+        );
+      }
+      function statusCounts(list = orders()) {
+        return ORDER_STAGES.reduce((acc, s) => {
+          acc[s.key] = list.filter(
+            (o) => normalizeOrderStatus(o.status) === s.key,
+          ).length;
+          return acc;
+        }, {});
+      }
+      function orderTimeline(o) {
+        const current = normalizeOrderStatus(o.status);
+        if (current === "cancelado")
+          return '<div class="message error" style="margin:12px 0 0">Este pedido foi cancelado.</div>';
+        const currentIndex = ORDER_STAGES.filter(
+          (s) => s.key !== "cancelado",
+        ).findIndex((s) => s.key === current);
+        return `<div class="order-timeline">${ORDER_STAGES.filter(
+          (s) => s.key !== "cancelado",
+        )
+          .map(
+            (s, i) =>
+              `<div class="timeline-step ${i <= currentIndex ? "active" : ""}"><span>${s.icon}</span><small>${s.label}</small></div>`,
+          )
+          .join("")}</div>`;
+      }
+      function activePromos() {
+        return products().filter((p) => promoActive(p));
+      }
+      const Pages = {
+        home() {
+          const list = products();
+          const cats = ["Todos", ...new Set(list.map((p) => p.category))];
+          const promo = activePromos()[0];
+          get("main").innerHTML =
+            `<section class="hero"><div class="hero-inner"><span class="eyebrow">🍞 Padaria artesanal</span><h1>Pão fresquinho, <em>entrega rápida</em></h1><p>Escolha seus produtos favoritos, monte seu pedido e receba em casa com todo o carinho.</p><a class="hero-cta" href="#catalogo">Ver cardápio ↓</a><div class="hero-stats"><div class="hero-stat"><strong>4.8★</strong><span>Avaliação média</span></div><div class="hero-stat"><strong>30 min</strong><span>Entrega média</span></div><div class="hero-stat"><strong>100%</strong><span>Assados no dia</span></div></div></div></section><section class="section container" id="catalogo">${promo ? `<div class="promo-banner">🎉 <strong>Promoção ativa:</strong> ${esc(promo.name)} por ${money(effectivePrice(promo))}</div>` : '<div class="promo-banner">🎉 <strong>Frete grátis</strong> em pedidos acima de R$ 50,00</div>'}<div class="section-head"><h2>Nosso cardápio</h2><span class="count">${list.length} itens</span></div><div class="filters" id="filters">${cats.map((c, i) => `<button class="cat-btn ${i === 0 ? "active" : ""}" data-cat="${esc(c)}">${esc(c)}</button>`).join("")}</div><input class="search" id="product-search" placeholder="🔍 Buscar produto..." oninput="Pages.filter()"><div style="height:22px"></div><div class="grid" id="product-grid"></div></section>`;
+          document.querySelectorAll("#filters .cat-btn").forEach((btn) =>
+            btn.addEventListener("click", () => {
+              document
+                .querySelectorAll("#filters .cat-btn")
+                .forEach((b) => b.classList.remove("active"));
+              btn.classList.add("active");
+              Pages.filter();
+            }),
+          );
+          Pages.filter();
+        },
+        filter() {
+          const grid = get("product-grid");
+          if (!grid) return;
+          const cat =
+            document.querySelector("#filters .cat-btn.active")?.dataset.cat ||
+            "Todos";
+          const term = (get("product-search")?.value || "")
+            .toLowerCase()
+            .trim();
+          let list = products();
+          if (cat !== "Todos") list = list.filter((p) => p.category === cat);
+          if (term)
+            list = list.filter((p) =>
+              (p.name + " " + (p.description || ""))
+                .toLowerCase()
+                .includes(term),
+            );
+          grid.innerHTML = list.length
+            ? list.map(cardProduct).join("")
+            : `<div class="empty"><strong>😕</strong><p>Nenhum produto encontrado.</p></div>`;
+        },
+        orders() {
+          if (!State.logged()) {
+            State.redirect = "orders";
+            App.openAuth();
+            return;
+          }
+          const list = orders()
+            .filter((o) => o.userId === State.user.id)
+            .sort((a, b) =>
+              String(b.createdAt).localeCompare(String(a.createdAt)),
+            );
+          get("main").innerHTML =
+            `<section class="section container"><div class="section-head"><h2>▣ Meus pedidos</h2><span class="count">${list.length} pedidos</span></div><div>${list.length ? list.map(cardOrder).join("") : `<div class="empty"><strong>📭</strong><p>Você ainda não fez nenhum pedido.</p><button class="hero-cta" style="margin-top:18px" onclick="App.go('home')">Ver cardápio →</button></div>`}</div></section>`;
+        },
+        admin() {
+          if (!State.isAdmin()) {
+            App.openAuth();
+            return;
+          }
+          const list = products();
+          const orderList = orders();
+          const counts = statusCounts(orderList);
+          const pending = counts.pendente;
+          const revenue = orderList
+            .filter((o) => normalizeOrderStatus(o.status) !== "cancelado")
+            .reduce((s, o) => s + Number(o.total || 0), 0);
+          get("main").innerHTML =
+            `<section class="admin-shell container"><div class="admin-hero"><div><span class="chip">Área restrita</span><h1>Painel administrativo</h1><p>Gerencie o cardápio e acompanhe cada pedido até a entrega.</p></div><div class="admin-hero-actions"><button class="btn-small" onclick="Pages.adminTab('products');setTimeout(()=>get('admin-name')?.focus(),0)">＋ Adicionar produto</button><button class="btn-outline" onclick="App.logout()">Sair da conta</button></div></div><div class="kpis"><div class="kpi"><small>Produtos</small><strong>${list.length}</strong></div><div class="kpi"><small>Novos pedidos</small><strong>${pending}</strong></div><div class="kpi"><small>Em preparo</small><strong>${counts.preparando}</strong></div><div class="kpi"><small>Saiu para entrega</small><strong>${counts.saiu_entrega}</strong></div></div><div id="api-status-box" class="api-status"><div><strong data-api-title>API não confirmada</strong><p data-api-text>${esc(State.api.message)}</p></div><button class="btn-small" onclick="Api.check()">Verificar novamente</button></div><div class="admin-card"><div class="admin-tabs"><button class="admin-tab active" data-admin-tab="products" onclick="Pages.adminTab('products')">Cardápio e promoções</button><button class="admin-tab" data-admin-tab="orders" onclick="Pages.adminTab('orders')">Pedidos</button><button class="admin-tab" data-admin-tab="delivery" onclick="Pages.adminTab('delivery')">🛵 Saiu para entrega <span class="badge">${counts.saiu_entrega}</span></button></div><div id="admin-content"></div></div><div class="admin-card"><div class="admin-card-head"><h2>Contas pré-prontas</h2></div><div class="credentials"><div class="credential"><strong>Cliente de demonstração</strong><code>cliente@pao.com</code><code>senha: 123456</code></div><div class="credential"><strong>Administrador de demonstração</strong><code>admin@pao.com</code><code>senha: admin123</code></div></div><p style="color:var(--muted);font-size:.73rem;margin-top:12px">As contas são demonstrativas e ficam salvas localmente neste arquivo quando a API não está disponível.</p></div></section>`;
+          Pages.adminTab("products");
+          updateApiUi();
+        },
+        adminTab(tab) {
+          document
+            .querySelectorAll("[data-admin-tab]")
+            .forEach((b) =>
+              b.classList.toggle("active", b.dataset.adminTab === tab),
+            );
+          const el = get("admin-content");
+          if (!el) return;
+          if (tab === "orders" || tab === "delivery") {
+            const all = orders().sort((a, b) =>
+              String(b.createdAt).localeCompare(String(a.createdAt)),
+            );
+            const list =
+              tab === "delivery"
+                ? all.filter(
+                    (o) => normalizeOrderStatus(o.status) === "saiu_entrega",
+                  )
+                : all;
+            el.innerHTML = `<div class="admin-card-head"><div><h2>${tab === "delivery" ? "Pedidos que saíram para entrega" : "Todos os pedidos"}</h2><small style="color:var(--muted)">${tab === "delivery" ? "Aparecem aqui somente após o status ser marcado como “Saiu para entrega”." : "Atualize o status de cada pedido sem sair desta tela."}</small></div><button class="btn-small secondary" onclick="Pages.adminTab('${tab}')">Atualizar</button></div>${list.length ? list.map(adminOrder).join("") : `<div class="empty"><strong>${tab === "delivery" ? "🛵" : "📭"}</strong><p>${tab === "delivery" ? "Nenhum pedido saiu para entrega ainda." : "Nenhum pedido registrado."}</p></div>`}`;
+            return;
+          }
+          el.innerHTML = `<div class="admin-products"><div><div class="admin-card-head"><h2>Adicionar produto</h2><button class="btn-small secondary" onclick="Admin.clearForm()">Limpar</button></div><form id="admin-product-form" onsubmit="Admin.save(event)"><input type="hidden" id="admin-id"><div class="field"><label for="admin-name">Nome</label><input id="admin-name" required></div><div class="field"><label for="admin-description">Descrição</label><textarea id="admin-description" required></textarea></div><div class="form-grid"><div class="field"><label for="admin-price">Preço (R$)</label><input id="admin-price" type="number" min="0" step="0.01" required></div><div class="field"><label for="admin-category">Categoria</label><select id="admin-category"><option>Pães</option><option>Doces</option><option>Salgados</option><option>Bebidas</option><option>Outros</option></select></div><div class="field full"><label for="admin-image">URL da imagem</label><input id="admin-image" type="url" placeholder="https://..."></div><div class="field"><label for="admin-promo-type">Tipo de promoção</label><select id="admin-promo-type"><option value="percent">Percentual (%)</option><option value="fixed">Desconto fixo (R$)</option></select></div><div class="field"><label for="admin-promo-value">Desconto</label><input id="admin-promo-value" type="number" min="0" step="0.01" value="0"></div><div class="field full"><label><input id="admin-promo-active" type="checkbox" style="width:auto;margin-right:7px"> Ativar promoção neste produto</label></div></div><div id="admin-form-message"></div><button class="btn-primary wide" type="submit">Salvar produto</button></form></div><div><div class="admin-card-head"><h2>Produtos cadastrados</h2><span class="count">${products().length} itens</span></div><div class="admin-product-list">${products().map(adminProduct).join("")}</div></div></div>`;
+        },
+      };
+      function cardProduct(p) {
+        const badge = promoActive(p)
+          ? `<span class="product-badge">${esc(promoText(p))}</span>`
+          : p.featured
+            ? '<span class="product-badge">🔥 Mais vendido</span>'
+            : p.isNew
+              ? '<span class="product-badge new">✨ Novo</span>'
+              : "";
+        const discounted = promoActive(p);
+        return `<article class="product"><div class="product-img">${productImg(p)}${badge}</div><div class="product-body"><div class="category">${esc(p.category)}</div><h3>${esc(p.name)}</h3><p class="desc">${esc(p.description)}</p>${imageCreditLine(p)}<div class="product-foot"><span class="price">${discounted ? `<span class="old-price">${money(p.price)}</span>` : ""}${money(effectivePrice(p))}</span><button class="btn-add" onclick="App.openProduct(${Number(p.id)})">Ver + adicionar</button></div></div></article>`;
+      }
+      function cardOrder(o) {
+        const meta = statusMeta(o.status);
+        const status = normalizeOrderStatus(o.status);
+        const cls =
+          status === "entregue"
+            ? "success"
+            : status === "cancelado"
+              ? "error"
+              : "";
+        return `<article class="admin-card" style="margin-bottom:14px"><div class="order-admin-top"><strong>Pedido #${esc(o.id)}</strong><span class="order-status-label ${cls}" style="background:${status === "entregue" ? "#dcfce7" : status === "cancelado" ? "#fee2e2" : status === "saiu_entrega" ? "#dbeafe" : "#fef3c7"};color:${status === "entregue" ? "#166534" : status === "cancelado" ? "#991b1b" : status === "saiu_entrega" ? "#1d4ed8" : "#92400e"}">${meta.icon} ${meta.label}</span></div><small style="color:var(--muted)">${fmtDate(o.createdAt)} · ${esc(o.address || "Sem endereço")}</small>${orderTimeline(o)}<div class="order-admin-items">${(o.items || []).map((i) => `${i.qty}× ${esc(i.name)} — ${money(i.price * i.qty)}`).join("<br>")}</div><div class="order-admin-top"><strong style="color:var(--orange)">${money(o.total)}</strong>${status === "pendente" ? `<button class="btn-small danger" onclick="App.cancelOrder('${esc(o.id)}')">Cancelar pedido</button>` : ""}</div></article>`;
+      }
+      function adminProduct(p) {
+        return `<div class="admin-product"><img src="${esc(imageOf(p))}" alt="${esc(p.name)}" onerror="this.onerror=null;this.src='${FALLBACK_IMAGE}'"><div class="admin-product-main"><strong>${esc(p.name)}</strong><small>${esc(p.category)} · ${money(effectivePrice(p))}${promoActive(p) ? ` · ${esc(promoText(p))}` : ""}</small></div><div class="admin-product-actions"><button class="btn-small secondary" onclick="Admin.edit(${Number(p.id)})">Editar</button><button class="btn-small danger" onclick="Admin.remove(${Number(p.id)})">Excluir</button></div></div>`;
+      }
+      function adminOrder(o) {
+        const status = normalizeOrderStatus(o.status);
+        const meta = statusMeta(status);
+        return `<article class="order-admin"><div class="order-admin-top"><div><strong>Pedido #${esc(o.id)}</strong><br><small>${fmtDate(o.createdAt)} · ${esc(o.userEmail || "cliente")}</small></div><select class="status-select" aria-label="Status do pedido ${esc(o.id)}" onchange="Admin.updateOrder('${esc(o.id)}',this.value)"><option value="pendente" ${status === "pendente" ? "selected" : ""}>Novo pedido</option><option value="preparando" ${status === "preparando" ? "selected" : ""}>Em preparo</option><option value="saiu_entrega" ${status === "saiu_entrega" ? "selected" : ""}>Saiu para entrega</option><option value="entregue" ${status === "entregue" ? "selected" : ""}>Entregue</option><option value="cancelado" ${status === "cancelado" ? "selected" : ""}>Cancelado</option></select></div><div style="margin-top:9px"><span class="order-status-label" style="background:${status === "entregue" ? "#dcfce7" : status === "cancelado" ? "#fee2e2" : status === "saiu_entrega" ? "#dbeafe" : "#fef3c7"};color:${status === "entregue" ? "#166534" : status === "cancelado" ? "#991b1b" : status === "saiu_entrega" ? "#1d4ed8" : "#92400e"}">${meta.icon} ${meta.label}</span></div>${orderTimeline(o)}<div class="order-admin-items">${(o.items || []).map((i) => `${i.qty}× ${esc(i.name)}`).join("<br>")}</div><div class="order-admin-top"><small>${esc(o.address || "Sem endereço")} </small><strong style="color:var(--orange)">${money(o.total)}</strong></div></article>`;
+      }
+      const Admin = {
+        clearForm() {
+          const f = get("admin-product-form");
+          if (f) f.reset();
+          get("admin-id").value = "";
+          get("admin-promo-value").value = "0";
+        },
+        save(e) {
+          e.preventDefault();
+          const id = get("admin-id").value;
+          const data = {
+            id: id ? Number(id) : Date.now(),
+            name: get("admin-name").value.trim(),
+            description: get("admin-description").value.trim(),
+            price: Number(get("admin-price").value),
+            category: get("admin-category").value,
+            image: get("admin-image").value.trim() || FALLBACK_IMAGE,
+            promo: {
+              active: get("admin-promo-active").checked,
+              type: get("admin-promo-type").value,
+              value: Number(get("admin-promo-value").value) || 0,
+            },
+          };
+          const list = products();
+          const idx = list.findIndex((p) => String(p.id) === String(data.id));
+          if (idx >= 0) list[idx] = { ...list[idx], ...data };
+          else list.unshift(data);
+          saveProducts(list);
+          toast(id ? "Produto atualizado." : "Produto adicionado.");
+          Pages.admin();
+        },
+        edit(id) {
+          const p = products().find((x) => Number(x.id) === Number(id));
+          if (!p) return;
+          get("admin-id").value = p.id;
+          get("admin-name").value = p.name;
+          get("admin-description").value = p.description || "";
+          get("admin-price").value = p.price;
+          get("admin-category").value = p.category;
+          get("admin-image").value = p.image || "";
+          get("admin-promo-type").value = p.promo?.type || "percent";
+          get("admin-promo-value").value = p.promo?.value || 0;
+          get("admin-promo-active").checked = !!p.promo?.active;
+          document
+            .querySelector("#admin-product-form")
+            ?.scrollIntoView({ behavior: "smooth", block: "start" });
+        },
+        remove(id) {
+          if (!confirm("Excluir este produto do cardápio local?")) return;
+          saveProducts(products().filter((p) => Number(p.id) !== Number(id)));
+          toast("Produto excluído.");
+          Pages.admin();
+        },
+        updateOrder(id, status) {
+          const list = orders();
+          const order = list.find((o) => String(o.id) === String(id));
+          if (!order) return;
+          const next = normalizeOrderStatus(status);
+          order.status = next;
+          if (next === "saiu_entrega" && !order.outForDeliveryAt)
+            order.outForDeliveryAt = new Date().toISOString();
+          saveOrders(list);
+          toast(`Pedido marcado como: ${statusMeta(next).label}.`);
+          Pages.admin();
+          setTimeout(
+            () =>
+              Pages.adminTab(next === "saiu_entrega" ? "delivery" : "orders"),
+            0,
+          );
+        },
+      };
+      const App = {
+        go(page) {
+          if (page === "home") Pages.home();
+          else if (page === "orders") Pages.orders();
+          else if (page === "admin") Pages.admin();
+          window.scrollTo({ top: 0, behavior: "smooth" });
+          renderHeader();
+        },
+        openAuth() {
+          get("auth-modal").classList.add("open");
+          document.body.style.overflow = "hidden";
+          setTimeout(() => get("login-email")?.focus(), 100);
+        },
+        closeAuth() {
+          get("auth-modal").classList.remove("open");
+          document.body.style.overflow = "";
+        },
+        authTab(tab) {
+          document
+            .querySelectorAll("[data-auth-tab]")
+            .forEach((b) =>
+              b.classList.toggle("active", b.dataset.authTab === tab),
+            );
+          get("login-form").classList.toggle("hidden", tab !== "login");
+          get("register-form").classList.toggle("hidden", tab !== "register");
+          get("demo-box").classList.toggle("hidden", tab !== "login");
+        },
+        fillDemo(role) {
+          get("login-email").value =
+            role === "admin" ? "admin@pao.com" : "cliente@pao.com";
+          get("login-password").value =
+            role === "admin" ? "admin123" : "123456";
+        },
+        login(e) {
+          e.preventDefault();
+          const email = get("login-email").value.trim().toLowerCase();
+          const password = get("login-password").value;
+          const user = users().find(
+            (u) => u.email.toLowerCase() === email && u.password === password,
+          );
+          if (!user) {
+            get("login-message").innerHTML =
+              '<div class="message error">E-mail ou senha inválidos.</div>';
+            return;
+          }
+          State.user = {
+            id: user.id,
+            role: user.role,
+            name: user.name,
+            email: user.email,
+          };
+          State.token = "local_" + Date.now();
+          State.saveSession();
+          this.closeAuth();
+          renderHeader();
+          const target = State.redirect || "home";
+          State.redirect = null;
+          this.go(target);
+          toast(
+            user.role === "admin"
+              ? "Login de administrador realizado."
+              : "Login realizado.",
+          );
+        },
+        register(e) {
+          e.preventDefault();
+          const name = get("register-name").value.trim();
+          const email = get("register-email").value.trim().toLowerCase();
+          const password = get("register-password").value;
+          if (password.length < 6) {
+            get("register-message").innerHTML =
+              '<div class="message error">A senha precisa ter ao menos 6 caracteres.</div>';
+            return;
+          }
+          if (users().some((u) => u.email.toLowerCase() === email)) {
+            get("register-message").innerHTML =
+              '<div class="message error">Este e-mail já está cadastrado.</div>';
+            return;
+          }
+          const list = users();
+          list.push({ id: Date.now(), role: "user", name, email, password });
+          DB.set("users", list);
+          get("register-message").innerHTML =
+            '<div class="message success">Conta criada. Agora faça login.</div>';
+          get("login-email").value = email;
+          get("login-password").value = "";
+          this.authTab("login");
+        },
+        logout() {
+          State.user = null;
+          State.token = null;
+          State.saveSession();
+          renderHeader();
+          this.go("home");
+          toast("Sessão encerrada.");
+        },
+        openCart() {
+          renderCart();
+          get("cart-overlay").classList.add("open");
+          get("cart-drawer").classList.add("open");
+          document.body.style.overflow = "hidden";
+        },
+        closeCart() {
+          get("cart-overlay").classList.remove("open");
+          get("cart-drawer").classList.remove("open");
+          document.body.style.overflow = "";
+        },
+        openProduct(id) {
+          const p = products().find((x) => Number(x.id) === Number(id));
+          if (!p) return;
+          get("product-detail").innerHTML =
+            `<div class="detail"><div class="detail-img">${productImg(p)}</div><div class="category">${esc(p.category)}</div><h3>${esc(p.name)}</h3><p class="desc">${esc(p.description)}</p>${imageCreditLine(p)}<div class="detail-price">${promoActive(p) ? `<span class="old-price">${money(p.price)}</span>` : ""}${money(effectivePrice(p))}</div><div class="detail-actions"><label for="product-qty" class="sr-only">Quantidade</label><button class="qty" type="button" onclick="App.changeDetailQty(-1)">−</button><input id="product-qty" class="number" type="number" min="1" max="99" value="1"><button class="qty" type="button" onclick="App.changeDetailQty(1)">+</button><button class="btn-primary" style="flex:1" onclick="App.addDetail(${Number(p.id)})">Adicionar ao carrinho</button></div></div>`;
+          get("product-modal").classList.add("open");
+          document.body.style.overflow = "hidden";
+        },
+        changeDetailQty(delta) {
+          const input = get("product-qty");
+          input.value = Math.max(
+            1,
+            Math.min(99, (Number(input.value) || 1) + delta),
+          );
+        },
+        closeProduct() {
+          get("product-modal").classList.remove("open");
+          document.body.style.overflow = "";
+        },
+        addDetail(id) {
+          const p = products().find((x) => Number(x.id) === Number(id));
+          const qty = Math.max(1, Number(get("product-qty").value) || 1);
+          const item = State.cart.find(
+            (i) => Number(i.product.id) === Number(id),
+          );
+          if (item) item.qty += qty;
+          else State.cart.push({ product: p, qty });
+          State.saveCart();
+          renderHeader();
+          this.closeProduct();
+          toast(`${p.name} adicionado ao carrinho.`);
+        },
+        setAddress() {
+          get("address-input").value = State.address || "";
+          get("address-modal").classList.add("open");
+          document.body.style.overflow = "hidden";
+        },
+        closeAddress() {
+          get("address-modal").classList.remove("open");
+          document.body.style.overflow = "";
+        },
+        saveAddress(e) {
+          e.preventDefault();
+          State.address = get("address-input").value.trim();
+          DB.set("address", State.address);
+          this.closeAddress();
+          renderHeader();
+          toast("Endereço salvo.");
+        },
+        openCheckout() {
+          if (!State.logged()) {
+            State.redirect = "checkout";
+            this.closeCart();
+            this.openAuth();
+            return;
+          }
+          if (!State.cart.length) {
+            toast("Seu carrinho está vazio.");
+            return;
+          }
+          get("checkout-address").value = State.address || "";
+          get("checkout-summary").innerHTML =
+            State.cart
+              .map(
+                (i) =>
+                  `<div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:6px"><span>${i.qty}× ${esc(i.product.name)}</span><strong>${money(effectivePrice(i.product) * i.qty)}</strong></div>`,
+              )
+              .join("") +
+            `<div style="border-top:1px solid #ddd6c8;padding-top:10px;margin-top:8px;display:flex;justify-content:space-between;font-weight:800"><span>Total</span><strong style="color:var(--orange)">${money(State.total())}</strong></div>`;
+          get("checkout-modal").classList.add("open");
+          document.body.style.overflow = "hidden";
+        },
+        closeCheckout() {
+          get("checkout-modal").classList.remove("open");
+          document.body.style.overflow = "";
+        },
+        checkout(e) {
+          e.preventDefault();
+          const address = get("checkout-address").value.trim();
+          if (!address) {
+            get("checkout-message").innerHTML =
+              '<div class="message error">Informe o endereço de entrega.</div>';
+            return;
+          }
+          const order = {
+            id: String(Date.now()).slice(-7),
+            userId: State.user.id,
+            userEmail: State.user.email,
+            items: State.cart.map((i) => ({
+              id: i.product.id,
+              name: i.product.name,
+              qty: i.qty,
+              price: effectivePrice(i.product),
+            })),
+            total: State.total(),
+            status: "pendente",
+            createdAt: new Date().toISOString(),
+            address,
+            notes: get("checkout-notes").value.trim(),
+          };
+          const list = orders();
+          list.push(order);
+          saveOrders(list);
+          State.address = address;
+          DB.set("address", address);
+          State.cart = [];
+          State.saveCart();
+          this.closeCheckout();
+          renderHeader();
+          get("checkout-notes").value = "";
+          this.go("orders");
+          toast("Pedido confirmado localmente.");
+        },
+        cancelOrder(id) {
+          if (!confirm("Cancelar este pedido?")) return;
+          const list = orders();
+          const o = list.find((x) => String(x.id) === String(id));
+          if (o && o.status === "pendente") {
+            o.status = "cancelado";
+            saveOrders(list);
+            Pages.orders();
+            toast("Pedido cancelado.");
+          }
+        },
+        closeAll() {
+          this.closeCart();
+          this.closeAuth();
+          this.closeProduct();
+          this.closeCheckout();
+          this.closeAddress();
+        },
+      };
+      function renderCart() {
+        const body = get("cart-body"),
+          foot = get("cart-foot");
+        if (!State.cart.length) {
+          body.innerHTML =
+            '<div class="cart-empty"><strong>🛒</strong><p>Seu carrinho está vazio.</p><small>Adicione produtos do cardápio.</small></div>';
+          foot.innerHTML = "";
+          return;
+        }
+        body.innerHTML = State.cart
+          .map(
+            (i) =>
+              `<div class="cart-item"><div class="cart-img">${productImg(i.product)}</div><div class="cart-info"><strong>${esc(i.product.name)}</strong><small>${money(effectivePrice(i.product))} / un.</small></div><div class="qty"><button onclick="Cart.change(${Number(i.product.id)},-1)">−</button><span>${i.qty}</span><button onclick="Cart.change(${Number(i.product.id)},1)">+</button></div><span class="subtotal">${money(effectivePrice(i.product) * i.qty)}</span></div>`,
+          )
+          .join("");
+        foot.innerHTML = `<div class="total-row"><span>Total</span><strong>${money(State.total())}</strong></div><button class="btn-primary wide" onclick="App.openCheckout()">Finalizar pedido →</button>`;
+      }
+      const Cart = {
+        change(id, delta) {
+          const item = State.cart.find(
+            (i) => Number(i.product.id) === Number(id),
+          );
+          if (!item) return;
+          item.qty += delta;
+          if (item.qty <= 0)
+            State.cart = State.cart.filter(
+              (i) => Number(i.product.id) !== Number(id),
+            );
+          State.saveCart();
+          renderHeader();
+          renderCart();
+        },
+      };
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") App.closeAll();
+      });
+      document.querySelectorAll(".modal-wrap").forEach((m) =>
+        m.addEventListener("click", (e) => {
+          if (e.target === m) {
+            m.classList.remove("open");
+            document.body.style.overflow = "";
+          }
+        }),
+      );
+      document.addEventListener("DOMContentLoaded", () => {
+        seed();
+        applyVerifiedImageCatalog();
+        State.load();
+        get("year").textContent = new Date().getFullYear();
+        renderImageAttributions();
+        renderHeader();
+        Pages.home();
+        updateApiUi();
+        Api.check();
+      });
+    </script>
+  </body>
 </html>
