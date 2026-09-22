@@ -4,7 +4,7 @@ Site de delivery de uma padaria artesanal, com frontend em HTML/CSS/JavaScript e
 
 ## Backend
 
-O backend usa FastAPI, SQLAlchemy e SQLite por padrão. Ele já possui autenticação, produtos e pedidos.
+O backend usa FastAPI, Flask, SQLAlchemy e SQLite por padrão. O FastAPI fornece a API e o Flask serve o frontend no mesmo processo. Ele já possui autenticação, produtos e pedidos.
 
 ```bash
 cd backend
@@ -15,15 +15,9 @@ cp .env.example .env
 uvicorn main:app --reload
 ```
 
-Depois, abra a documentação em http://127.0.0.1:8000/docs.
+Esse único comando inicia a API e o frontend juntos. Abra http://127.0.0.1:8000/undex.html e a documentação em http://127.0.0.1:8000/docs.
 
-Em outro terminal, na raiz do projeto, sirva o frontend:
-
-```bash
-python -m http.server 5500
-```
-
-Abra http://127.0.0.1:5500/undex.html. O frontend está configurado para usar a API em `http://127.0.0.1:8000`.
+O frontend usa automaticamente a mesma origem da API quando é servido pelo backend. O servidor separado `python -m http.server 5500` não é mais necessário.
 
 O banco é criado automaticamente em `backend/pao.db`. Para usar PostgreSQL ou Supabase no futuro, basta trocar `DATABASE_URL` no arquivo `.env`.
 

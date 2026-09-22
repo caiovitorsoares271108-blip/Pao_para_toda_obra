@@ -1,6 +1,6 @@
 # Backend
 
-API simples da padaria usando FastAPI e SQLAlchemy.
+Backend da padaria usando FastAPI, Flask, SQLAlchemy e SQLite. O FastAPI fornece a API e o Flask serve o frontend no mesmo processo.
 
 ## Executar
 
@@ -13,7 +13,9 @@ cp .env.example .env
 uvicorn main:app --reload
 ```
 
-A documentação fica em http://127.0.0.1:8000/docs.
+O comando inicia a API e o frontend juntos. Acesse o frontend em http://127.0.0.1:8000/undex.html e a documentação em http://127.0.0.1:8000/docs.
+
+O frontend é servido pelo Flask; não é necessário iniciar um `python -m http.server` separado.
 
 O banco padrão é SQLite em `backend/pao.db`. Para PostgreSQL, defina `DATABASE_URL` no `.env`.
 

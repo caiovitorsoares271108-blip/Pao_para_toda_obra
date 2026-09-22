@@ -1469,17 +1469,6 @@
               type="password"
               minlength="6"
               required
-              autocomplete="new-password"
-            />
-          </div>
-          <div class="field">
-            <label for="register-password-confirm">Confirme a senha</label
-            ><input
-              id="register-password-confirm"
-              type="password"
-              minlength="6"
-              required
-              autocomplete="new-password"
             />
           </div>
           <div id="register-message"></div>
@@ -1580,7 +1569,9 @@
       );
       const apiBaseUrl = window.location.hostname.endsWith(".app.github.dev")
         ? `${window.location.protocol}//${forwardedApiHost}`
-        : "http://127.0.0.1:8000";
+        : window.location.port === "8000"
+          ? window.location.origin
+          : "http://127.0.0.1:8000";
       const API_CONFIG = {
         baseUrl: apiBaseUrl,
         docsUrl: `${apiBaseUrl}/openapi.json`,
@@ -1611,7 +1602,6 @@
           } catch (_) {}
         },
       };
-      const Runtime = { products: null, orders: null };
       const PRODUCTS_SEED = [
         {
           id: 1,
@@ -1892,35 +1882,6 @@
         },
       };
       const Api = {
-        async request(path, options = {}) {
-          const headers = {
-            "Content-Type": "application/json",
-            ...(options.headers || {}),
-          };
-          if (State.token) headers.Authorization = `Bearer ${State.token}`;
-          const response = await fetch(`${API_CONFIG.baseUrl}${path}`, {
-            ...options,
-            headers,
-          });
-          const text = await response.text();
-          let data = null;
-          try {
-            data = text ? JSON.parse(text) : null;
-          } catch (_) {
-            data = null;
-          }
-          if (!response.ok)
-            throw new Error(data?.detail || "Não foi possível acessar a API.");
-          return data;
-        },
-        async load() {
-          const remoteProducts = await this.request("/products");
-          Runtime.products = remoteProducts.map(remoteProduct);
-          if (State.logged()) {
-            const remoteOrders = await this.request("/orders");
-            Runtime.orders = remoteOrders.map(remoteOrder);
-          }
-        },
         async check() {
           State.api = {
             status: "checking",
@@ -1973,28 +1934,6 @@
           return State.api.status === "ok";
         },
       };
-      function remoteProduct(product) {
-        const seed = PRODUCTS_SEED.find(
-          (item) => Number(item.id) === Number(product.id),
-        );
-        return {
-          ...(seed || {}),
-          ...product,
-          image: product.image || seed?.image || "",
-        };
-      }
-      function remoteOrder(order) {
-        return {
-          ...order,
-          userId: State.user?.id,
-          userEmail: State.user?.email,
-          createdAt: order.created_at,
-          items: (order.items || []).map((item) => ({
-            ...item,
-            qty: item.quantity,
-          })),
-        };
-      }
       const IMAGE_UPDATE_VERSION = "verified-images-2026-08-19-v3";
       const IMAGE_CATALOG = {
         1: {
@@ -2339,7 +2278,6 @@
         DB.set("imageCatalogVersion", IMAGE_UPDATE_VERSION);
       }
       function products() {
-        if (Array.isArray(Runtime.products)) return Runtime.products;
         const list = DB.get("products");
         return Array.isArray(list) && list.length ? list : catalogSeed();
       }
@@ -2348,7 +2286,6 @@
         DB.set("products", normalized.length ? normalized : catalogSeed());
       }
       function orders() {
-        if (Array.isArray(Runtime.orders)) return Runtime.orders;
         const list = DB.get("orders");
         return Array.isArray(list) ? list : [];
       }
@@ -2686,7 +2623,7 @@
           get("admin-id").value = "";
           get("admin-promo-value").value = "0";
         },
-        async save(e) {
+        save(e) {
           e.preventDefault();
           const id = get("admin-id").value;
           const data = {
@@ -2702,18 +2639,13 @@
               value: Number(get("admin-promo-value").value) || 0,
             },
           };
-          try {
-            await Api.request(id ? `/products/${id}` : "/products", {
-              method: id ? "PATCH" : "POST",
-              body: JSON.stringify(data),
-            });
-            await Api.load();
-            toast(id ? "Produto atualizado." : "Produto adicionado.");
-            Pages.admin();
-          } catch (error) {
-            get("admin-form-message").innerHTML =
-              `<div class="message error">${esc(error.message)}</div>`;
-          }
+          const list = products();
+          const idx = list.findIndex((p) => String(p.id) === String(data.id));
+          if (idx >= 0) list[idx] = { ...list[idx], ...data };
+          else list.unshift(data);
+          saveProducts(list);
+          toast(id ? "Produto atualizado." : "Produto adicionado.");
+          Pages.admin();
         },
         edit(id) {
           const p = products().find((x) => Number(x.id) === Number(id));
@@ -2731,34 +2663,28 @@
             .querySelector("#admin-product-form")
             ?.scrollIntoView({ behavior: "smooth", block: "start" });
         },
-        async remove(id) {
-          if (!confirm("Excluir este produto do cardápio?")) return;
-          try {
-            await Api.request(`/products/${id}`, { method: "DELETE" });
-            await Api.load();
-            toast("Produto excluído.");
-            Pages.admin();
-          } catch (error) {
-            toast(error.message);
-          }
+        remove(id) {
+          if (!confirm("Excluir este produto do cardápio local?")) return;
+          saveProducts(products().filter((p) => Number(p.id) !== Number(id)));
+          toast("Produto excluído.");
+          Pages.admin();
         },
-        async updateOrder(id, status) {
+        updateOrder(id, status) {
+          const list = orders();
+          const order = list.find((o) => String(o.id) === String(id));
+          if (!order) return;
           const next = normalizeOrderStatus(status);
-          try {
-            await Api.request(`/orders/${id}/status?new_status=${next}`, {
-              method: "PATCH",
-            });
-            await Api.load();
-            toast(`Pedido marcado como: ${statusMeta(next).label}.`);
-            Pages.admin();
-            setTimeout(
-              () =>
-                Pages.adminTab(next === "saiu_entrega" ? "delivery" : "orders"),
-              0,
-            );
-          } catch (error) {
-            toast(error.message);
-          }
+          order.status = next;
+          if (next === "saiu_entrega" && !order.outForDeliveryAt)
+            order.outForDeliveryAt = new Date().toISOString();
+          saveOrders(list);
+          toast(`Pedido marcado como: ${statusMeta(next).label}.`);
+          Pages.admin();
+          setTimeout(
+            () =>
+              Pages.adminTab(next === "saiu_entrega" ? "delivery" : "orders"),
+            0,
+          );
         },
       };
       const App = {
@@ -2794,65 +2720,60 @@
           get("login-password").value =
             role === "admin" ? "admin123" : "123456";
         },
-        async login(e) {
+        login(e) {
           e.preventDefault();
           const email = get("login-email").value.trim().toLowerCase();
           const password = get("login-password").value;
-          try {
-            const auth = await Api.request("/auth/login", {
-              method: "POST",
-              body: JSON.stringify({ email, password }),
-            });
-            State.user = auth.user;
-            State.token = auth.access_token;
-            State.saveSession();
-            await Api.load();
-          } catch (error) {
+          const user = users().find(
+            (u) => u.email.toLowerCase() === email && u.password === password,
+          );
+          if (!user) {
             get("login-message").innerHTML =
-              `<div class="message error">${esc(error.message)}</div>`;
+              '<div class="message error">E-mail ou senha inválidos.</div>';
             return;
           }
+          State.user = {
+            id: user.id,
+            role: user.role,
+            name: user.name,
+            email: user.email,
+          };
+          State.token = "local_" + Date.now();
+          State.saveSession();
           this.closeAuth();
           renderHeader();
           const target = State.redirect || "home";
           State.redirect = null;
           this.go(target);
           toast(
-            State.user.role === "admin"
+            user.role === "admin"
               ? "Login de administrador realizado."
               : "Login realizado.",
           );
         },
-        async register(e) {
+        register(e) {
           e.preventDefault();
           const name = get("register-name").value.trim();
           const email = get("register-email").value.trim().toLowerCase();
           const password = get("register-password").value;
-          const passwordConfirmation = get("register-password-confirm").value;
           if (password.length < 6) {
             get("register-message").innerHTML =
               '<div class="message error">A senha precisa ter ao menos 6 caracteres.</div>';
             return;
           }
-          if (password !== passwordConfirmation) {
+          if (users().some((u) => u.email.toLowerCase() === email)) {
             get("register-message").innerHTML =
-              '<div class="message error">As senhas precisam ser iguais.</div>';
+              '<div class="message error">Este e-mail já está cadastrado.</div>';
             return;
           }
-          try {
-            await Api.request("/auth/register", {
-              method: "POST",
-              body: JSON.stringify({ name, email, password }),
-            });
-            get("register-message").innerHTML =
-              '<div class="message success">Conta criada. Agora faça login.</div>';
-            get("login-email").value = email;
-            get("login-password").value = "";
-            this.authTab("login");
-          } catch (error) {
-            get("register-message").innerHTML =
-              `<div class="message error">${esc(error.message)}</div>`;
-          }
+          const list = users();
+          list.push({ id: Date.now(), role: "user", name, email, password });
+          DB.set("users", list);
+          get("register-message").innerHTML =
+            '<div class="message success">Conta criada. Agora faça login.</div>';
+          get("login-email").value = email;
+          get("login-password").value = "";
+          this.authTab("login");
         },
         logout() {
           State.user = null;
@@ -2949,7 +2870,7 @@
           get("checkout-modal").classList.remove("open");
           document.body.style.overflow = "";
         },
-        async checkout(e) {
+        checkout(e) {
           e.preventDefault();
           const address = get("checkout-address").value.trim();
           if (!address) {
@@ -2957,24 +2878,25 @@
               '<div class="message error">Informe o endereço de entrega.</div>';
             return;
           }
-          try {
-            await Api.request("/orders", {
-              method: "POST",
-              body: JSON.stringify({
-                address,
-                notes: get("checkout-notes").value.trim(),
-                items: State.cart.map((item) => ({
-                  product_id: item.product.id,
-                  quantity: item.qty,
-                })),
-              }),
-            });
-            await Api.load();
-          } catch (error) {
-            get("checkout-message").innerHTML =
-              `<div class="message error">${esc(error.message)}</div>`;
-            return;
-          }
+          const order = {
+            id: String(Date.now()).slice(-7),
+            userId: State.user.id,
+            userEmail: State.user.email,
+            items: State.cart.map((i) => ({
+              id: i.product.id,
+              name: i.product.name,
+              qty: i.qty,
+              price: effectivePrice(i.product),
+            })),
+            total: State.total(),
+            status: "pendente",
+            createdAt: new Date().toISOString(),
+            address,
+            notes: get("checkout-notes").value.trim(),
+          };
+          const list = orders();
+          list.push(order);
+          saveOrders(list);
           State.address = address;
           DB.set("address", address);
           State.cart = [];
@@ -2983,19 +2905,17 @@
           renderHeader();
           get("checkout-notes").value = "";
           this.go("orders");
-          toast("Pedido confirmado.");
+          toast("Pedido confirmado localmente.");
         },
-        async cancelOrder(id) {
+        cancelOrder(id) {
           if (!confirm("Cancelar este pedido?")) return;
-          try {
-            await Api.request(`/orders/${id}/status?new_status=cancelado`, {
-              method: "PATCH",
-            });
-            await Api.load();
+          const list = orders();
+          const o = list.find((x) => String(x.id) === String(id));
+          if (o && o.status === "pendente") {
+            o.status = "cancelado";
+            saveOrders(list);
             Pages.orders();
             toast("Pedido cancelado.");
-          } catch (error) {
-            toast(error.message);
           }
         },
         closeAll() {
@@ -3050,20 +2970,11 @@
           }
         }),
       );
-      document.addEventListener("DOMContentLoaded", async () => {
+      document.addEventListener("DOMContentLoaded", () => {
         seed();
         applyVerifiedImageCatalog();
         State.load();
         get("year").textContent = new Date().getFullYear();
-        try {
-          await Api.load();
-          State.load();
-        } catch (_) {
-          State.api = {
-            status: "off",
-            message: "API indisponível. O modo local está sendo usado.",
-          };
-        }
         renderImageAttributions();
         renderHeader();
         Pages.home();

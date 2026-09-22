@@ -2,12 +2,15 @@ from __future__ import annotations
 
 import os
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 from typing import Annotated
 
 import jwt
+from flask import Flask, abort, send_from_directory
 from dotenv import load_dotenv
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.wsgi import WSGIMiddleware
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 from pwdlib import PasswordHash
@@ -252,6 +255,23 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+frontend_directory = Path(__file__).resolve().parent.parent / "frontend"
+frontend = Flask(__name__, static_folder=None)
+
+
+@frontend.get("/")
+@frontend.get("/undex.html")
+def serve_frontend():
+    return send_from_directory(frontend_directory, "undex.html")
+
+
+@frontend.get("/<path:requested_path>")
+def serve_frontend_asset(requested_path: str):
+    requested_file = frontend_directory / requested_path
+    if requested_file.is_file() and frontend_directory in requested_file.parents:
+        return send_from_directory(frontend_directory, requested_path)
+    abort(404)
+
 
 @app.on_event("startup")
 def startup() -> None:
@@ -366,3 +386,6 @@ def update_order_status(order_id: int, new_status: str, _: Annotated[User, Depen
     db.commit()
     db.refresh(order)
     return order
+
+
+app.mount("/", WSGIMiddleware(frontend))
