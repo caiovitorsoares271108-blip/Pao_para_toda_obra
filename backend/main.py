@@ -9,9 +9,10 @@ from dotenv import load_dotenv
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from pwdlib import PasswordHash
 from sqlalchemy import JSON, Boolean, DateTime, Float, ForeignKey, Integer, String, create_engine, select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column, relationship, sessionmaker
 
 load_dotenv()
@@ -19,7 +20,10 @@ load_dotenv()
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./pao.db")
 JWT_SECRET = os.getenv("JWT_SECRET", "dev-secret-change-me")
 JWT_EXPIRE_MINUTES = int(os.getenv("JWT_EXPIRE_MINUTES", "1440"))
-CORS_ORIGINS = [item.strip() for item in os.getenv("CORS_ORIGINS", "*").split(",")]
+CORS_ORIGINS = [item.strip() for item in os.getenv("CORS_ORIGINS", "http://localhost:5500,http://127.0.0.1:5500").split(",") if item.strip()]
+
+if JWT_SECRET == "dev-secret-change-me" and os.getenv("ENVIRONMENT", "development") == "production":
+    raise RuntimeError("Defina JWT_SECRET antes de executar em produção")
 
 connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
 engine = create_engine(DATABASE_URL, connect_args=connect_args)
@@ -88,10 +92,34 @@ class UserCreate(BaseModel):
     email: str = Field(min_length=5, max_length=180)
     password: str = Field(min_length=6, max_length=128)
 
+    @field_validator("name")
+    @classmethod
+    def validate_name(cls, value: str) -> str:
+        value = " ".join(value.split())
+        if len(value) < 2:
+            raise ValueError("Informe seu nome")
+        return value
+
+    @field_validator("email")
+    @classmethod
+    def normalize_email(cls, value: str) -> str:
+        value = value.strip().lower()
+        if value.count("@") != 1 or any(char.isspace() for char in value):
+            raise ValueError("Informe um e-mail válido")
+        local, domain = value.split("@")
+        if not local or "." not in domain or domain.startswith(".") or domain.endswith("."):
+            raise ValueError("Informe um e-mail válido")
+        return value
+
 
 class LoginRequest(BaseModel):
-    email: str
-    password: str
+    email: str = Field(min_length=5, max_length=180)
+    password: str = Field(min_length=1, max_length=128)
+
+    @field_validator("email")
+    @classmethod
+    def normalize_email(cls, value: str) -> str:
+        return value.strip().lower()
 
 
 class UserResponse(BaseModel):
@@ -218,6 +246,7 @@ app = FastAPI(title="Pão para Toda Obra API", version="1.0.0")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=CORS_ORIGINS,
+    allow_origin_regex=r"https://.*-5500\.app\.github\.dev",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -236,19 +265,23 @@ def health() -> dict[str, str]:
 
 @app.post("/auth/register", response_model=AuthResponse, status_code=201)
 def register(data: UserCreate, db: Annotated[Session, Depends(get_db)]) -> AuthResponse:
-    email = data.email.strip().lower()
+    email = data.email
     if db.scalar(select(User).where(User.email == email)):
         raise HTTPException(status_code=409, detail="Este e-mail já está cadastrado")
     user = User(name=data.name.strip(), email=email, password_hash=password_hash.hash(data.password))
     db.add(user)
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=409, detail="Este e-mail já está cadastrado")
     db.refresh(user)
     return AuthResponse(access_token=create_token(user), user=user)
 
 
 @app.post("/auth/login", response_model=AuthResponse)
 def login(data: LoginRequest, db: Annotated[Session, Depends(get_db)]) -> AuthResponse:
-    user = db.scalar(select(User).where(User.email == data.email.strip().lower()))
+    user = db.scalar(select(User).where(User.email == data.email))
     if not user or not password_hash.verify(data.password, user.password_hash):
         raise HTTPException(status_code=401, detail="E-mail ou senha inválidos")
     return AuthResponse(access_token=create_token(user), user=user)

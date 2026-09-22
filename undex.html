@@ -1469,6 +1469,17 @@
               type="password"
               minlength="6"
               required
+              autocomplete="new-password"
+            />
+          </div>
+          <div class="field">
+            <label for="register-password-confirm">Confirme a senha</label
+            ><input
+              id="register-password-confirm"
+              type="password"
+              minlength="6"
+              required
+              autocomplete="new-password"
             />
           </div>
           <div id="register-message"></div>
@@ -1563,9 +1574,16 @@
 
     <script>
       "use strict";
+      const forwardedApiHost = window.location.hostname.replace(
+        /-\d+(?=\.app\.github\.dev$)/,
+        "-8000",
+      );
+      const apiBaseUrl = window.location.hostname.endsWith(".app.github.dev")
+        ? `${window.location.protocol}//${forwardedApiHost}`
+        : "http://127.0.0.1:8000";
       const API_CONFIG = {
-        baseUrl: "http://127.0.0.1:8000",
-        docsUrl: "http://127.0.0.1:8000/openapi.json",
+        baseUrl: apiBaseUrl,
+        docsUrl: `${apiBaseUrl}/openapi.json`,
       };
       const FALLBACK_IMAGE =
         "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=900&q=82";
@@ -1885,7 +1903,12 @@
             headers,
           });
           const text = await response.text();
-          const data = text ? JSON.parse(text) : null;
+          let data = null;
+          try {
+            data = text ? JSON.parse(text) : null;
+          } catch (_) {
+            data = null;
+          }
           if (!response.ok)
             throw new Error(data?.detail || "Não foi possível acessar a API.");
           return data;
@@ -2805,9 +2828,15 @@
           const name = get("register-name").value.trim();
           const email = get("register-email").value.trim().toLowerCase();
           const password = get("register-password").value;
+          const passwordConfirmation = get("register-password-confirm").value;
           if (password.length < 6) {
             get("register-message").innerHTML =
               '<div class="message error">A senha precisa ter ao menos 6 caracteres.</div>';
+            return;
+          }
+          if (password !== passwordConfirmation) {
+            get("register-message").innerHTML =
+              '<div class="message error">As senhas precisam ser iguais.</div>';
             return;
           }
           try {
