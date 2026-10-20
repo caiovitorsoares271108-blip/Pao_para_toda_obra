@@ -5,7 +5,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Annotated
 
-import jwt
+import jwt 
 from flask import Flask, abort, send_from_directory
 from dotenv import load_dotenv
 from fastapi import Depends, FastAPI, HTTPException, status

@@ -1933,6 +1933,22 @@
         confirmed() {
           return State.api.status === "ok";
         },
+        async authenticate(action, payload) {
+          const response = await fetch(`${API_CONFIG.baseUrl}/auth/${action}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+          const result = await response.json().catch(() => null);
+          if (!response.ok) {
+            throw new Error(
+              typeof result?.detail === "string"
+                ? result.detail
+                : "Não foi possível autenticar. Tente novamente.",
+            );
+          }
+          return result;
+        },
       };
       const IMAGE_UPDATE_VERSION = "verified-images-2026-08-19-v3";
       const IMAGE_CATALOG = {
@@ -2720,60 +2736,47 @@
           get("login-password").value =
             role === "admin" ? "admin123" : "123456";
         },
-        login(e) {
-          e.preventDefault();
-          const email = get("login-email").value.trim().toLowerCase();
-          const password = get("login-password").value;
-          const user = users().find(
-            (u) => u.email.toLowerCase() === email && u.password === password,
-          );
-          if (!user) {
-            get("login-message").innerHTML =
-              '<div class="message error">E-mail ou senha inválidos.</div>';
-            return;
-          }
-          State.user = {
-            id: user.id,
-            role: user.role,
-            name: user.name,
-            email: user.email,
-          };
-          State.token = "local_" + Date.now();
+        finishLogin(auth, message) {
+          State.user = auth.user;
+          State.token = auth.access_token;
           State.saveSession();
           this.closeAuth();
           renderHeader();
           const target = State.redirect || "home";
           State.redirect = null;
           this.go(target);
-          toast(
-            user.role === "admin"
-              ? "Login de administrador realizado."
-              : "Login realizado.",
-          );
+          toast(message);
         },
-        register(e) {
+        async login(e) {
+          e.preventDefault();
+          const email = get("login-email").value.trim().toLowerCase();
+          const password = get("login-password").value;
+          get("login-message").innerHTML = "";
+          try {
+            const auth = await Api.authenticate("login", { email, password });
+            this.finishLogin(auth, "Login realizado.");
+          } catch (error) {
+            get("login-message").innerHTML =
+              `<div class="message error">${esc(error.message)}</div>`;
+          }
+        },
+        async register(e) {
           e.preventDefault();
           const name = get("register-name").value.trim();
           const email = get("register-email").value.trim().toLowerCase();
           const password = get("register-password").value;
-          if (password.length < 6) {
+          get("register-message").innerHTML = "";
+          try {
+            const auth = await Api.authenticate("register", {
+              name,
+              email,
+              password,
+            });
+            this.finishLogin(auth, "Conta criada e login realizado.");
+          } catch (error) {
             get("register-message").innerHTML =
-              '<div class="message error">A senha precisa ter ao menos 6 caracteres.</div>';
-            return;
+              `<div class="message error">${esc(error.message)}</div>`;
           }
-          if (users().some((u) => u.email.toLowerCase() === email)) {
-            get("register-message").innerHTML =
-              '<div class="message error">Este e-mail já está cadastrado.</div>';
-            return;
-          }
-          const list = users();
-          list.push({ id: Date.now(), role: "user", name, email, password });
-          DB.set("users", list);
-          get("register-message").innerHTML =
-            '<div class="message success">Conta criada. Agora faça login.</div>';
-          get("login-email").value = email;
-          get("login-password").value = "";
-          this.authTab("login");
         },
         logout() {
           State.user = null;
