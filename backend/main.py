@@ -14,22 +14,35 @@ from starlette.middleware.wsgi import WSGIMiddleware
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 from pwdlib import PasswordHash
-from sqlalchemy import JSON, Boolean, DateTime, Float, ForeignKey, Integer, String, create_engine, select
+from sqlalchemy import JSON, Boolean, DateTime, ForeignKey, Integer, Numeric, String, create_engine, select, text
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column, relationship, sessionmaker
 
 load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./pao.db")
+ENVIRONMENT = os.getenv("ENVIRONMENT", "development").lower()
+DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
+if not DATABASE_URL:
+    if ENVIRONMENT == "production":
+        raise RuntimeError("DATABASE_URL é obrigatória em produção")
+    DATABASE_URL = "sqlite:///./pao.db"
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = "postgresql+psycopg://" + DATABASE_URL.removeprefix("postgres://")
+elif DATABASE_URL.startswith("postgresql://"):
+    DATABASE_URL = "postgresql+psycopg://" + DATABASE_URL.removeprefix("postgresql://")
 JWT_SECRET = os.getenv("JWT_SECRET", "dev-secret-change-me")
 JWT_EXPIRE_MINUTES = int(os.getenv("JWT_EXPIRE_MINUTES", "1440"))
 CORS_ORIGINS = [item.strip() for item in os.getenv("CORS_ORIGINS", "http://localhost:5500,http://127.0.0.1:5500").split(",") if item.strip()]
+SEED_DEMO_DATA = os.getenv("SEED_DEMO_DATA", "false").lower() == "true"
 
-if JWT_SECRET == "dev-secret-change-me" and os.getenv("ENVIRONMENT", "development") == "production":
+if JWT_SECRET == "dev-secret-change-me" and ENVIRONMENT == "production":
     raise RuntimeError("Defina JWT_SECRET antes de executar em produção")
 
 connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
-engine = create_engine(DATABASE_URL, connect_args=connect_args)
+engine_options = {"connect_args": connect_args, "pool_pre_ping": True}
+if not DATABASE_URL.startswith("sqlite"):
+    engine_options.update(pool_size=5, max_overflow=5, pool_recycle=1800)
+engine = create_engine(DATABASE_URL, **engine_options)
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
 password_hash = PasswordHash.recommended()
 bearer = HTTPBearer(auto_error=False)
@@ -57,7 +70,7 @@ class Product(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(150))
     description: Mapped[str] = mapped_column(String(500), default="")
-    price: Mapped[float] = mapped_column(Float)
+    price: Mapped[float] = mapped_column(Numeric(10, 2))
     category: Mapped[str] = mapped_column(String(80), default="Outros")
     image: Mapped[str] = mapped_column(String(500), default="")
     promo: Mapped[dict] = mapped_column(JSON, nullable=True)
@@ -72,10 +85,14 @@ class Order(Base):
     address: Mapped[str] = mapped_column(String(300))
     notes: Mapped[str] = mapped_column(String(500), default="")
     status: Mapped[str] = mapped_column(String(30), default="pendente")
-    total: Mapped[float] = mapped_column(Float, default=0)
+    total: Mapped[float] = mapped_column(Numeric(10, 2), default=0)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
     user: Mapped[User] = relationship(back_populates="orders")
     items: Mapped[list["OrderItem"]] = relationship(back_populates="order", cascade="all, delete-orphan")
+
+    @property
+    def user_email(self) -> str:
+        return self.user.email if self.user else ""
 
 
 class OrderItem(Base):
@@ -85,7 +102,7 @@ class OrderItem(Base):
     order_id: Mapped[int] = mapped_column(ForeignKey("orders.id"))
     product_id: Mapped[int] = mapped_column(ForeignKey("products.id"))
     name: Mapped[str] = mapped_column(String(150))
-    price: Mapped[float] = mapped_column(Float)
+    price: Mapped[float] = mapped_column(Numeric(10, 2))
     quantity: Mapped[int] = mapped_column(Integer)
     order: Mapped[Order] = relationship(back_populates="items")
 
@@ -180,12 +197,17 @@ class OrderResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
+    user_email: str
     address: str
     notes: str
     status: str
     total: float
     created_at: datetime
     items: list[OrderItemResponse]
+
+
+class OrderStatusUpdate(BaseModel):
+    status: str
 
 
 def get_db():
@@ -224,24 +246,40 @@ def admin_user(user: Annotated[User, Depends(current_user)]) -> User:
     return user
 
 
-def seed_database() -> None:
+def initialize_database() -> None:
     Base.metadata.create_all(engine)
+    if not SEED_DEMO_DATA or ENVIRONMENT != "development":
+        return
     with SessionLocal() as db:
         if not db.scalar(select(User).where(User.email == "admin@pao.com")):
-            db.add_all(
-                [
-                    User(name="Admin Demo", email="admin@pao.com", password_hash=password_hash.hash("admin123"), role="admin"),
-                    User(name="Cliente Demo", email="cliente@pao.com", password_hash=password_hash.hash("123456")),
-                ]
-            )
+            db.add_all([
+                User(name="Admin Demo", email="admin@pao.com", password_hash=password_hash.hash("admin123"), role="admin"),
+                User(name="Cliente Demo", email="cliente@pao.com", password_hash=password_hash.hash("123456")),
+            ])
         if not db.scalar(select(Product).limit(1)):
-            db.add_all(
-                [
-                    Product(name="Pão Francês", description="Casquinha crocante e miolo macio.", price=0.75, category="Pães"),
-                    Product(name="Pão de Queijo", description="Receita mineira tradicional.", price=14.90, category="Pães"),
-                    Product(name="Café Espresso", description="Grãos torrados e café tirado na hora.", price=5.50, category="Bebidas"),
-                ]
-            )
+            db.add_all([
+                Product(name="Pão Francês", description="Casquinha crocante, miolo macio. Assado várias vezes ao dia.", price=0.75, category="Pães", image="https://images.unsplash.com/photo-1586444248902-2f64eddc13df?auto=format&fit=crop&w=900&q=82"),
+                Product(name="Pão de Queijo (6 un.)", description="Receita mineira tradicional, quentinho e elástico por dentro.", price=14.90, category="Pães", image="https://images.unsplash.com/photo-1574017019416-5b1f68b5a2c1?auto=format&fit=crop&w=900&q=82"),
+                Product(name="Baguete Artesanal", description="Fermentação longa, casca crocante e aroma de padaria.", price=12.90, category="Pães", image="https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=900&q=82"),
+                Product(name="Pão Integral de Forma", description="Fatiado, rico em fibras e sem conservantes.", price=16.50, category="Pães", image="https://images.unsplash.com/photo-1589367920969-ab8e050bbb04?auto=format&fit=crop&w=900&q=82"),
+                Product(name="Pão Australiano", description="Massa macia e levemente adocicada, perfeita para sanduíches.", price=18.90, category="Pães", image="https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=900&q=82"),
+                Product(name="Sonho de Creme", description="Massa fofinha com recheio de creme de confeiteiro.", price=8.50, category="Doces", image="https://images.unsplash.com/photo-1550617931-e17a7b70dce2?auto=format&fit=crop&w=900&q=82"),
+                Product(name="Croissant de Chocolate", description="Folhado amanteigado com recheio generoso de chocolate.", price=9.90, category="Doces", image="https://images.unsplash.com/photo-1587312246397-1c817a8eb86d?auto=format&fit=crop&w=900&q=82"),
+                Product(name="Fatia de Bolo de Fubá", description="Molhadinho com casquinha crocante, receita de família.", price=7.90, category="Doces", image="https://images.unsplash.com/photo-1588195538326-c5b1e9f80a1b?auto=format&fit=crop&w=900&q=82"),
+                Product(name="Rocambole de Doce de Leite", description="Massa fofa enrolada com doce de leite cremoso.", price=8.90, category="Doces", image="https://images.unsplash.com/photo-1551024506-0bccd828d307?auto=format&fit=crop&w=900&q=82"),
+                Product(name="Brigadeiro Gourmet", description="Chocolate intenso com granulado crocante, feito na hora.", price=4.50, category="Doces", image="https://images.unsplash.com/photo-1571115177098-24ec42ed204d?auto=format&fit=crop&w=900&q=82"),
+                Product(name="Coxinha de Frango", description="Massa lisa e recheio cremoso de frango desfiado.", price=7.50, category="Salgados", image="https://images.unsplash.com/photo-1626768902589-2ae9efd0fffb?auto=format&fit=crop&w=900&q=82"),
+                Product(name="Esfiha de Carne", description="Aberta, com carne temperada e toque de limão.", price=6.90, category="Salgados", image="https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=900&q=82"),
+                Product(name="Pastel de Queijo", description="Massa fina e crocante com queijo derretido.", price=7.00, category="Salgados", image="https://images.unsplash.com/photo-1619531045520-d574aca6d54b?auto=format&fit=crop&w=900&q=82"),
+                Product(name="Empada de Palmito", description="Massa delicada com recheio de palmito e requeijão.", price=8.90, category="Salgados", image="https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=900&q=82"),
+                Product(name="Cookie de Chocolate", description="Macio por dentro, crocante por fora, com gotas de chocolate.", price=6.50, category="Doces", image="https://images.unsplash.com/photo-1499636136210-6f4ee919583b?auto=format&fit=crop&w=900&q=82"),
+                Product(name="Café Espresso", description="Grãos torrados na medida, tirado na hora.", price=5.50, category="Bebidas", image="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=82"),
+                Product(name="Suco de Laranja 300 ml", description="Laranjas espremidas na hora, sem açúcar.", price=8.90, category="Bebidas", image="https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=900&q=82"),
+                Product(name="Chá Gelado de Pêssego", description="Chá preto com suco de pêssego e hortelã.", price=7.50, category="Bebidas", image="https://images.unsplash.com/photo-1541795795328-f073b763494e?auto=format&fit=crop&w=900&q=82"),
+                Product(name="Capuccino Cremoso", description="Café com leite cremoso, chocolate e canela.", price=9.90, category="Bebidas", image="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=82"),
+                Product(name="Torta de Limão", description="Massa crocante com mousse de limão e merengue.", price=12.90, category="Doces", image="https://images.unsplash.com/photo-1587312246397-1c817a8eb86d?auto=format&fit=crop&w=900&q=82"),
+                Product(name="Pão de Batata com Requeijão", description="Massa macia com recheio cremoso de requeijão.", price=11.90, category="Pães", image="https://images.unsplash.com/photo-1589367920969-ab8e050bbb04?auto=format&fit=crop&w=900&q=82"),
+            ])
         db.commit()
 
 
@@ -275,12 +313,21 @@ def serve_frontend_asset(requested_path: str):
 
 @app.on_event("startup")
 def startup() -> None:
-    seed_database()
+    initialize_database()
 
 
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}
+
+
+@app.get("/health/db")
+def health_db(db: Annotated[Session, Depends(get_db)]) -> dict[str, str]:
+    try:
+        db.execute(text("SELECT 1"))
+        return {"status": "ok", "database": "reachable"}
+    except Exception:
+        raise HTTPException(status_code=503, detail="Banco de dados indisponível")
 
 
 @app.post("/auth/register", response_model=AuthResponse, status_code=201)
@@ -310,6 +357,11 @@ def login(data: LoginRequest, db: Annotated[Session, Depends(get_db)]) -> AuthRe
 @app.get("/products", response_model=list[ProductResponse])
 def list_products(db: Annotated[Session, Depends(get_db)]) -> list[Product]:
     return list(db.scalars(select(Product).where(Product.active.is_(True)).order_by(Product.id)))
+
+
+@app.get("/products/admin", response_model=list[ProductResponse])
+def list_products_admin(_: Annotated[User, Depends(admin_user)], db: Annotated[Session, Depends(get_db)]) -> list[Product]:
+    return list(db.scalars(select(Product).order_by(Product.id)))
 
 
 @app.post("/products", response_model=ProductResponse, status_code=201)
@@ -350,16 +402,37 @@ def create_order(data: OrderCreate, user: Annotated[User, Depends(current_user)]
     if len(products) != len(set(product_ids)):
         raise HTTPException(status_code=400, detail="Um ou mais produtos não estão disponíveis")
 
+    from decimal import Decimal, ROUND_HALF_UP
+
+    def applied_price(product: Product) -> Decimal:
+        price = Decimal(str(product.price))
+        promo = product.promo or {}
+        if not promo.get("active"):
+            return price
+        value = Decimal(str(promo.get("value", 0)))
+        if value < 0:
+            raise HTTPException(status_code=400, detail="Promoção inválida")
+        if promo.get("type") == "percent":
+            if value > 100:
+                raise HTTPException(status_code=400, detail="Promoção inválida")
+            price *= (Decimal("100") - value) / Decimal("100")
+        elif promo.get("type") == "fixed":
+            price -= value
+        else:
+            raise HTTPException(status_code=400, detail="Promoção inválida")
+        return max(price, Decimal("0")).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+
     order = Order(
         user_id=user.id,
         address=data.address.strip(),
         notes=data.notes.strip(),
-        total=0.0,
+        total=Decimal("0.00"),
     )
     for requested in data.items:
         product = products[requested.product_id]
-        order.items.append(OrderItem(product_id=product.id, name=product.name, price=product.price, quantity=requested.quantity))
-        order.total += product.price * requested.quantity
+        item_price = applied_price(product)
+        order.items.append(OrderItem(product_id=product.id, name=product.name, price=item_price, quantity=requested.quantity))
+        order.total += item_price * requested.quantity
     db.add(order)
     db.commit()
     db.refresh(order)
@@ -375,14 +448,27 @@ def list_orders(user: Annotated[User, Depends(current_user)], db: Annotated[Sess
 
 
 @app.patch("/orders/{order_id}/status", response_model=OrderResponse)
-def update_order_status(order_id: int, new_status: str, _: Annotated[User, Depends(admin_user)], db: Annotated[Session, Depends(get_db)]) -> Order:
+def update_order_status(order_id: int, data: OrderStatusUpdate, _: Annotated[User, Depends(admin_user)], db: Annotated[Session, Depends(get_db)]) -> Order:
     allowed = {"pendente", "preparando", "saiu_entrega", "entregue", "cancelado"}
-    if new_status not in allowed:
+    if data.status not in allowed:
         raise HTTPException(status_code=400, detail="Status inválido")
     order = db.get(Order, order_id)
     if not order:
         raise HTTPException(status_code=404, detail="Pedido não encontrado")
-    order.status = new_status
+    order.status = data.status
+    db.commit()
+    db.refresh(order)
+    return order
+
+
+@app.post("/orders/{order_id}/cancel", response_model=OrderResponse)
+def cancel_order(order_id: int, user: Annotated[User, Depends(current_user)], db: Annotated[Session, Depends(get_db)]) -> Order:
+    order = db.get(Order, order_id)
+    if not order or order.user_id != user.id:
+        raise HTTPException(status_code=404, detail="Pedido não encontrado")
+    if order.status != "pendente":
+        raise HTTPException(status_code=409, detail="Somente pedidos pendentes podem ser cancelados")
+    order.status = "cancelado"
     db.commit()
     db.refresh(order)
     return order

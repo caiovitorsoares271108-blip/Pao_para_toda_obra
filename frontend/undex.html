@@ -1420,17 +1420,6 @@
             Criar conta
           </button>
         </div>
-        <div class="demo" id="demo-box">
-          <strong>Contas prontas para demonstração</strong>
-          <div class="demo-row">
-            <code>cliente@pao.com / 123456</code
-            ><button onclick="App.fillDemo('user')">Preencher</button>
-          </div>
-          <div class="demo-row">
-            <code>admin@pao.com / admin123</code
-            ><button onclick="App.fillDemo('admin')">Preencher</button>
-          </div>
-        </div>
         <form id="login-form" onsubmit="App.login(event)">
           <div class="field">
             <label for="login-email">E-mail</label
@@ -1810,6 +1799,8 @@
       const State = {
         user: null,
         token: null,
+        products: [],
+        orders: [],
         cart: [],
         address: null,
         redirect: null,
@@ -1882,6 +1873,45 @@
         },
       };
       const Api = {
+        async request(path, options = {}) {
+          const headers = { Accept: "application/json", ...(options.headers || {}) };
+          if (options.body && !headers["Content-Type"]) headers["Content-Type"] = "application/json";
+          if (State.token) headers.Authorization = `Bearer ${State.token}`;
+          let response;
+          try {
+            response = await fetch(`${API_CONFIG.baseUrl}${path}`, { ...options, headers });
+          } catch (_) {
+            throw new Error("Não foi possível conectar à API. Verifique se o servidor está ativo.");
+          }
+          const result = await response.json().catch(() => null);
+          if (!response.ok) {
+            const detail = result?.detail;
+            const message = Array.isArray(detail)
+              ? detail.map((item) => item.msg).join("; ")
+              : detail;
+            throw new Error(message || `A API respondeu com erro ${response.status}.`);
+          }
+          return result;
+        },
+        async loadProducts(admin = false) {
+          State.products = await this.request(admin ? "/products/admin" : "/products");
+          return State.products;
+        },
+        async loadOrders() {
+          const result = await this.request("/orders");
+          State.orders = result.map((order) => ({
+            ...order,
+            createdAt: order.created_at,
+            userId: order.user_id,
+            userEmail: order.user_email,
+            items: (order.items || []).map((item) => ({
+              ...item,
+              id: item.product_id,
+              qty: item.quantity,
+            })),
+          }));
+          return State.orders;
+        },
         async check() {
           State.api = {
             status: "checking",
@@ -1934,20 +1964,10 @@
           return State.api.status === "ok";
         },
         async authenticate(action, payload) {
-          const response = await fetch(`${API_CONFIG.baseUrl}/auth/${action}`, {
+          return this.request(`/auth/${action}`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
           });
-          const result = await response.json().catch(() => null);
-          if (!response.ok) {
-            throw new Error(
-              typeof result?.detail === "string"
-                ? result.detail
-                : "Não foi possível autenticar. Tente novamente.",
-            );
-          }
-          return result;
         },
       };
       const IMAGE_UPDATE_VERSION = "verified-images-2026-08-19-v3";
@@ -2155,22 +2175,6 @@
           note: "Correspondência direta com pão de batata assado, descrita pela fonte como meio pão de batata; o recheio de requeijão não é visível e não será afirmado pela imagem. Exige atribuição e share-alike.",
         },
       };
-      const DEMO_USERS = [
-        {
-          id: 1,
-          role: "user",
-          name: "Cliente Demo",
-          email: "cliente@pao.com",
-          password: "123456",
-        },
-        {
-          id: 2,
-          role: "admin",
-          name: "Admin Demo",
-          email: "admin@pao.com",
-          password: "admin123",
-        },
-      ];
       function catalogSeed() {
         return PRODUCTS_SEED.map((p) => {
           const item = IMAGE_CATALOG[String(p.id)];
@@ -2215,21 +2219,6 @@
                   : undefined,
             }))
           : [];
-      }
-      function seed() {
-        const savedUsers = DB.get("users");
-        if (!Array.isArray(savedUsers) || !savedUsers.length)
-          DB.set("users", DEMO_USERS);
-        const savedProducts = DB.get("products");
-        const normalized = normalizeProducts(savedProducts);
-        if (!Array.isArray(savedProducts) || !normalized.length)
-          DB.set("products", catalogSeed());
-        else if (JSON.stringify(normalized) !== JSON.stringify(savedProducts))
-          DB.set("products", normalized);
-        const savedOrders = DB.get("orders");
-        if (!Array.isArray(savedOrders)) DB.set("orders", []);
-        const savedCart = DB.get("cart");
-        if (!Array.isArray(savedCart)) DB.set("cart", []);
       }
       function applyVerifiedImageCatalog() {
         const existing = normalizeProducts(DB.get("products"));
@@ -2294,23 +2283,10 @@
         DB.set("imageCatalogVersion", IMAGE_UPDATE_VERSION);
       }
       function products() {
-        const list = DB.get("products");
-        return Array.isArray(list) && list.length ? list : catalogSeed();
-      }
-      function saveProducts(list) {
-        const normalized = normalizeProducts(list);
-        DB.set("products", normalized.length ? normalized : catalogSeed());
+        return Array.isArray(State.products) ? State.products : [];
       }
       function orders() {
-        const list = DB.get("orders");
-        return Array.isArray(list) ? list : [];
-      }
-      function saveOrders(list) {
-        DB.set("orders", Array.isArray(list) ? list : []);
-      }
-      function users() {
-        const list = DB.get("users");
-        return Array.isArray(list) ? list : DEMO_USERS;
+        return Array.isArray(State.orders) ? State.orders : [];
       }
       function money(v) {
         return (Number(v) || 0).toLocaleString("pt-BR", {
@@ -2547,27 +2523,35 @@
             ? list.map(cardProduct).join("")
             : `<div class="empty"><strong>😕</strong><p>Nenhum produto encontrado.</p></div>`;
         },
-        orders() {
+        async orders() {
           if (!State.logged()) {
             State.redirect = "orders";
             App.openAuth();
             return;
           }
-          const list = orders()
-            .filter((o) => o.userId === State.user.id)
-            .sort((a, b) =>
-              String(b.createdAt).localeCompare(String(a.createdAt)),
-            );
+          try {
+            await Api.loadOrders();
+          } catch (error) {
+            get("main").innerHTML = `<section class="section container"><div class="message error">${esc(error.message)} <button class="btn-small" onclick="Pages.orders()">Tentar novamente</button></div></section>`;
+            return;
+          }
+          const list = orders();
           get("main").innerHTML =
             `<section class="section container"><div class="section-head"><h2>▣ Meus pedidos</h2><span class="count">${list.length} pedidos</span></div><div>${list.length ? list.map(cardOrder).join("") : `<div class="empty"><strong>📭</strong><p>Você ainda não fez nenhum pedido.</p><button class="hero-cta" style="margin-top:18px" onclick="App.go('home')">Ver cardápio →</button></div>`}</div></section>`;
         },
-        admin() {
+        async admin() {
           if (!State.isAdmin()) {
             App.openAuth();
             return;
           }
-          const list = products();
-          const orderList = orders();
+          let list;
+          let orderList;
+          try {
+            [list, orderList] = await Promise.all([Api.loadProducts(true), Api.loadOrders()]);
+          } catch (error) {
+            get("main").innerHTML = `<section class="section container"><div class="message error">${esc(error.message)} <button class="btn-small" onclick="Pages.admin()">Tentar novamente</button></div></section>`;
+            return;
+          }
           const counts = statusCounts(orderList);
           const pending = counts.pendente;
           const revenue = orderList
@@ -2578,7 +2562,7 @@
           Pages.adminTab("products");
           updateApiUi();
         },
-        adminTab(tab) {
+        async adminTab(tab) {
           document
             .querySelectorAll("[data-admin-tab]")
             .forEach((b) =>
@@ -2587,6 +2571,12 @@
           const el = get("admin-content");
           if (!el) return;
           if (tab === "orders" || tab === "delivery") {
+            try {
+              await Api.loadOrders();
+            } catch (error) {
+              el.innerHTML = `<div class="message error">${esc(error.message)} <button class="btn-small" onclick="Pages.adminTab('${tab}')">Tentar novamente</button></div>`;
+              return;
+            }
             const all = orders().sort((a, b) =>
               String(b.createdAt).localeCompare(String(a.createdAt)),
             );
@@ -2639,11 +2629,10 @@
           get("admin-id").value = "";
           get("admin-promo-value").value = "0";
         },
-        save(e) {
+        async save(e) {
           e.preventDefault();
           const id = get("admin-id").value;
           const data = {
-            id: id ? Number(id) : Date.now(),
             name: get("admin-name").value.trim(),
             description: get("admin-description").value.trim(),
             price: Number(get("admin-price").value),
@@ -2655,13 +2644,16 @@
               value: Number(get("admin-promo-value").value) || 0,
             },
           };
-          const list = products();
-          const idx = list.findIndex((p) => String(p.id) === String(data.id));
-          if (idx >= 0) list[idx] = { ...list[idx], ...data };
-          else list.unshift(data);
-          saveProducts(list);
-          toast(id ? "Produto atualizado." : "Produto adicionado.");
-          Pages.admin();
+          try {
+            await Api.request(id ? `/products/${id}` : "/products", {
+              method: id ? "PATCH" : "POST",
+              body: JSON.stringify(data),
+            });
+            await Pages.admin();
+            toast(id ? "Produto atualizado." : "Produto adicionado.");
+          } catch (error) {
+            get("admin-form-message").innerHTML = `<div class="message error">${esc(error.message)}</div>`;
+          }
         },
         edit(id) {
           const p = products().find((x) => Number(x.id) === Number(id));
@@ -2679,35 +2671,36 @@
             .querySelector("#admin-product-form")
             ?.scrollIntoView({ behavior: "smooth", block: "start" });
         },
-        remove(id) {
-          if (!confirm("Excluir este produto do cardápio local?")) return;
-          saveProducts(products().filter((p) => Number(p.id) !== Number(id)));
-          toast("Produto excluído.");
-          Pages.admin();
+        async remove(id) {
+          if (!confirm("Desativar este produto do cardápio?")) return;
+          try {
+            await Api.request(`/products/${id}`, { method: "DELETE" });
+            await Pages.admin();
+            toast("Produto desativado.");
+          } catch (error) {
+            toast(error.message);
+          }
         },
-        updateOrder(id, status) {
-          const list = orders();
-          const order = list.find((o) => String(o.id) === String(id));
-          if (!order) return;
+        async updateOrder(id, status) {
           const next = normalizeOrderStatus(status);
-          order.status = next;
-          if (next === "saiu_entrega" && !order.outForDeliveryAt)
-            order.outForDeliveryAt = new Date().toISOString();
-          saveOrders(list);
-          toast(`Pedido marcado como: ${statusMeta(next).label}.`);
-          Pages.admin();
-          setTimeout(
-            () =>
-              Pages.adminTab(next === "saiu_entrega" ? "delivery" : "orders"),
-            0,
-          );
+          try {
+            await Api.request(`/orders/${id}/status`, {
+              method: "PATCH",
+              body: JSON.stringify({ status: next }),
+            });
+            await Pages.admin();
+            await Pages.adminTab(next === "saiu_entrega" ? "delivery" : "orders");
+            toast(`Pedido marcado como: ${statusMeta(next).label}.`);
+          } catch (error) {
+            toast(error.message);
+          }
         },
       };
       const App = {
-        go(page) {
+        async go(page) {
           if (page === "home") Pages.home();
-          else if (page === "orders") Pages.orders();
-          else if (page === "admin") Pages.admin();
+          else if (page === "orders") await Pages.orders();
+          else if (page === "admin") await Pages.admin();
           window.scrollTo({ top: 0, behavior: "smooth" });
           renderHeader();
         },
@@ -2728,13 +2721,6 @@
             );
           get("login-form").classList.toggle("hidden", tab !== "login");
           get("register-form").classList.toggle("hidden", tab !== "register");
-          get("demo-box").classList.toggle("hidden", tab !== "login");
-        },
-        fillDemo(role) {
-          get("login-email").value =
-            role === "admin" ? "admin@pao.com" : "cliente@pao.com";
-          get("login-password").value =
-            role === "admin" ? "admin123" : "123456";
         },
         finishLogin(auth, message) {
           State.user = auth.user;
@@ -2873,7 +2859,7 @@
           get("checkout-modal").classList.remove("open");
           document.body.style.overflow = "";
         },
-        checkout(e) {
+        async checkout(e) {
           e.preventDefault();
           const address = get("checkout-address").value.trim();
           if (!address) {
@@ -2881,44 +2867,37 @@
               '<div class="message error">Informe o endereço de entrega.</div>';
             return;
           }
-          const order = {
-            id: String(Date.now()).slice(-7),
-            userId: State.user.id,
-            userEmail: State.user.email,
-            items: State.cart.map((i) => ({
-              id: i.product.id,
-              name: i.product.name,
-              qty: i.qty,
-              price: effectivePrice(i.product),
-            })),
-            total: State.total(),
-            status: "pendente",
-            createdAt: new Date().toISOString(),
-            address,
-            notes: get("checkout-notes").value.trim(),
-          };
-          const list = orders();
-          list.push(order);
-          saveOrders(list);
-          State.address = address;
-          DB.set("address", address);
-          State.cart = [];
-          State.saveCart();
-          this.closeCheckout();
-          renderHeader();
-          get("checkout-notes").value = "";
-          this.go("orders");
-          toast("Pedido confirmado localmente.");
+          get("checkout-message").innerHTML = "";
+          try {
+            await Api.request("/orders", {
+              method: "POST",
+              body: JSON.stringify({
+                address,
+                notes: get("checkout-notes").value.trim(),
+                items: State.cart.map((i) => ({ product_id: Number(i.product.id), quantity: i.qty })),
+              }),
+            });
+            State.address = address;
+            DB.set("address", address);
+            State.cart = [];
+            State.saveCart();
+            this.closeCheckout();
+            renderHeader();
+            get("checkout-notes").value = "";
+            await this.go("orders");
+            toast("Pedido confirmado.");
+          } catch (error) {
+            get("checkout-message").innerHTML = `<div class="message error">${esc(error.message)}</div>`;
+          }
         },
-        cancelOrder(id) {
+        async cancelOrder(id) {
           if (!confirm("Cancelar este pedido?")) return;
-          const list = orders();
-          const o = list.find((x) => String(x.id) === String(id));
-          if (o && o.status === "pendente") {
-            o.status = "cancelado";
-            saveOrders(list);
-            Pages.orders();
+          try {
+            await Api.request(`/orders/${id}/cancel`, { method: "POST" });
+            await Pages.orders();
             toast("Pedido cancelado.");
+          } catch (error) {
+            toast(error.message);
           }
         },
         closeAll() {
@@ -2973,9 +2952,12 @@
           }
         }),
       );
-      document.addEventListener("DOMContentLoaded", () => {
-        seed();
-        applyVerifiedImageCatalog();
+      document.addEventListener("DOMContentLoaded", async () => {
+        try {
+          await Api.loadProducts();
+        } catch (error) {
+          State.api = { status: "off", message: error.message };
+        }
         State.load();
         get("year").textContent = new Date().getFullYear();
         renderImageAttributions();
