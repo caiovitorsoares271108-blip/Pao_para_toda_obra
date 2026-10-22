@@ -23,7 +23,7 @@ Para desenvolvimento isolado, `DATABASE_URL` vazio usa SQLite local. Em produç�
 
 As tabelas podem ser criadas pelo startup local ou aplicando `backend/migration_initial.sql` no SQL Editor do Supabase. Depois, confirme `users`, `products`, `orders` e `order_items` no Table Editor.
 
-Defina também `JWT_SECRET` com uma chave longa e aleatória, `ENVIRONMENT=development` ou `production`, `SEED_DEMO_DATA=false` e `CORS_ORIGINS` somente quando o frontend estiver em outra origem. O arquivo `.env` é local e está no `.gitignore`; se algum segredo já tiver sido versionado, remova-o do índice com `git rm --cached backend/.env` e faça a rotação da credencial.
+Defina também `JWT_SECRET` com uma chave longa e aleatória, `ENVIRONMENT=development` ou `production`, e `CORS_ORIGINS` somente quando o frontend estiver em outra origem. Em desenvolvimento, o `.env.example` habilita contas de demonstração: `cliente@pao.com` (`123456`) e `admin@pao.com` (`admin123`). O seed só roda em `development`; desative-o em produção. A autenticação fica em cookie `HttpOnly` por 30 dias por padrão, sem salvar o token no armazenamento do navegador. O arquivo `.env` é local e está no `.gitignore`; se algum segredo já tiver sido versionado, remova-o do índice com `git rm --cached backend/.env` e faça a rotação da credencial.
 
 Para criar o primeiro administrador sem senha padrão:
 

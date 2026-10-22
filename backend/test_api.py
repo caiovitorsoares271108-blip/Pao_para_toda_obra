@@ -31,6 +31,8 @@ class ApiTestCase(unittest.TestCase):
             json={"name": "Cliente", "email": "test@example.com", "password": "secret123"},
         )
         self.assertEqual(response.status_code, 201)
+        self.assertIn("httponly", response.headers.get("set-cookie", "").lower())
+        self.assertEqual(self.client_context.get("/auth/me").json()["email"], "test@example.com")
         self.assertEqual(self.client_context.post(
             "/auth/register",
             json={"name": "Outro", "email": "test@example.com", "password": "secret123"},
@@ -38,6 +40,17 @@ class ApiTestCase(unittest.TestCase):
         self.assertEqual(self.client_context.post(
             "/auth/login", json={"email": "test@example.com", "password": "wrong"}
         ).status_code, 401)
+        self.assertEqual(self.client_context.post("/auth/logout").status_code, 200)
+        self.assertEqual(self.client_context.get("/auth/me").status_code, 401)
+
+    def test_demo_quick_login_is_disabled_outside_development(self):
+        self.assertEqual(
+            self.client_context.get("/auth/demo-accounts").json(), {"accounts": []}
+        )
+        self.assertEqual(
+            self.client_context.post("/auth/demo-login", json={"role": "admin"}).status_code,
+            404,
+        )
 
     def test_admin_product_order_total_and_inactive_rejection(self):
         customer = self.client_context.post(
@@ -63,6 +76,15 @@ class ApiTestCase(unittest.TestCase):
         )
         self.assertEqual(product.status_code, 201)
         product_id = product.json()["id"]
+        unavailable = {**product.json(), "active": False}
+        self.assertEqual(self.client_context.patch(
+            f"/products/{product_id}", headers=admin_headers, json=unavailable
+        ).status_code, 200)
+        self.assertEqual(self.client_context.get("/products").json(), [])
+        available = {**product.json(), "active": True}
+        self.assertEqual(self.client_context.patch(
+            f"/products/{product_id}", headers=admin_headers, json=available
+        ).status_code, 200)
         order = self.client_context.post(
             "/orders",
             headers=customer_headers,

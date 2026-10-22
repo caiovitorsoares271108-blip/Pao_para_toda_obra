@@ -750,6 +750,21 @@
         color: var(--orange);
         box-shadow: var(--shadow);
       }
+      .demo-login-options {
+        display: grid;
+        gap: 8px;
+        margin-top: 14px;
+        padding-top: 12px;
+        border-top: 1px solid var(--line);
+      }
+      .demo-login-label {
+        color: var(--muted);
+        font-size: 0.76rem;
+        font-weight: 700;
+      }
+      .demo-login-options .btn-small {
+        width: 100%;
+      }
       .demo {
         background: var(--cream-2);
         border: 1px solid var(--gold);
@@ -1441,6 +1456,7 @@
           </div>
           <div id="login-message"></div>
           <button class="btn-primary wide" type="submit">Entrar</button>
+          <div id="demo-login-options" class="demo-login-options hidden" aria-label="Contas de demonstração"></div>
         </form>
         <form id="register-form" class="hidden" onsubmit="App.register(event)">
           <div class="field">
@@ -1835,12 +1851,7 @@
           this.saveCart();
         },
         saveSession() {
-          DB.set(
-            "session",
-            this.user && this.token
-              ? { user: this.user, token: this.token }
-              : null,
-          );
+          DB.remove("session");
         },
         saveCart() {
           DB.set(
@@ -1879,7 +1890,11 @@
           if (State.token) headers.Authorization = `Bearer ${State.token}`;
           let response;
           try {
-            response = await fetch(`${API_CONFIG.baseUrl}${path}`, { ...options, headers });
+            response = await fetch(`${API_CONFIG.baseUrl}${path}`, {
+              ...options,
+              headers,
+              credentials: "include",
+            });
           } catch (_) {
             throw new Error("Não foi possível conectar à API. Verifique se o servidor está ativo.");
           }
@@ -1892,6 +1907,32 @@
             throw new Error(message || `A API respondeu com erro ${response.status}.`);
           }
           return result;
+        },
+        async restoreSession() {
+          if (State.token) {
+            try {
+              await this.request("/auth/session", { method: "POST" });
+            } catch (_) {
+              State.user = null;
+              State.token = null;
+            }
+          }
+          try {
+            State.user = await this.request("/auth/me");
+          } catch (_) {
+            State.user = null;
+          }
+          State.token = null;
+          DB.remove("session");
+        },
+        async loadDemoAccounts() {
+          const { accounts } = await this.request("/auth/demo-accounts");
+          const options = get("demo-login-options");
+          if (!options) return;
+          options.innerHTML = (accounts || []).map((account) =>
+            `<button class="btn-small secondary" type="button" onclick="App.demoLogin('${esc(account.role)}')">${esc(account.label)}</button>`,
+          ).join("");
+          options.classList.toggle("hidden", !accounts?.length);
         },
         async loadProducts(admin = false) {
           State.products = await this.request(admin ? "/products/admin" : "/products");
@@ -2615,7 +2656,8 @@
         return `<article class="admin-card" style="margin-bottom:14px"><div class="order-admin-top"><strong>Pedido #${esc(o.id)}</strong><span class="order-status-label ${cls}" style="background:${status === "entregue" ? "#dcfce7" : status === "cancelado" ? "#fee2e2" : status === "saiu_entrega" ? "#dbeafe" : "#fef3c7"};color:${status === "entregue" ? "#166534" : status === "cancelado" ? "#991b1b" : status === "saiu_entrega" ? "#1d4ed8" : "#92400e"}">${meta.icon} ${meta.label}</span></div><small style="color:var(--muted)">${fmtDate(o.createdAt)} · ${esc(o.address || "Sem endereço")}</small>${orderTimeline(o)}<div class="order-admin-items">${(o.items || []).map((i) => `${i.qty}× ${esc(i.name)} — ${money(i.price * i.qty)}`).join("<br>")}</div><div class="order-admin-top"><strong style="color:var(--orange)">${money(o.total)}</strong>${status === "pendente" ? `<button class="btn-small danger" onclick="App.cancelOrder('${esc(o.id)}')">Cancelar pedido</button>` : ""}</div></article>`;
       }
       function adminProduct(p) {
-        return `<div class="admin-product"><img src="${esc(imageOf(p))}" alt="${esc(p.name)}" onerror="this.onerror=null;this.src='${FALLBACK_IMAGE}'"><div class="admin-product-main"><strong>${esc(p.name)}</strong><small>${esc(p.category)} · ${money(effectivePrice(p))}${promoActive(p) ? ` · ${esc(promoText(p))}` : ""}</small></div><div class="admin-product-actions"><button class="btn-small secondary" onclick="Admin.edit(${Number(p.id)})">Editar</button><button class="btn-small danger" onclick="Admin.remove(${Number(p.id)})">Excluir</button></div></div>`;
+        const available = p.active !== false;
+        return `<div class="admin-product"><img src="${esc(imageOf(p))}" alt="${esc(p.name)}" onerror="this.onerror=null;this.src='${FALLBACK_IMAGE}'"><div class="admin-product-main"><strong>${esc(p.name)}</strong><small>${esc(p.category)} · ${money(effectivePrice(p))}${promoActive(p) ? ` · ${esc(promoText(p))}` : ""}</small><small>${available ? "Disponível no cardápio" : "Indisponível"}</small></div><div class="admin-product-actions"><button class="btn-small secondary" onclick="Admin.edit(${Number(p.id)})">Editar</button><button class="btn-small secondary" onclick="Admin.toggleAvailability(${Number(p.id)})">${available ? "Marcar indisponível" : "Marcar disponível"}</button><button class="btn-small danger" onclick="Admin.remove(${Number(p.id)})">Excluir</button></div></div>`;
       }
       function adminOrder(o) {
         const status = normalizeOrderStatus(o.status);
@@ -2681,6 +2723,29 @@
             toast(error.message);
           }
         },
+        async toggleAvailability(id) {
+          const product = products().find((item) => Number(item.id) === Number(id));
+          if (!product) return;
+          const available = product.active === false;
+          try {
+            await Api.request(`/products/${id}`, {
+              method: "PATCH",
+              body: JSON.stringify({
+                name: product.name,
+                description: product.description || "",
+                price: Number(product.price),
+                category: product.category,
+                image: product.image || "",
+                promo: product.promo || null,
+                active: available,
+              }),
+            });
+            await Pages.admin();
+            toast(available ? "Produto disponível no cardápio." : "Produto marcado como indisponível.");
+          } catch (error) {
+            toast(error.message);
+          }
+        },
         async updateOrder(id, status) {
           const next = normalizeOrderStatus(status);
           try {
@@ -2724,7 +2789,7 @@
         },
         finishLogin(auth, message) {
           State.user = auth.user;
-          State.token = auth.access_token;
+          State.token = null;
           State.saveSession();
           this.closeAuth();
           renderHeader();
@@ -2732,6 +2797,21 @@
           State.redirect = null;
           this.go(target);
           toast(message);
+        },
+        async demoLogin(role) {
+          get("login-message").innerHTML = "";
+          try {
+            const auth = await Api.request("/auth/demo-login", {
+              method: "POST",
+              body: JSON.stringify({ role }),
+            });
+            this.finishLogin(
+              auth,
+              role === "admin" ? "Entrou como administrador." : "Entrou como cliente.",
+            );
+          } catch (error) {
+            get("login-message").innerHTML = `<div class="message error">${esc(error.message)}</div>`;
+          }
         },
         async login(e) {
           e.preventDefault();
@@ -2764,7 +2844,10 @@
               `<div class="message error">${esc(error.message)}</div>`;
           }
         },
-        logout() {
+        async logout() {
+          try {
+            await Api.request("/auth/logout", { method: "POST" });
+          } catch (_) {}
           State.user = null;
           State.token = null;
           State.saveSession();
@@ -2959,6 +3042,8 @@
           State.api = { status: "off", message: error.message };
         }
         State.load();
+        await Api.restoreSession();
+        await Api.loadDemoAccounts().catch(() => {});
         get("year").textContent = new Date().getFullYear();
         renderImageAttributions();
         renderHeader();

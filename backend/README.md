@@ -19,6 +19,8 @@ O frontend é servido pelo Flask; não é necessário iniciar um `python -m http
 
 Com `DATABASE_URL` vazio em desenvolvimento, o banco isolado é `backend/pao.db`. Em produção, `DATABASE_URL` é obrigatória. Copie a string oficial em Supabase > Connect; use a string do Session Pooler se a infraestrutura futura não alcançar o endpoint direto.
 
+Em desenvolvimento, o seed habilitado cria as contas `cliente@pao.com` (`123456`) e `admin@pao.com` (`admin123`). Elas são apenas para teste local; o seed é bloqueado fora de `ENVIRONMENT=development`. Altere as variáveis `DEMO_*` no `.env` para usar outras credenciais. A sessão do navegador usa cookie `HttpOnly` com validade padrão de 30 dias; `JWT_EXPIRE_MINUTES` controla essa duração.
+
 As tabelas também podem ser preparadas executando `migration_initial.sql` no SQL Editor. Crie o primeiro administrador com `python create_admin.py`. O seed demo exige explicitamente `ENVIRONMENT=development` e `SEED_DEMO_DATA=true`.
 
 Consulte `/health`, `/health/db` e `/docs` após iniciar. Nunca coloque `DATABASE_URL`, `JWT_SECRET` ou chaves Supabase no HTML, no JavaScript ou no Git.

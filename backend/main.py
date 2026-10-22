@@ -3,12 +3,12 @@ from __future__ import annotations
 import os
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, Literal
 
 import jwt 
 from flask import Flask, abort, send_from_directory
 from dotenv import load_dotenv
-from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi import Depends, FastAPI, HTTPException, Request, Response, status
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.wsgi import WSGIMiddleware
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -31,7 +31,8 @@ if DATABASE_URL.startswith("postgres://"):
 elif DATABASE_URL.startswith("postgresql://"):
     DATABASE_URL = "postgresql+psycopg://" + DATABASE_URL.removeprefix("postgresql://")
 JWT_SECRET = os.getenv("JWT_SECRET", "dev-secret-change-me")
-JWT_EXPIRE_MINUTES = int(os.getenv("JWT_EXPIRE_MINUTES", "1440"))
+JWT_EXPIRE_MINUTES = int(os.getenv("JWT_EXPIRE_MINUTES", "43200"))
+AUTH_COOKIE_NAME = "pao_session"
 CORS_ORIGINS = [item.strip() for item in os.getenv("CORS_ORIGINS", "http://localhost:5500,http://127.0.0.1:5500").split(",") if item.strip()]
 SEED_DEMO_DATA = os.getenv("SEED_DEMO_DATA", "false").lower() == "true"
 
@@ -142,6 +143,10 @@ class LoginRequest(BaseModel):
         return value.strip().lower()
 
 
+class DemoLoginRequest(BaseModel):
+    role: Literal["admin", "customer"]
+
+
 class UserResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -223,14 +228,39 @@ def create_token(user: User) -> str:
     return jwt.encode({"sub": str(user.id), "exp": expires}, JWT_SECRET, algorithm="HS256")
 
 
+def set_auth_cookie(response: Response, token: str) -> None:
+    response.set_cookie(
+        key=AUTH_COOKIE_NAME,
+        value=token,
+        max_age=JWT_EXPIRE_MINUTES * 60,
+        httponly=True,
+        secure=ENVIRONMENT == "production",
+        samesite="lax",
+        path="/",
+    )
+
+
+def demo_account_configs() -> dict[str, tuple[str, str]]:
+    return {
+        "admin": (os.getenv("DEMO_ADMIN_EMAIL", "").strip().lower(), "admin"),
+        "customer": (os.getenv("DEMO_CUSTOMER_EMAIL", "").strip().lower(), "user"),
+    }
+
+
+def demo_accounts_enabled() -> bool:
+    return ENVIRONMENT == "development" and SEED_DEMO_DATA
+
+
 def current_user(
+    request: Request,
     credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer)],
     db: Annotated[Session, Depends(get_db)],
 ) -> User:
-    if not credentials:
+    token = credentials.credentials if credentials else request.cookies.get(AUTH_COOKIE_NAME)
+    if not token:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Login necessário")
     try:
-        payload = jwt.decode(credentials.credentials, JWT_SECRET, algorithms=["HS256"])
+        payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
         user_id = int(payload["sub"])
     except (jwt.InvalidTokenError, KeyError, ValueError):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token inválido")
@@ -251,11 +281,32 @@ def initialize_database() -> None:
     if not SEED_DEMO_DATA or ENVIRONMENT != "development":
         return
     with SessionLocal() as db:
-        if not db.scalar(select(User).where(User.email == "admin@pao.com")):
-            db.add_all([
-                User(name="Admin Demo", email="admin@pao.com", password_hash=password_hash.hash("admin123"), role="admin"),
-                User(name="Cliente Demo", email="cliente@pao.com", password_hash=password_hash.hash("123456")),
-            ])
+        demo_accounts = [
+            (
+                "DEMO_ADMIN_NAME",
+                "DEMO_ADMIN_EMAIL",
+                "DEMO_ADMIN_PASSWORD",
+                "Administrador Demo",
+                "admin",
+            ),
+            (
+                "DEMO_CUSTOMER_NAME",
+                "DEMO_CUSTOMER_EMAIL",
+                "DEMO_CUSTOMER_PASSWORD",
+                "Cliente Demo",
+                "user",
+            ),
+        ]
+        for name_key, email_key, password_key, default_name, role in demo_accounts:
+            email = os.getenv(email_key, "").strip().lower()
+            password = os.getenv(password_key, "")
+            if email and password and not db.scalar(select(User).where(User.email == email)):
+                db.add(User(
+                    name=os.getenv(name_key, default_name).strip(),
+                    email=email,
+                    password_hash=password_hash.hash(password),
+                    role=role,
+                ))
         if not db.scalar(select(Product).limit(1)):
             db.add_all([
                 Product(name="Pão Francês", description="Casquinha crocante, miolo macio. Assado várias vezes ao dia.", price=0.75, category="Pães", image="https://images.unsplash.com/photo-1586444248902-2f64eddc13df?auto=format&fit=crop&w=900&q=82"),
@@ -331,7 +382,7 @@ def health_db(db: Annotated[Session, Depends(get_db)]) -> dict[str, str]:
 
 
 @app.post("/auth/register", response_model=AuthResponse, status_code=201)
-def register(data: UserCreate, db: Annotated[Session, Depends(get_db)]) -> AuthResponse:
+def register(data: UserCreate, response: Response, db: Annotated[Session, Depends(get_db)]) -> AuthResponse:
     email = data.email
     if db.scalar(select(User).where(User.email == email)):
         raise HTTPException(status_code=409, detail="Este e-mail já está cadastrado")
@@ -343,15 +394,68 @@ def register(data: UserCreate, db: Annotated[Session, Depends(get_db)]) -> AuthR
         db.rollback()
         raise HTTPException(status_code=409, detail="Este e-mail já está cadastrado")
     db.refresh(user)
-    return AuthResponse(access_token=create_token(user), user=user)
+    token = create_token(user)
+    set_auth_cookie(response, token)
+    return AuthResponse(access_token=token, user=user)
 
 
 @app.post("/auth/login", response_model=AuthResponse)
-def login(data: LoginRequest, db: Annotated[Session, Depends(get_db)]) -> AuthResponse:
+def login(data: LoginRequest, response: Response, db: Annotated[Session, Depends(get_db)]) -> AuthResponse:
     user = db.scalar(select(User).where(User.email == data.email))
     if not user or not password_hash.verify(data.password, user.password_hash):
         raise HTTPException(status_code=401, detail="E-mail ou senha inválidos")
-    return AuthResponse(access_token=create_token(user), user=user)
+    token = create_token(user)
+    set_auth_cookie(response, token)
+    return AuthResponse(access_token=token, user=user)
+
+
+@app.get("/auth/demo-accounts")
+def list_demo_accounts(db: Annotated[Session, Depends(get_db)]) -> dict[str, list[dict[str, str]]]:
+    if not demo_accounts_enabled():
+        return {"accounts": []}
+    labels = {"admin": "Entrar como administrador", "customer": "Entrar como cliente"}
+    accounts = []
+    for role, (email, expected_role) in demo_account_configs().items():
+        user = db.scalar(select(User).where(User.email == email)) if email else None
+        if user and user.role == expected_role:
+            accounts.append({"role": role, "label": labels[role]})
+    return {"accounts": accounts}
+
+
+@app.post("/auth/demo-login", response_model=AuthResponse)
+def demo_login(data: DemoLoginRequest, response: Response, db: Annotated[Session, Depends(get_db)]) -> AuthResponse:
+    if not demo_accounts_enabled():
+        raise HTTPException(status_code=404, detail="Acesso de demonstração desativado")
+    email, expected_role = demo_account_configs()[data.role]
+    user = db.scalar(select(User).where(User.email == email)) if email else None
+    if not user or user.role != expected_role:
+        raise HTTPException(status_code=404, detail="Conta de demonstração não encontrada")
+    token = create_token(user)
+    set_auth_cookie(response, token)
+    return AuthResponse(access_token=token, user=user)
+
+
+@app.get("/auth/me", response_model=UserResponse)
+def get_current_user(user: Annotated[User, Depends(current_user)]) -> User:
+    return user
+
+
+@app.post("/auth/session", response_model=UserResponse)
+def renew_auth_cookie(user: Annotated[User, Depends(current_user)], response: Response) -> User:
+    set_auth_cookie(response, create_token(user))
+    return user
+
+
+@app.post("/auth/logout")
+def logout(response: Response) -> dict[str, str]:
+    response.delete_cookie(
+        key=AUTH_COOKIE_NAME,
+        httponly=True,
+        secure=ENVIRONMENT == "production",
+        samesite="lax",
+        path="/",
+    )
+    return {"status": "ok"}
 
 
 @app.get("/products", response_model=list[ProductResponse])
