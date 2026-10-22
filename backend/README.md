@@ -23,4 +23,6 @@ Em desenvolvimento, o seed habilitado cria as contas `cliente@pao.com` (`123456`
 
 As tabelas também podem ser preparadas executando `migration_initial.sql` no SQL Editor. Crie o primeiro administrador com `python create_admin.py`. O seed demo exige explicitamente `ENVIRONMENT=development` e `SEED_DEMO_DATA=true`.
 
+Em um banco vazio, a inicialização cadastra o catálogo padrão uma única vez; produtos já existentes não são substituídos. Para criar as contas iniciais em produção, configure `INITIAL_ADMIN_NAME`, `INITIAL_ADMIN_EMAIL`, `INITIAL_ADMIN_PASSWORD`, `INITIAL_CUSTOMER_NAME`, `INITIAL_CUSTOMER_EMAIL` e `INITIAL_CUSTOMER_PASSWORD` no Render. Use senhas próprias com pelo menos 6 caracteres. Após confirmar que as contas foram criadas, remova as duas variáveis de senha do Render; os usuários permanecem salvos no Supabase.
+
 Consulte `/health`, `/health/db` e `/docs` após iniciar. Nunca coloque `DATABASE_URL`, `JWT_SECRET` ou chaves Supabase no HTML, no JavaScript ou no Git.

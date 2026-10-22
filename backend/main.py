@@ -278,8 +278,7 @@ def admin_user(user: Annotated[User, Depends(current_user)]) -> User:
 
 def initialize_database() -> None:
     Base.metadata.create_all(engine)
-    if not SEED_DEMO_DATA or ENVIRONMENT != "development":
-        return
+    seed_demo_accounts = ENVIRONMENT == "development" and SEED_DEMO_DATA
     with SessionLocal() as db:
         demo_accounts = [
             (
@@ -297,6 +296,8 @@ def initialize_database() -> None:
                 "user",
             ),
         ]
+        if not seed_demo_accounts:
+            demo_accounts = []
         for name_key, email_key, password_key, default_name, role in demo_accounts:
             email = os.getenv(email_key, "").strip().lower()
             password = os.getenv(password_key, "")
@@ -307,7 +308,25 @@ def initialize_database() -> None:
                     password_hash=password_hash.hash(password),
                     role=role,
                 ))
-        if not db.scalar(select(Product).limit(1)):
+
+        initial_accounts = [
+            ("INITIAL_ADMIN_NAME", "INITIAL_ADMIN_EMAIL", "INITIAL_ADMIN_PASSWORD", "Administrador", "admin"),
+            ("INITIAL_CUSTOMER_NAME", "INITIAL_CUSTOMER_EMAIL", "INITIAL_CUSTOMER_PASSWORD", "Cliente", "user"),
+        ]
+        for name_key, email_key, password_key, default_name, role in initial_accounts:
+            email = os.getenv(email_key, "").strip().lower()
+            password = os.getenv(password_key, "")
+            if not email or len(password) < 6:
+                continue
+            if not db.scalar(select(User).where(User.email == email)):
+                db.add(User(
+                    name=os.getenv(name_key, default_name).strip() or default_name,
+                    email=email,
+                    password_hash=password_hash.hash(password),
+                    role=role,
+                ))
+
+        if ENVIRONMENT != "test" and not db.scalar(select(Product).limit(1)):
             db.add_all([
                 Product(name="Pão Francês", description="Casquinha crocante, miolo macio. Assado várias vezes ao dia.", price=0.75, category="Pães", image="https://images.unsplash.com/photo-1586444248902-2f64eddc13df?auto=format&fit=crop&w=900&q=82"),
                 Product(name="Pão de Queijo (6 un.)", description="Receita mineira tradicional, quentinho e elástico por dentro.", price=14.90, category="Pães", image="https://images.unsplash.com/photo-1574017019416-5b1f68b5a2c1?auto=format&fit=crop&w=900&q=82"),

@@ -1812,6 +1812,27 @@
             "https://images.unsplash.com/photo-1589367920969-ab8e050bbb04?auto=format&fit=crop&w=900&q=82",
         },
       ];
+      let orderRefreshTimer = null;
+      let orderRefreshInFlight = false;
+      let activeAdminTab = "products";
+      let previousPendingOrderCount = null;
+      function stopOrderRefresh() {
+        clearInterval(orderRefreshTimer);
+        orderRefreshTimer = null;
+      }
+      function startOrderRefresh(refresh) {
+        stopOrderRefresh();
+        orderRefreshTimer = setInterval(async () => {
+          if (document.hidden || orderRefreshInFlight) return;
+          orderRefreshInFlight = true;
+          try {
+            await refresh();
+          } catch (_) {
+          } finally {
+            orderRefreshInFlight = false;
+          }
+        }, 5000);
+      }
       const State = {
         user: null,
         token: null,
@@ -2564,24 +2585,29 @@
             ? list.map(cardProduct).join("")
             : `<div class="empty"><strong>😕</strong><p>Nenhum produto encontrado.</p></div>`;
         },
-        async orders() {
+        async orders(refreshing = false) {
           if (!State.logged()) {
+            stopOrderRefresh();
             State.redirect = "orders";
             App.openAuth();
             return;
           }
+          const previousOrders = refreshing ? JSON.stringify(orders()) : null;
           try {
             await Api.loadOrders();
           } catch (error) {
             get("main").innerHTML = `<section class="section container"><div class="message error">${esc(error.message)} <button class="btn-small" onclick="Pages.orders()">Tentar novamente</button></div></section>`;
             return;
           }
+          if (refreshing && previousOrders === JSON.stringify(orders())) return;
           const list = orders();
           get("main").innerHTML =
             `<section class="section container"><div class="section-head"><h2>▣ Meus pedidos</h2><span class="count">${list.length} pedidos</span></div><div>${list.length ? list.map(cardOrder).join("") : `<div class="empty"><strong>📭</strong><p>Você ainda não fez nenhum pedido.</p><button class="hero-cta" style="margin-top:18px" onclick="App.go('home')">Ver cardápio →</button></div>`}</div></section>`;
+          if (!refreshing) startOrderRefresh(() => Pages.orders(true));
         },
         async admin() {
           if (!State.isAdmin()) {
+            stopOrderRefresh();
             App.openAuth();
             return;
           }
@@ -2602,8 +2628,41 @@
             `<section class="admin-shell container"><div class="admin-hero"><div><span class="chip">Área restrita</span><h1>Painel administrativo</h1><p>Gerencie o cardápio e acompanhe cada pedido até a entrega.</p></div><div class="admin-hero-actions"><button class="btn-small" onclick="Pages.adminTab('products');setTimeout(()=>get('admin-name')?.focus(),0)">＋ Adicionar produto</button><button class="btn-outline" onclick="App.logout()">Sair da conta</button></div></div><div class="kpis"><div class="kpi"><small>Produtos</small><strong>${list.length}</strong></div><div class="kpi"><small>Novos pedidos</small><strong>${pending}</strong></div><div class="kpi"><small>Em preparo</small><strong>${counts.preparando}</strong></div><div class="kpi"><small>Saiu para entrega</small><strong>${counts.saiu_entrega}</strong></div></div><div id="api-status-box" class="api-status"><div><strong data-api-title>API não confirmada</strong><p data-api-text>${esc(State.api.message)}</p></div><button class="btn-small" onclick="Api.check()">Verificar novamente</button></div><div class="admin-card"><div class="admin-tabs"><button class="admin-tab active" data-admin-tab="products" onclick="Pages.adminTab('products')">Cardápio e promoções</button><button class="admin-tab" data-admin-tab="orders" onclick="Pages.adminTab('orders')">Pedidos</button><button class="admin-tab" data-admin-tab="delivery" onclick="Pages.adminTab('delivery')">🛵 Saiu para entrega <span class="badge">${counts.saiu_entrega}</span></button></div><div id="admin-content"></div></div><div class="admin-card"><div class="admin-card-head"><h2>Contas pré-prontas</h2></div><div class="credentials"><div class="credential"><strong>Cliente de demonstração</strong><code>cliente@pao.com</code><code>senha: 123456</code></div><div class="credential"><strong>Administrador de demonstração</strong><code>admin@pao.com</code><code>senha: admin123</code></div></div><p style="color:var(--muted);font-size:.73rem;margin-top:12px">As contas são demonstrativas e ficam salvas localmente neste arquivo quando a API não está disponível.</p></div></section>`;
           Pages.adminTab("products");
           updateApiUi();
+          previousPendingOrderCount = pending;
+          startOrderRefresh(async () => {
+            if (!State.isAdmin()) {
+              stopOrderRefresh();
+              return;
+            }
+            const previousOrders = JSON.stringify(orders());
+            const updatedOrders = await Api.loadOrders();
+            const updatedCounts = statusCounts(updatedOrders);
+            const ordersChanged = previousOrders !== JSON.stringify(updatedOrders);
+            const kpiValues = document.querySelectorAll(".kpis .kpi strong");
+            if (kpiValues[1]) kpiValues[1].textContent = updatedCounts.pendente;
+            if (kpiValues[2]) kpiValues[2].textContent = updatedCounts.preparando;
+            if (kpiValues[3]) kpiValues[3].textContent = updatedCounts.saiu_entrega;
+            const deliveryBadge = document.querySelector(
+              '[data-admin-tab="delivery"] .badge',
+            );
+            if (deliveryBadge) deliveryBadge.textContent = updatedCounts.saiu_entrega;
+            if (
+              previousPendingOrderCount !== null &&
+              updatedCounts.pendente > previousPendingOrderCount
+            ) {
+              toast("Novo pedido recebido.");
+            }
+            previousPendingOrderCount = updatedCounts.pendente;
+            if (
+              ordersChanged &&
+              (activeAdminTab === "orders" || activeAdminTab === "delivery")
+            ) {
+              await Pages.adminTab(activeAdminTab, true);
+            }
+          });
         },
-        async adminTab(tab) {
+        async adminTab(tab, refreshing = false) {
+          activeAdminTab = tab;
           document
             .querySelectorAll("[data-admin-tab]")
             .forEach((b) =>
@@ -2613,7 +2672,7 @@
           if (!el) return;
           if (tab === "orders" || tab === "delivery") {
             try {
-              await Api.loadOrders();
+              if (!refreshing) await Api.loadOrders();
             } catch (error) {
               el.innerHTML = `<div class="message error">${esc(error.message)} <button class="btn-small" onclick="Pages.adminTab('${tab}')">Tentar novamente</button></div>`;
               return;
@@ -2763,6 +2822,7 @@
       };
       const App = {
         async go(page) {
+          if (page !== "orders" && page !== "admin") stopOrderRefresh();
           if (page === "home") Pages.home();
           else if (page === "orders") await Pages.orders();
           else if (page === "admin") await Pages.admin();
