@@ -18,8 +18,11 @@ SUPABASE_SECRET_KEY = os.getenv("SUPABASE_SECRET_KEY", "").strip()
 DATABASE_URL = (os.getenv("DATABASE_URL", "") or os.getenv("SUPABASE_DB_URL", "")).strip()
 
 if SUPABASE_URL:
+    SUPABASE_URL = SUPABASE_URL.rstrip("/")
     if not SUPABASE_URL.startswith("https://"):
         raise RuntimeError("SUPABASE_URL deve usar https://")
+    if SUPABASE_URL.endswith("/rest/v1"):
+        SUPABASE_URL = SUPABASE_URL.removesuffix("/rest/v1")
     if len(SUPABASE_URL.split("/")) < 3 or not SUPABASE_URL.split("/")[2]:
         raise RuntimeError("SUPABASE_URL deve incluir um hostname válido")
 
