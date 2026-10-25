@@ -48,7 +48,9 @@ def init_sqlite_schema() -> None:
         raw = conn.connection.driver_connection
         has_users = raw.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='users'").fetchone()
         if not has_users:
-            raw.executescript(Path(__file__).with_name("schema.sql").read_text(encoding="utf-8"))
+            schema_file = Path(__file__).with_name("schema.sql")
+            if schema_file.is_file():
+                raw.executescript(schema_file.read_text(encoding="utf-8"))
 
 
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
