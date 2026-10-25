@@ -40,6 +40,40 @@ CREATE TABLE IF NOT EXISTS order_items (
   quantity INTEGER NOT NULL CHECK (quantity > 0)
 );
 
-CREATE INDEX IF NOT EXISTS ix_users_email ON users(email);
+ALTER TABLE users
+  ADD COLUMN IF NOT EXISTS active BOOLEAN NOT NULL DEFAULT TRUE;
+
+ALTER TABLE products
+  ADD COLUMN IF NOT EXISTS seed_key VARCHAR(80);
+
+ALTER TABLE products
+  ADD COLUMN IF NOT EXISTS promo_starts_at TIMESTAMPTZ,
+  ADD COLUMN IF NOT EXISTS promo_ends_at TIMESTAMPTZ;
+
+CREATE UNIQUE INDEX IF NOT EXISTS ix_users_email ON users(email);
+CREATE UNIQUE INDEX IF NOT EXISTS ix_products_seed_key ON products(seed_key);
 CREATE INDEX IF NOT EXISTS ix_orders_user_id ON orders(user_id);
 CREATE INDEX IF NOT EXISTS ix_order_items_order_id ON order_items(order_id);
+CREATE INDEX IF NOT EXISTS ix_order_items_product_id ON order_items(product_id);
+CREATE INDEX IF NOT EXISTS ix_products_active ON products(active);
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'ck_users_role'
+  ) THEN
+    ALTER TABLE users ADD CONSTRAINT ck_users_role CHECK (role IN ('user', 'admin'));
+  END IF;
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'ck_products_promo_period'
+  ) THEN
+    ALTER TABLE products ADD CONSTRAINT ck_products_promo_period
+      CHECK (promo_starts_at IS NULL OR promo_ends_at IS NULL OR promo_starts_at <= promo_ends_at);
+  END IF;
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'ck_orders_status'
+  ) THEN
+    ALTER TABLE orders ADD CONSTRAINT ck_orders_status
+      CHECK (status IN ('pendente', 'preparando', 'saiu_entrega', 'entregue', 'cancelado'));
+  END IF;
+END $$;

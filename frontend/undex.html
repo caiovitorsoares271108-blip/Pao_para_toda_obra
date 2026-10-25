@@ -1959,6 +1959,10 @@
           State.products = await this.request(admin ? "/products/admin" : "/products");
           return State.products;
         },
+        async loadAccounts() {
+          State.accounts = await this.request("/auth/accounts");
+          return State.accounts;
+        },
         async loadOrders() {
           const result = await this.request("/orders");
           State.orders = result.map((order) => ({
@@ -2237,22 +2241,6 @@
           note: "Correspondência direta com pão de batata assado, descrita pela fonte como meio pão de batata; o recheio de requeijão não é visível e não será afirmado pela imagem. Exige atribuição e share-alike.",
         },
       };
-      function catalogSeed() {
-        return PRODUCTS_SEED.map((p) => {
-          const item = IMAGE_CATALOG[String(p.id)];
-          return item
-            ? {
-                ...p,
-                image: item.image,
-                imageSource: item.source,
-                imageLicense: item.license,
-                imageLicenseUrl: item.licenseUrl,
-                imageCredit: item.credit,
-                imageNote: item.note,
-              }
-            : { ...p };
-        });
-      }
       function validProduct(p) {
         return (
           !!p &&
@@ -2281,68 +2269,6 @@
                   : undefined,
             }))
           : [];
-      }
-      function applyVerifiedImageCatalog() {
-        const existing = normalizeProducts(DB.get("products"));
-        const rawSeedById = Object.fromEntries(
-          PRODUCTS_SEED.map((p) => [String(p.id), p]),
-        );
-        const legacySources = {
-          5: "https://commons.wikimedia.org/wiki/File:Boston_Brown_Bread_loaf_-_Massachusetts.jpg",
-          21: "https://commons.wikimedia.org/wiki/File:Homemade_sweet_potato_bread_1.jpg",
-        };
-        const oldVersion = DB.get("imageCatalogVersion");
-        let changed = false;
-        const updated = (existing.length ? existing : catalogSeed()).map(
-          (p) => {
-            const key = String(p.id),
-              item = IMAGE_CATALOG[key],
-              seed = rawSeedById[key];
-            if (!item || !seed) return p;
-            const isOriginalSeed =
-              !p.imageSource &&
-              (!p.image ||
-                p.image === seed.image ||
-                p.image === FALLBACK_IMAGE);
-            const isKnownLegacy =
-              legacySources[key] && p.imageSource === legacySources[key];
-            const isAlreadyVerified =
-              p.imageSource === item.source && p.image === item.image;
-            if (
-              (oldVersion !== IMAGE_UPDATE_VERSION && isOriginalSeed) ||
-              isKnownLegacy
-            ) {
-              changed = true;
-              return {
-                ...p,
-                image: item.image,
-                imageSource: item.source,
-                imageLicense: item.license,
-                imageLicenseUrl: item.licenseUrl,
-                imageCredit: item.credit,
-                imageNote: item.note,
-              };
-            }
-            if (isAlreadyVerified && !p.imageLicense) {
-              changed = true;
-              return {
-                ...p,
-                imageLicense: item.license,
-                imageLicenseUrl: item.licenseUrl,
-                imageCredit: item.credit,
-                imageNote: item.note,
-              };
-            }
-            return p;
-          },
-        );
-        if (
-          changed ||
-          !Array.isArray(DB.get("products")) ||
-          !DB.get("products")?.length
-        )
-          DB.set("products", updated);
-        DB.set("imageCatalogVersion", IMAGE_UPDATE_VERSION);
       }
       function products() {
         return Array.isArray(State.products) ? State.products : [];
@@ -2625,7 +2551,7 @@
             .filter((o) => normalizeOrderStatus(o.status) !== "cancelado")
             .reduce((s, o) => s + Number(o.total || 0), 0);
           get("main").innerHTML =
-            `<section class="admin-shell container"><div class="admin-hero"><div><span class="chip">Área restrita</span><h1>Painel administrativo</h1><p>Gerencie o cardápio e acompanhe cada pedido até a entrega.</p></div><div class="admin-hero-actions"><button class="btn-small" onclick="Pages.adminTab('products');setTimeout(()=>get('admin-name')?.focus(),0)">＋ Adicionar produto</button><button class="btn-outline" onclick="App.logout()">Sair da conta</button></div></div><div class="kpis"><div class="kpi"><small>Produtos</small><strong>${list.length}</strong></div><div class="kpi"><small>Novos pedidos</small><strong>${pending}</strong></div><div class="kpi"><small>Em preparo</small><strong>${counts.preparando}</strong></div><div class="kpi"><small>Saiu para entrega</small><strong>${counts.saiu_entrega}</strong></div></div><div id="api-status-box" class="api-status"><div><strong data-api-title>API não confirmada</strong><p data-api-text>${esc(State.api.message)}</p></div><button class="btn-small" onclick="Api.check()">Verificar novamente</button></div><div class="admin-card"><div class="admin-tabs"><button class="admin-tab active" data-admin-tab="products" onclick="Pages.adminTab('products')">Cardápio e promoções</button><button class="admin-tab" data-admin-tab="orders" onclick="Pages.adminTab('orders')">Pedidos</button><button class="admin-tab" data-admin-tab="delivery" onclick="Pages.adminTab('delivery')">🛵 Saiu para entrega <span class="badge">${counts.saiu_entrega}</span></button></div><div id="admin-content"></div></div><div class="admin-card"><div class="admin-card-head"><h2>Contas pré-prontas</h2></div><div class="credentials"><div class="credential"><strong>Cliente de demonstração</strong><code>cliente@pao.com</code><code>senha: 123456</code></div><div class="credential"><strong>Administrador de demonstração</strong><code>admin@pao.com</code><code>senha: admin123</code></div></div><p style="color:var(--muted);font-size:.73rem;margin-top:12px">As contas são demonstrativas e ficam salvas localmente neste arquivo quando a API não está disponível.</p></div></section>`;
+            `<section class="admin-shell container"><div class="admin-hero"><div><span class="chip">Área restrita</span><h1>Painel administrativo</h1><p>Gerencie o cardápio e acompanhe cada pedido até a entrega.</p></div><div class="admin-hero-actions"><button class="btn-small" onclick="Pages.adminTab('products');setTimeout(()=>get('admin-name')?.focus(),0)">＋ Adicionar produto</button><button class="btn-outline" onclick="App.logout()">Sair da conta</button></div></div><div class="kpis"><div class="kpi"><small>Produtos</small><strong>${list.length}</strong></div><div class="kpi"><small>Novos pedidos</small><strong>${pending}</strong></div><div class="kpi"><small>Em preparo</small><strong>${counts.preparando}</strong></div><div class="kpi"><small>Saiu para entrega</small><strong>${counts.saiu_entrega}</strong></div></div><div id="api-status-box" class="api-status"><div><strong data-api-title>API não confirmada</strong><p data-api-text>${esc(State.api.message)}</p></div><button class="btn-small" onclick="Api.check()">Verificar novamente</button></div><div class="admin-card"><div class="admin-tabs"><button class="admin-tab active" data-admin-tab="products" onclick="Pages.adminTab('products')">Cardápio e promoções</button><button class="admin-tab" data-admin-tab="orders" onclick="Pages.adminTab('orders')">Pedidos</button><button class="admin-tab" data-admin-tab="accounts" onclick="Pages.adminTab('accounts')">Contas</button><button class="admin-tab" data-admin-tab="delivery" onclick="Pages.adminTab('delivery')">🛵 Saiu para entrega <span class="badge">${counts.saiu_entrega}</span></button></div><div id="admin-content"></div></div><div class="admin-card"><div class="admin-card-head"><h2>Contas persistidas no banco</h2></div><p style="color:var(--muted);font-size:.73rem">Gerencie os acessos na aba Contas.</p></div></section>`;
           Pages.adminTab("products");
           updateApiUi();
           previousPendingOrderCount = pending;
@@ -2670,6 +2596,15 @@
             );
           const el = get("admin-content");
           if (!el) return;
+          if (tab === "accounts") {
+            try {
+              const accounts = await Api.loadAccounts();
+              el.innerHTML = `<div class="admin-card-head"><div><h2>Contas do sistema</h2><small style="color:var(--muted)">Somente o administrador pode alterar papéis e acesso.</small></div></div><div class="admin-product-list">${accounts.map((account) => `<div class="admin-product"><div class="admin-product-main"><strong>${esc(account.name)}</strong><small>${esc(account.email)} · ${account.role === "admin" ? "Administrador" : "Cliente"}</small><small>${account.active ? "Conta ativa" : "Conta desativada"}</small></div><div class="admin-product-actions"><button class="btn-small secondary" onclick="Accounts.toggleRole(${Number(account.id)}, '${account.role === "admin" ? "user" : "admin"}')">${account.role === "admin" ? "Remover admin" : "Tornar admin"}</button><button class="btn-small ${account.active ? "danger" : "secondary"}" onclick="Accounts.toggleActive(${Number(account.id)}, ${account.active ? "false" : "true"})">${account.active ? "Desativar" : "Ativar"}</button></div></div>`).join("")}</div>`;
+            } catch (error) {
+              el.innerHTML = `<div class="message error">${esc(error.message)}</div>`;
+            }
+            return;
+          }
           if (tab === "orders" || tab === "delivery") {
             try {
               if (!refreshing) await Api.loadOrders();
@@ -2689,7 +2624,7 @@
             el.innerHTML = `<div class="admin-card-head"><div><h2>${tab === "delivery" ? "Pedidos que saíram para entrega" : "Todos os pedidos"}</h2><small style="color:var(--muted)">${tab === "delivery" ? "Aparecem aqui somente após o status ser marcado como “Saiu para entrega”." : "Atualize o status de cada pedido sem sair desta tela."}</small></div><button class="btn-small secondary" onclick="Pages.adminTab('${tab}')">Atualizar</button></div>${list.length ? list.map(adminOrder).join("") : `<div class="empty"><strong>${tab === "delivery" ? "🛵" : "📭"}</strong><p>${tab === "delivery" ? "Nenhum pedido saiu para entrega ainda." : "Nenhum pedido registrado."}</p></div>`}`;
             return;
           }
-          el.innerHTML = `<div class="admin-products"><div><div class="admin-card-head"><h2>Adicionar produto</h2><button class="btn-small secondary" onclick="Admin.clearForm()">Limpar</button></div><form id="admin-product-form" onsubmit="Admin.save(event)"><input type="hidden" id="admin-id"><div class="field"><label for="admin-name">Nome</label><input id="admin-name" required></div><div class="field"><label for="admin-description">Descrição</label><textarea id="admin-description" required></textarea></div><div class="form-grid"><div class="field"><label for="admin-price">Preço (R$)</label><input id="admin-price" type="number" min="0" step="0.01" required></div><div class="field"><label for="admin-category">Categoria</label><select id="admin-category"><option>Pães</option><option>Doces</option><option>Salgados</option><option>Bebidas</option><option>Outros</option></select></div><div class="field full"><label for="admin-image">URL da imagem</label><input id="admin-image" type="url" placeholder="https://..."></div><div class="field"><label for="admin-promo-type">Tipo de promoção</label><select id="admin-promo-type"><option value="percent">Percentual (%)</option><option value="fixed">Desconto fixo (R$)</option></select></div><div class="field"><label for="admin-promo-value">Desconto</label><input id="admin-promo-value" type="number" min="0" step="0.01" value="0"></div><div class="field full"><label><input id="admin-promo-active" type="checkbox" style="width:auto;margin-right:7px"> Ativar promoção neste produto</label></div></div><div id="admin-form-message"></div><button class="btn-primary wide" type="submit">Salvar produto</button></form></div><div><div class="admin-card-head"><h2>Produtos cadastrados</h2><span class="count">${products().length} itens</span></div><div class="admin-product-list">${products().map(adminProduct).join("")}</div></div></div>`;
+          el.innerHTML = `<div class="admin-products"><div><div class="admin-card-head"><h2>Adicionar produto</h2><button class="btn-small secondary" onclick="Admin.clearForm()">Limpar</button></div><form id="admin-product-form" onsubmit="Admin.save(event)"><input type="hidden" id="admin-id"><div class="field"><label for="admin-name">Nome</label><input id="admin-name" required></div><div class="field"><label for="admin-description">Descrição</label><textarea id="admin-description" required></textarea></div><div class="form-grid"><div class="field"><label for="admin-price">Preço (R$)</label><input id="admin-price" type="number" min="0" step="0.01" required></div><div class="field"><label for="admin-category">Categoria</label><select id="admin-category"><option>Pães</option><option>Doces</option><option>Salgados</option><option>Bebidas</option><option>Outros</option></select></div><div class="field full"><label for="admin-image">URL da imagem</label><input id="admin-image" type="url" placeholder="https://..."></div><div class="field"><label for="admin-promo-type">Tipo de promoção</label><select id="admin-promo-type"><option value="percent">Percentual (%)</option><option value="fixed">Desconto fixo (R$)</option></select></div><div class="field"><label for="admin-promo-value">Desconto</label><input id="admin-promo-value" type="number" min="0" step="0.01" value="0"></div><div class="field full"><label><input id="admin-promo-active" type="checkbox" style="width:auto;margin-right:7px"> Ativar promoção neste produto</label></div><div class="field"><label for="admin-promo-start">Início da promoção</label><input id="admin-promo-start" type="datetime-local"></div><div class="field"><label for="admin-promo-end">Fim da promoção</label><input id="admin-promo-end" type="datetime-local"></div></div><div id="admin-form-message"></div><button class="btn-primary wide" type="submit">Salvar produto</button></form></div><div><div class="admin-card-head"><h2>Produtos cadastrados</h2><span class="count">${products().length} itens</span></div><div class="admin-product-list">${products().map(adminProduct).join("")}</div></div></div>`;
         },
       };
       function cardProduct(p) {
@@ -2723,12 +2658,38 @@
         const meta = statusMeta(status);
         return `<article class="order-admin"><div class="order-admin-top"><div><strong>Pedido #${esc(o.id)}</strong><br><small>${fmtDate(o.createdAt)} · ${esc(o.userEmail || "cliente")}</small></div><select class="status-select" aria-label="Status do pedido ${esc(o.id)}" onchange="Admin.updateOrder('${esc(o.id)}',this.value)"><option value="pendente" ${status === "pendente" ? "selected" : ""}>Novo pedido</option><option value="preparando" ${status === "preparando" ? "selected" : ""}>Em preparo</option><option value="saiu_entrega" ${status === "saiu_entrega" ? "selected" : ""}>Saiu para entrega</option><option value="entregue" ${status === "entregue" ? "selected" : ""}>Entregue</option><option value="cancelado" ${status === "cancelado" ? "selected" : ""}>Cancelado</option></select></div><div style="margin-top:9px"><span class="order-status-label" style="background:${status === "entregue" ? "#dcfce7" : status === "cancelado" ? "#fee2e2" : status === "saiu_entrega" ? "#dbeafe" : "#fef3c7"};color:${status === "entregue" ? "#166534" : status === "cancelado" ? "#991b1b" : status === "saiu_entrega" ? "#1d4ed8" : "#92400e"}">${meta.icon} ${meta.label}</span></div>${orderTimeline(o)}<div class="order-admin-items">${(o.items || []).map((i) => `${i.qty}× ${esc(i.name)}`).join("<br>")}</div><div class="order-admin-top"><small>${esc(o.address || "Sem endereço")} </small><strong style="color:var(--orange)">${money(o.total)}</strong></div></article>`;
       }
+      const Accounts = {
+        async update(id, changes) {
+          try {
+            await Api.request(`/auth/accounts/${id}`, {
+              method: "PATCH",
+              body: JSON.stringify(changes),
+            });
+            await Pages.adminTab("accounts");
+            toast("Conta atualizada.");
+          } catch (error) {
+            toast(error.message);
+          }
+        },
+        toggleRole(id, role) {
+          if (role === "admin" || confirm("Remover o acesso administrativo desta conta?")) {
+            this.update(id, { role });
+          }
+        },
+        toggleActive(id, active) {
+          if (active || confirm("Desativar esta conta? Ela perderá o acesso imediatamente.")) {
+            this.update(id, { active });
+          }
+        },
+      };
       const Admin = {
         clearForm() {
           const f = get("admin-product-form");
           if (f) f.reset();
           get("admin-id").value = "";
           get("admin-promo-value").value = "0";
+          get("admin-promo-start").value = "";
+          get("admin-promo-end").value = "";
         },
         async save(e) {
           e.preventDefault();
@@ -2744,6 +2705,8 @@
               type: get("admin-promo-type").value,
               value: Number(get("admin-promo-value").value) || 0,
             },
+            promo_starts_at: get("admin-promo-start").value || null,
+            promo_ends_at: get("admin-promo-end").value || null,
           };
           try {
             await Api.request(id ? `/products/${id}` : "/products", {
@@ -2768,6 +2731,8 @@
           get("admin-promo-type").value = p.promo?.type || "percent";
           get("admin-promo-value").value = p.promo?.value || 0;
           get("admin-promo-active").checked = !!p.promo?.active;
+          get("admin-promo-start").value = p.promo_starts_at ? p.promo_starts_at.slice(0, 16) : "";
+          get("admin-promo-end").value = p.promo_ends_at ? p.promo_ends_at.slice(0, 16) : "";
           document
             .querySelector("#admin-product-form")
             ?.scrollIntoView({ behavior: "smooth", block: "start" });

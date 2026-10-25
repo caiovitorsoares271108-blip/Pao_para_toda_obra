@@ -11,7 +11,8 @@ os.environ["JWT_SECRET"] = "test-secret"
 
 from fastapi.testclient import TestClient
 
-from backend.main import SessionLocal, User, app
+from backend.main import SessionLocal, app, _seed_catalog
+from backend.database import Product, User
 
 
 class ApiTestCase(unittest.TestCase):
@@ -43,6 +44,31 @@ class ApiTestCase(unittest.TestCase):
         self.assertEqual(self.client_context.post("/auth/logout").status_code, 200)
         self.assertEqual(self.client_context.get("/auth/me").status_code, 401)
 
+    def test_admin_manages_accounts_and_customer_cannot_escalate(self):
+        admin = self.client_context.post("/auth/register", json={
+            "name": "Administrador", "email": "root@example.com", "password": "secret123"
+        }).json()
+        customer = self.client_context.post("/auth/register", json={
+            "name": "Cliente", "email": "managed@example.com", "password": "secret123"
+        }).json()
+        customer_headers = {"Authorization": f"Bearer {customer['access_token']}"}
+        admin_headers = {"Authorization": f"Bearer {admin['access_token']}"}
+        with SessionLocal() as db:
+            db.get(User, admin["user"]["id"]).role = "admin"
+            db.commit()
+        self.assertEqual(self.client_context.get("/auth/accounts", headers=customer_headers).status_code, 403)
+        self.assertEqual(self.client_context.patch(
+            f"/auth/accounts/{customer['user']['id']}", headers=customer_headers,
+            json={"role": "admin"}
+        ).status_code, 403)
+        updated = self.client_context.patch(
+            f"/auth/accounts/{customer['user']['id']}", headers=admin_headers,
+            json={"name": "Cliente Atualizado", "active": False}
+        )
+        self.assertEqual(updated.status_code, 200)
+        self.assertFalse(updated.json()["active"])
+        self.assertEqual(self.client_context.get("/auth/me", headers=customer_headers).status_code, 401)
+
     def test_demo_quick_login_is_disabled_outside_development(self):
         self.assertEqual(
             self.client_context.get("/auth/demo-accounts").json(), {"accounts": []}
@@ -51,6 +77,46 @@ class ApiTestCase(unittest.TestCase):
             self.client_context.post("/auth/demo-login", json={"role": "admin"}).status_code,
             404,
         )
+
+    def test_seed_is_idempotent_and_does_not_overwrite_admin_changes(self):
+        with SessionLocal() as db:
+            _seed_catalog(db)
+            _seed_catalog(db)
+            count = db.query(Product).filter(Product.seed_key.is_not(None)).count()
+            frances = db.scalar(db.query(Product).filter(Product.seed_key == "pao-frances").statement)
+            frances.price = 1.25
+            db.commit()
+        with SessionLocal() as db:
+            _seed_catalog(db)
+            self.assertEqual(db.query(Product).filter(Product.seed_key.is_not(None)).count(), 21)
+            self.assertEqual(db.query(Product).filter(Product.seed_key.is_not(None)).count(), count)
+            frances = db.scalar(db.query(Product).filter(Product.seed_key == "pao-frances").statement)
+            self.assertEqual(float(frances.price), 1.25)
+
+    def test_promotion_period_is_applied_by_backend_only_when_active(self):
+        admin = self.client_context.post("/auth/register", json={
+            "name": "Administrador", "email": "promo-admin@example.com", "password": "secret123"
+        }).json()
+        customer = self.client_context.post("/auth/register", json={
+            "name": "Cliente", "email": "promo-client@example.com", "password": "secret123"
+        }).json()
+        admin_headers = {"Authorization": f"Bearer {admin['access_token']}"}
+        customer_headers = {"Authorization": f"Bearer {customer['access_token']}"}
+        with SessionLocal() as db:
+            db.get(User, admin["user"]["id"]).role = "admin"
+            db.commit()
+        product = self.client_context.post("/products", headers=admin_headers, json={
+            "name": "Produto promocional", "description": "Teste", "price": 100,
+            "category": "Outros", "promo": {"active": True, "type": "percent", "value": 25},
+            "promo_starts_at": "2020-01-01T00:00:00Z", "promo_ends_at": "2020-01-02T00:00:00Z"
+        })
+        self.assertEqual(product.status_code, 201)
+        order = self.client_context.post("/orders", headers=customer_headers, json={
+            "address": "Rua Promocional, 1", "items": [{"product_id": product.json()["id"], "quantity": 1}]
+        })
+        self.assertEqual(order.status_code, 201)
+        self.assertEqual(order.json()["total"], 100)
+        self.assertEqual(order.json()["items"][0]["price"], 100)
 
     def test_admin_product_order_total_and_inactive_rejection(self):
         customer = self.client_context.post(
