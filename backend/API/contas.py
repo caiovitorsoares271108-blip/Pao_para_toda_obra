@@ -64,6 +64,13 @@ def _demo_enabled() -> bool:
     return ENVIRONMENT == "development" and os.getenv("SEED_DEMO_DATA", "false").lower() == "true"
 
 
+def _quick_admin_enabled() -> bool:
+    return ENVIRONMENT == "development" and bool(
+        os.getenv("QUICK_ADMIN_EMAIL", "").strip()
+        and os.getenv("QUICK_ADMIN_PASSWORD", "")
+    )
+
+
 @router.post("/register", response_model=AuthResponse, status_code=201)
 def register(data: UserCreate, response: Response, db: Annotated[Session, Depends(get_db)]) -> AuthResponse:
     if db.scalar(select(User).where(User.email == data.email)):
@@ -93,19 +100,42 @@ def login(data: LoginRequest, response: Response, db: Annotated[Session, Depends
 
 @router.get("/demo-accounts")
 def list_demo_accounts(db: Annotated[Session, Depends(get_db)]) -> dict:
+    accounts = []
+    if _quick_admin_enabled():
+        email = os.getenv("QUICK_ADMIN_EMAIL", "").strip().lower()
+        user = db.scalar(select(User).where(User.email == email)) if email else None
+        if user and user.active and user.role == "admin":
+            accounts.append({
+                "role": "quick-admin",
+                "action": "quick-admin",
+                "label": "Entrar como administrador",
+            })
     if not _demo_enabled():
-        return {"accounts": []}
+        return {"accounts": accounts}
     configs = {
         "admin": (os.getenv("DEMO_ADMIN_EMAIL", "").strip().lower(), "admin"),
         "customer": (os.getenv("DEMO_CUSTOMER_EMAIL", "").strip().lower(), "user"),
     }
     labels = {"admin": "Entrar como administrador", "customer": "Entrar como cliente"}
-    accounts = []
     for role, (email, expected_role) in configs.items():
         user = db.scalar(select(User).where(User.email == email)) if email else None
         if user and user.active and user.role == expected_role:
             accounts.append({"role": role, "label": labels[role]})
     return {"accounts": accounts}
+
+
+@router.post("/quick-admin", response_model=AuthResponse)
+def quick_admin(response: Response, db: Annotated[Session, Depends(get_db)]) -> AuthResponse:
+    if not _quick_admin_enabled():
+        raise HTTPException(404, "Acesso rápido desativado")
+    email = os.getenv("QUICK_ADMIN_EMAIL", "").strip().lower()
+    password = os.getenv("QUICK_ADMIN_PASSWORD", "")
+    user = db.scalar(select(User).where(User.email == email))
+    if not user or not user.active or user.role != "admin" or not password_hash.verify(password, user.password_hash):
+        raise HTTPException(401, "Acesso administrativo indisponível")
+    token = create_token(user)
+    set_auth_cookie(response, token)
+    return AuthResponse(access_token=token, user=user)
 
 
 @router.post("/demo-login", response_model=AuthResponse)

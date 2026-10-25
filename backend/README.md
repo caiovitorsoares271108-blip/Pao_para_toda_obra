@@ -44,4 +44,4 @@ Em bancos não vazios, `products_seed.json` é carregado uma vez por `seed_key`.
 
 Os produtos novos e promoções são administrados pelas rotas `/products`, `/products/admin` e `/products/{id}`. O preço enviado pelo navegador não participa do cálculo do pedido. Promoções podem ter início/fim opcionais e somente o backend aplica o valor vigente.
 
-Aplicar `migration_initial.sql` no Supabase é uma ação manual e aditiva. Não confirme a publicação ou migração remota sem acesso autorizado ao projeto. Consulte `/health`, `/health/db` e `/docs` após iniciar. Nunca coloque `DATABASE_URL`, `JWT_SECRET` ou chaves privilegiadas no HTML, no JavaScript ou no Git.
+Para a versão atual, aplique `migration_supabase_v3.sql` no SQL Editor antes de iniciar a API no Supabase; ela prepara as tabelas e o campo `orders.updated_at` usado pela resposta dos pedidos. A migração remota é uma ação manual: não a execute sem acesso autorizado ao projeto. Consulte `/health`, `/health/db` e `/docs` após iniciar. Nunca coloque `DATABASE_URL`, `JWT_SECRET` ou chaves privilegiadas no HTML, no JavaScript ou no Git.

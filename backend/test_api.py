@@ -168,6 +168,70 @@ class ApiTestCase(unittest.TestCase):
         ).status_code, 200)
         self.assertEqual(self.client_context.get("/products").json(), [])
 
+    def test_orders_are_private_and_keep_product_price_snapshot(self):
+        admin = self.client_context.post("/auth/register", json={
+            "name": "Administrador", "email": "orders-admin@example.com", "password": "secret123"
+        }).json()
+        customer = self.client_context.post("/auth/register", json={
+            "name": "Cliente", "email": "orders-customer@example.com", "password": "secret123"
+        }).json()
+        other_customer = self.client_context.post("/auth/register", json={
+            "name": "Outro Cliente", "email": "orders-other@example.com", "password": "secret123"
+        }).json()
+        admin_headers = {"Authorization": f"Bearer {admin['access_token']}"}
+        customer_headers = {"Authorization": f"Bearer {customer['access_token']}"}
+        other_headers = {"Authorization": f"Bearer {other_customer['access_token']}"}
+        with SessionLocal() as db:
+            db.get(User, admin["user"]["id"]).role = "admin"
+            db.commit()
+
+        product = self.client_context.post("/products", headers=admin_headers, json={
+            "name": "Pão para snapshot", "price": 8.50, "category": "Pães"
+        })
+        self.assertEqual(product.status_code, 201)
+        self.assertEqual(self.client_context.patch(
+            f"/products/{product.json()['id']}", headers=customer_headers,
+            json={"price": 0.01},
+        ).status_code, 403)
+        order_response = self.client_context.post("/orders", headers=customer_headers, json={
+            "address": "Rua do Cliente, 123",
+            "items": [{"product_id": product.json()["id"], "quantity": 2}],
+        })
+        self.assertEqual(order_response.status_code, 201)
+        order = order_response.json()
+        self.assertIn("updated_at", order)
+        self.assertEqual(order["items"][0]["price"], 8.5)
+        self.assertEqual(order["total"], 17.0)
+
+        self.assertEqual(self.client_context.get("/orders", headers=other_headers).json(), [])
+        self.assertEqual(
+            self.client_context.get("/orders", headers=customer_headers).json()[0]["address"],
+            "Rua do Cliente, 123",
+        )
+        admin_orders = self.client_context.get("/orders", headers=admin_headers).json()
+        self.assertIn(order["id"], [item["id"] for item in admin_orders])
+
+        self.assertEqual(self.client_context.patch(
+            f"/products/{product.json()['id']}", headers=admin_headers,
+            json={"price": 12.0},
+        ).status_code, 200)
+        saved_order = self.client_context.get("/orders", headers=customer_headers).json()[0]
+        self.assertEqual(saved_order["items"][0]["name"], "Pão para snapshot")
+        self.assertEqual(saved_order["items"][0]["price"], 8.5)
+        self.assertEqual(saved_order["total"], 17.0)
+
+        updated = self.client_context.patch(
+            f"/orders/{order['id']}/status", headers=admin_headers,
+            json={"status": "preparando"},
+        )
+        self.assertEqual(updated.status_code, 200)
+        self.assertEqual(updated.json()["status"], "preparando")
+        self.assertGreaterEqual(updated.json()["updated_at"], order["updated_at"])
+        self.assertEqual(self.client_context.patch(
+            f"/orders/{order['id']}/status", headers=admin_headers,
+            json={"status": "pendente"},
+        ).status_code, 409)
+
 
 if __name__ == "__main__":
     unittest.main()

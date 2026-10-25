@@ -67,6 +67,14 @@ def init_sqlite_schema() -> None:
             schema_file = Path(__file__).with_name("schema.sql")
             if schema_file.is_file():
                 raw.executescript(schema_file.read_text(encoding="utf-8"))
+        has_updated_at = raw.execute("SELECT 1 FROM pragma_table_info('orders') WHERE name='updated_at'").fetchone()
+        if has_users and not has_updated_at:
+            raw.execute(
+                "ALTER TABLE orders ADD COLUMN updated_at DATETIME NOT NULL DEFAULT '1970-01-01 00:00:00'"
+            )
+            raw.execute(
+                "UPDATE orders SET updated_at = COALESCE(created_at, '1970-01-01 00:00:00')"
+            )
 
 
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)

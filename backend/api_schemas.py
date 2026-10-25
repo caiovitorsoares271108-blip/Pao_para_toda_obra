@@ -147,6 +147,7 @@ class OrderResponse(BaseModel):
     status: str
     total: float
     created_at: datetime
+    updated_at: datetime
     items: list[OrderItemResponse]
 
 

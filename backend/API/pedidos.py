@@ -20,6 +20,14 @@ else:
 
 router = APIRouter(prefix="/orders", tags=["pedidos"])
 
+ORDER_STATUS_TRANSITIONS = {
+    "pendente": {"preparando", "saiu_entrega", "entregue", "cancelado"},
+    "preparando": {"saiu_entrega", "entregue", "cancelado"},
+    "saiu_entrega": {"entregue", "cancelado"},
+    "entregue": set(),
+    "cancelado": set(),
+}
+
 
 def effective_price(product: Product) -> Decimal:
     price = Decimal(str(product.price)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
@@ -96,6 +104,8 @@ def update_order_status(order_id: int, data: OrderStatusUpdate,
     order = db.get(Order, order_id)
     if not order:
         raise HTTPException(404, "Pedido não encontrado")
+    if data.status != order.status and data.status not in ORDER_STATUS_TRANSITIONS.get(order.status, set()):
+        raise HTTPException(409, "Mudança de status não permitida para este pedido")
     order.status = data.status
     try:
         db.commit()

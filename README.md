@@ -19,9 +19,11 @@ Esse único comando inicia a API e o frontend juntos. Abra http://127.0.0.1:8000
 
 O frontend usa automaticamente a mesma origem da API. A API está separada em módulos de contas, cardápio e pedidos, mas mantém os caminhos públicos já usados pelo frontend. O servidor separado `python -m http.server 5500` não é necessário.
 
+O painel administrativo e a área de pedidos consultam os pedidos persistidos a cada 5 segundos; o cardápio aberto também consulta os produtos no backend nesse intervalo, refletindo alterações feitas em outras sessões. Cada atualização é lida da API e do banco compartilhado, não simulada no navegador. Os pedidos mantêm nome e preço dos itens no momento da compra e expõem a data da última atualização de status.
+
 Para desenvolvimento isolado, `DATABASE_URL` vazio usa SQLite local. Em produção, `DATABASE_URL` é obrigatória e não há fallback silencioso. Para o Supabase, abra **Connect** no painel, copie a connection string oficial PostgreSQL (direta ou Session Pooler), e coloque-a em `backend/.env` como `DATABASE_URL`, sem publicar esse arquivo. Se o Render não alcançar o endpoint direto por IPv6, use a string oficial do Session Pooler fornecida pelo próprio Supabase, sem montar o host manualmente.
 
-As tabelas podem ser criadas pelo startup local ou aplicando `backend/migration_initial.sql` no SQL Editor do Supabase. Depois, confirme `users`, `products`, `orders` e `order_items` no Table Editor.
+No SQLite local, o startup cria e atualiza o esquema. No Supabase, aplique `backend/migration_supabase_v3.sql` pelo SQL Editor antes de iniciar a versão atual da API; ela prepara as tabelas e o campo `orders.updated_at` usado para exibir a última atualização do pedido. Depois, confirme `users`, `products`, `orders` e `order_items` no Table Editor.
 
 Defina `JWT_SECRET` com uma chave longa e aleatória, `ENVIRONMENT=development` ou `production`, e `CORS_ORIGINS` somente quando o frontend estiver em outra origem. Contas demo são opcionais e exigem credenciais privadas nas variáveis `DEMO_*`; não há senha publicada no código. A autenticação fica em cookie `HttpOnly` por 30 dias por padrão. O navegador não guarda conta nem catálogo como banco de dados. O arquivo `.env` é local e está no `.gitignore`; se algum segredo já tiver sido versionado, remova-o do índice e faça a rotação da credencial.
 

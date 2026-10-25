@@ -30,7 +30,7 @@
         --red: #ad2d2d;
         --shadow: 0 8px 30px rgba(61, 31, 10, 0.12);
         --shadow-2: 0 12px 40px rgba(61, 31, 10, 0.2);
-        --radius: 16px;
+        --radius: 12px;
         --title: "Playfair Display", Georgia, serif;
         --body: "Inter", Arial, sans-serif;
       }
@@ -44,7 +44,10 @@
       }
       body {
         font-family: var(--body);
-        background: var(--cream);
+        background:
+          linear-gradient(rgba(251, 246, 238, 0.94), rgba(251, 246, 238, 0.94)),
+          repeating-linear-gradient(0deg, transparent 0 31px, rgba(61,31,10,.025) 31px 32px),
+          var(--cream);
         color: var(--brown);
         min-height: 100vh;
         line-height: 1.45;
@@ -63,6 +66,10 @@
         border: 0;
         background: none;
         cursor: pointer;
+      }
+      :focus-visible {
+        outline: 3px solid var(--gold-2);
+        outline-offset: 3px;
       }
       img {
         display: block;
@@ -86,8 +93,9 @@
         position: sticky;
         top: 0;
         z-index: 50;
-        background: var(--brown);
-        box-shadow: 0 2px 16px rgba(0, 0, 0, 0.22);
+        background: rgba(61, 31, 10, 0.97);
+        backdrop-filter: blur(14px);
+        box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08), 0 8px 24px rgba(61, 31, 10, 0.16);
       }
       .header-inner {
         width: min(1120px, calc(100% - 32px));
@@ -206,25 +214,49 @@
         background: var(--cream-2);
         border-bottom: 1px solid #ddd6c8;
       }
-      .location button {
-        width: 100%;
-        display: flex;
+      .location-inner {
+        min-height: 52px;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
         align-items: center;
-        gap: 8px;
-        text-align: left;
-        padding: 10px 0;
+        gap: 14px;
         color: var(--brown-2);
-        font-size: 0.84rem;
-        font-weight: 700;
       }
-      .location button span:last-child {
-        margin-left: auto;
-        font-size: 1.3rem;
+      .location-copy {
+        min-width: 0;
+      }
+      .location-copy strong,
+      .location-copy span {
+        display: block;
+      }
+      .location-copy strong {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+      }
+      .location-copy span {
+        max-width: 720px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        color: var(--muted);
+        font-size: 0.78rem;
+      }
+      .location-edit {
+        min-height: 34px;
+        padding: 7px 12px;
+        border: 1px solid #d8cbb7;
+        border-radius: 8px;
+        background: var(--white);
+        color: var(--brown-2);
+        font-size: 0.75rem;
+        font-weight: 800;
       }
       .hero {
         position: relative;
         overflow: hidden;
-        background: var(--brown);
+        background:
+          linear-gradient(115deg, rgba(61,31,10,.98), rgba(61,31,10,.86)),
+          url("https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=1600&q=80") center 58% / cover;
         color: var(--cream);
         padding: 64px 16px 70px;
         text-align: center;
@@ -261,7 +293,7 @@
         text-transform: uppercase;
       }
       .hero h1 {
-        font: 600 clamp(2.35rem, 7vw, 4rem) / 1.08 var(--title);
+        font: 600 clamp(2.2rem, 6vw, 3.7rem) / 1.08 var(--title);
         margin: 18px 0 14px;
       }
       .hero h1 em {
@@ -312,7 +344,7 @@
         font-weight: 700;
       }
       .section {
-        padding: 48px 0;
+        padding: 44px 0;
       }
       .section-head {
         display: flex;
@@ -346,14 +378,19 @@
       }
       .filters {
         display: flex;
-        gap: 9px;
+        align-items: center;
+        gap: 8px;
         flex-wrap: wrap;
         margin-bottom: 20px;
+        padding: 8px;
+        border: 1px solid #ddd6c8;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.72);
       }
       .cat-btn {
         padding: 8px 18px;
         border-radius: 999px;
-        border: 2px solid #ddd6c8;
+        border: 1px solid #ddd6c8;
         background: var(--white);
         color: var(--brown-2);
         font-size: 0.8rem;
@@ -392,6 +429,7 @@
       }
       .product {
         display: flex;
+        border: 1px solid rgba(61, 31, 10, 0.07);
         flex-direction: column;
         overflow: hidden;
         background: var(--white);
@@ -447,7 +485,7 @@
         text-transform: uppercase;
       }
       .product h3 {
-        font: 600 1.08rem/1.25 var(--title);
+        font: 600 1.12rem/1.25 var(--title);
         margin: 5px 0 6px;
       }
       .desc {
@@ -476,6 +514,7 @@
         margin-right: 4px;
       }
       .btn-add {
+        min-height: 36px;
         background: var(--orange);
         color: var(--white);
         padding: 8px 13px;
@@ -708,14 +747,15 @@
         pointer-events: auto;
       }
       .modal {
-        width: min(560px, 100%);
+        width: min(520px, 100%);
         max-height: 91vh;
         overflow: auto;
         position: relative;
         background: var(--white);
         border-radius: var(--radius);
         padding: 30px 28px;
-        box-shadow: 0 20px 70px rgba(0, 0, 0, 0.24);
+        border: 1px solid rgba(61, 31, 10, 0.08);
+        box-shadow: 0 24px 80px rgba(61, 31, 10, 0.28);
       }
       .modal.large {
         width: min(1000px, 100%);
@@ -730,7 +770,8 @@
         margin-bottom: 20px;
       }
       .tabs {
-        display: flex;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
         gap: 5px;
         background: #f5f0ea;
         padding: 4px;
@@ -800,6 +841,9 @@
         font-weight: 800;
       }
       .field {
+        min-width: 0;
+        width: 100%;
+        max-width: 100%;
         margin-bottom: 14px;
       }
       .field label {
@@ -812,6 +856,8 @@
       .field input,
       .field textarea,
       .field select {
+        width: 100%;
+        max-width: 100%;
         width: 100%;
         padding: 10px 12px;
         border: 2px solid #ddd6c8;
@@ -957,7 +1003,8 @@
       }
       .kpi {
         background: var(--white);
-        border-radius: 14px;
+        border: 1px solid rgba(61, 31, 10, 0.07);
+        border-radius: 10px;
         box-shadow: var(--shadow);
         padding: 17px;
       }
@@ -977,6 +1024,7 @@
       }
       .admin-card {
         background: var(--white);
+        border: 1px solid rgba(61, 31, 10, 0.07);
         border-radius: var(--radius);
         box-shadow: var(--shadow);
         padding: 20px;
@@ -1000,6 +1048,9 @@
         border-bottom: 1px solid #eee8e0;
         padding-bottom: 8px;
         flex-wrap: wrap;
+      }
+      .admin-tab {
+        flex: 0 0 auto;
       }
       .admin-tab {
         display: inline-flex;
@@ -1071,9 +1122,19 @@
         color: #991b1b;
       }
       .admin-products {
+        min-width: 0;
+        width: 100%;
         display: grid;
         grid-template-columns: 1fr 1.3fr;
         gap: 20px;
+      }
+      .admin-products > div,
+      .admin-product-list,
+      #admin-product-form,
+      .form-grid,
+      .field {
+        min-width: 0;
+        max-width: 100%;
       }
       .admin-product-list {
         display: grid;
@@ -1094,8 +1155,9 @@
         border-radius: 9px;
       }
       .admin-product-main {
-        flex: 1;
+        flex: 1 1 auto;
         min-width: 0;
+        max-width: 100%;
       }
       .admin-product-main strong {
         display: block;
@@ -1254,11 +1316,33 @@
         .api-pill {
           display: none;
         }
+        .header-inner {
+          width: calc(100% - 20px);
+          gap: 8px;
+        }
+        .nav {
+          min-width: 0;
+        }
         .admin-products {
-          grid-template-columns: 1fr;
+          grid-template-columns: minmax(0, 1fr);
+          width: 100%;
+        }
+        .admin-product {
+          min-width: 0;
+          align-items: flex-start;
+          flex-wrap: wrap;
+        }
+        .admin-product-main {
+          flex-basis: calc(100% - 66px);
+        }
+        .admin-product-actions {
+          width: 100%;
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
         }
         .kpis {
           grid-template-columns: 1fr 1fr;
+          gap: 10px;
         }
         .admin-hero {
           flex-direction: column;
@@ -1272,18 +1356,58 @@
         .credentials {
           grid-template-columns: 1fr;
         }
+        .admin-tabs {
+          overflow-x: auto;
+          flex-wrap: nowrap;
+          margin-inline: -4px;
+          padding-inline: 4px;
+          scrollbar-width: thin;
+        }
       }
       @media (max-width: 560px) {
         .header-inner {
-          min-height: 60px;
+          min-height: 64px;
+        }
+        .nav {
+          gap: 3px;
+          margin-left: auto;
+        }
+        .nav-btn:nth-child(1) {
+          display: none;
+        }
+        .location-inner {
+          gap: 8px;
+        }
+        .location-copy {
+          max-width: calc(100vw - 98px);
+        }
+        .location-copy span {
+          max-width: 100%;
+          white-space: nowrap;
+          line-height: 1.25;
+        }
+        .location-edit {
+          min-width: 58px;
+          min-height: 36px;
+          padding-inline: 10px;
+        }
+        .nav-btn.cart {
+          width: 40px;
+          min-width: 40px;
+          height: 40px;
+          justify-content: center;
+          padding: 0;
         }
         .logo-title {
           font-size: 1rem;
+          max-width: 150px;
         }
         .logo-sub {
           display: none;
         }
         .nav-btn {
+          min-width: 36px;
+          min-height: 36px;
           padding: 8px;
         }
         .nav-btn .label {
@@ -1299,8 +1423,8 @@
           padding: 34px 0;
         }
         .grid {
-          grid-template-columns: 1fr 1fr;
-          gap: 14px;
+          grid-template-columns: 1fr;
+          gap: 16px;
         }
         .product-img {
           height: 145px;
@@ -1323,7 +1447,11 @@
           text-align: center;
         }
         .modal {
+          width: calc(100% - 16px);
+          border-radius: 10px;
+          max-height: calc(100vh - 16px);
           padding: 24px 18px;
+          overflow-y: auto;
         }
         .drawer-body,
         .drawer-head,
@@ -1333,8 +1461,24 @@
         }
       }
       @media (max-width: 390px) {
-        .grid {
-          grid-template-columns: 1fr;
+        .logo-title {
+          max-width: 132px;
+          display: block;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+        .nav-btn {
+          width: 36px;
+          min-width: 36px;
+          height: 36px;
+          justify-content: center;
+          padding: 0;
+        }
+        .nav-btn.cart {
+          width: 36px;
+          min-width: 36px;
+          height: 36px;
         }
       }
     </style>
@@ -1375,12 +1519,12 @@
     </header>
     <div class="stripe"></div>
     <div class="location">
-      <div class="container">
-        <button onclick="App.setAddress()">
-          <span>📍</span
-          ><span id="location-text">Informar endereço de entrega</span
-          ><span>›</span>
-        </button>
+      <div class="container location-inner">
+        <div class="location-copy">
+          <strong>Endereço de entrega</strong>
+          <span id="location-text">Informar endereço de entrega</span>
+        </div>
+        <button class="location-edit" onclick="App.setAddress()">Editar</button>
       </div>
     </div>
     <div id="main"></div>
@@ -1814,11 +1958,19 @@
       ];
       let orderRefreshTimer = null;
       let orderRefreshInFlight = false;
+      let orderRefreshFailed = false;
+      let catalogRefreshTimer = null;
+      let catalogRefreshInFlight = false;
+      let catalogRefreshFailed = false;
       let activeAdminTab = "products";
       let previousPendingOrderCount = null;
       function stopOrderRefresh() {
         clearInterval(orderRefreshTimer);
         orderRefreshTimer = null;
+      }
+      function stopCatalogRefresh() {
+        clearInterval(catalogRefreshTimer);
+        catalogRefreshTimer = null;
       }
       function startOrderRefresh(refresh) {
         stopOrderRefresh();
@@ -1827,11 +1979,55 @@
           orderRefreshInFlight = true;
           try {
             await refresh();
-          } catch (_) {
+            orderRefreshFailed = false;
+          } catch (error) {
+            console.error("Falha ao sincronizar pedidos com a API.", error);
+            if (!orderRefreshFailed) toast("Não foi possível sincronizar os pedidos. Tentaremos novamente.");
+            orderRefreshFailed = true;
           } finally {
             orderRefreshInFlight = false;
           }
         }, 5000);
+      }
+      function startCatalogRefresh() {
+        stopCatalogRefresh();
+        const refresh = async () => {
+          if (
+            document.hidden ||
+            catalogRefreshInFlight ||
+            !get("product-grid") ||
+            get("product-modal")?.classList.contains("open")
+          ) return;
+          catalogRefreshInFlight = true;
+          try {
+            const previousProducts = JSON.stringify(products());
+            await Api.loadProducts();
+            if (!get("product-grid")) return;
+            const productsById = new Map(products().map((product) => [Number(product.id), product]));
+            State.cart = State.cart.map((item) => ({
+              ...item,
+              product: productsById.get(Number(item.product.id)) || {
+                ...item.product,
+                active: false,
+              },
+            }));
+            State.saveCart();
+            if (previousProducts !== JSON.stringify(products())) {
+              Pages.home(true);
+              if (get("cart-drawer")?.classList.contains("open")) renderCart();
+              if (get("checkout-modal")?.classList.contains("open")) App.renderCheckoutSummary();
+            }
+            catalogRefreshFailed = false;
+          } catch (error) {
+            console.error("Falha ao sincronizar o cardápio com a API.", error);
+            if (!catalogRefreshFailed) toast("Não foi possível atualizar o cardápio. Tentaremos novamente.");
+            catalogRefreshFailed = true;
+          } finally {
+            catalogRefreshInFlight = false;
+          }
+        };
+        void refresh();
+        catalogRefreshTimer = setInterval(refresh, 5000);
       }
       const State = {
         user: null,
@@ -1886,7 +2082,7 @@
           );
         },
         logged() {
-          return !!(this.token && this.user);
+          return !!this.user;
         },
         isAdmin() {
           return !!(this.user && this.user.role === "admin");
@@ -1913,6 +2109,7 @@
           try {
             response = await fetch(`${API_CONFIG.baseUrl}${path}`, {
               ...options,
+              cache: "no-store",
               headers,
               credentials: "include",
             });
@@ -1951,7 +2148,7 @@
           const options = get("demo-login-options");
           if (!options) return;
           options.innerHTML = (accounts || []).map((account) =>
-            `<button class="btn-small secondary" type="button" onclick="App.demoLogin('${esc(account.role)}')">${esc(account.label)}</button>`,
+            `<button class="btn-small ${account.role === "quick-admin" ? "admin-quick-login" : "secondary"}" type="button" onclick="App.demoLogin('${esc(account.role)}')">${esc(account.label)}</button>`,
           ).join("");
           options.classList.toggle("hidden", !accounts?.length);
         },
@@ -1968,6 +2165,7 @@
           State.orders = result.map((order) => ({
             ...order,
             createdAt: order.created_at,
+            updatedAt: order.updated_at,
             userId: order.user_id,
             userEmail: order.user_email,
             items: (order.items || []).map((item) => ({
@@ -2401,8 +2599,8 @@
           adminNav = get("nav-admin");
         if (adminNav) adminNav.classList.toggle("hidden", !State.isAdmin());
         if (State.logged()) {
-          label.textContent = (State.user.name || "Conta").split(" ")[0];
-          nav.title = State.isAdmin() ? "Abrir painel administrativo" : "Sair";
+          label.textContent = State.isAdmin() ? "Painel admin" : (State.user.name || "Conta").split(" ")[0];
+          nav.title = State.isAdmin() ? "Abrir painel administrativo" : "Sair da conta";
           nav.onclick = State.isAdmin() ? () => App.go("admin") : App.logout;
         } else {
           label.textContent = "Entrar";
@@ -2473,7 +2671,11 @@
         return products().filter((p) => promoActive(p));
       }
       const Pages = {
-        home() {
+        home(refreshing = false) {
+          const searchTerm = refreshing ? get("product-search")?.value || "" : "";
+          const activeCategory = refreshing
+            ? document.querySelector("#filters .cat-btn.active")?.dataset.cat || "Todos"
+            : "Todos";
           const list = products();
           const cats = ["Todos", ...new Set(list.map((p) => p.category))];
           const promo = activePromos()[0];
@@ -2488,7 +2690,15 @@
               Pages.filter();
             }),
           );
+          const categoryButton = [...document.querySelectorAll("#filters .cat-btn")]
+            .find((button) => button.dataset.cat === activeCategory);
+          if (categoryButton) {
+            document.querySelector("#filters .cat-btn.active")?.classList.remove("active");
+            categoryButton.classList.add("active");
+          }
+          get("product-search").value = searchTerm;
           Pages.filter();
+          if (!refreshing) startCatalogRefresh();
         },
         filter() {
           const grid = get("product-grid");
@@ -2534,7 +2744,9 @@
         async admin() {
           if (!State.isAdmin()) {
             stopOrderRefresh();
+            State.redirect = "home";
             App.openAuth();
+            toast("Entre com uma conta administrativa.");
             return;
           }
           let list;
@@ -2647,7 +2859,7 @@
             : status === "cancelado"
               ? "error"
               : "";
-        return `<article class="admin-card" style="margin-bottom:14px"><div class="order-admin-top"><strong>Pedido #${esc(o.id)}</strong><span class="order-status-label ${cls}" style="background:${status === "entregue" ? "#dcfce7" : status === "cancelado" ? "#fee2e2" : status === "saiu_entrega" ? "#dbeafe" : "#fef3c7"};color:${status === "entregue" ? "#166534" : status === "cancelado" ? "#991b1b" : status === "saiu_entrega" ? "#1d4ed8" : "#92400e"}">${meta.icon} ${meta.label}</span></div><small style="color:var(--muted)">${fmtDate(o.createdAt)} · ${esc(o.address || "Sem endereço")}</small>${orderTimeline(o)}<div class="order-admin-items">${(o.items || []).map((i) => `${i.qty}× ${esc(i.name)} — ${money(i.price * i.qty)}`).join("<br>")}</div><div class="order-admin-top"><strong style="color:var(--orange)">${money(o.total)}</strong>${status === "pendente" ? `<button class="btn-small danger" onclick="App.cancelOrder('${esc(o.id)}')">Cancelar pedido</button>` : ""}</div></article>`;
+        return `<article class="admin-card" style="margin-bottom:14px"><div class="order-admin-top"><strong>Pedido #${esc(o.id)}</strong><span class="order-status-label ${cls}" style="background:${status === "entregue" ? "#dcfce7" : status === "cancelado" ? "#fee2e2" : status === "saiu_entrega" ? "#dbeafe" : "#fef3c7"};color:${status === "entregue" ? "#166534" : status === "cancelado" ? "#991b1b" : status === "saiu_entrega" ? "#1d4ed8" : "#92400e"}">${meta.icon} ${meta.label}</span></div><small style="color:var(--muted)">${fmtDate(o.createdAt)} · Atualizado: ${fmtDate(o.updatedAt || o.createdAt)} · ${esc(o.address || "Sem endereço")}</small>${orderTimeline(o)}<div class="order-admin-items">${(o.items || []).map((i) => `${i.qty}× ${esc(i.name)} — ${money(i.price * i.qty)}`).join("<br>")}</div><div class="order-admin-top"><strong style="color:var(--orange)">${money(o.total)}</strong>${status === "pendente" ? `<button class="btn-small danger" onclick="App.cancelOrder('${esc(o.id)}')">Cancelar pedido</button>` : ""}</div></article>`;
       }
       function adminProduct(p) {
         const available = p.active !== false;
@@ -2656,7 +2868,7 @@
       function adminOrder(o) {
         const status = normalizeOrderStatus(o.status);
         const meta = statusMeta(status);
-        return `<article class="order-admin"><div class="order-admin-top"><div><strong>Pedido #${esc(o.id)}</strong><br><small>${fmtDate(o.createdAt)} · ${esc(o.userEmail || "cliente")}</small></div><select class="status-select" aria-label="Status do pedido ${esc(o.id)}" onchange="Admin.updateOrder('${esc(o.id)}',this.value)"><option value="pendente" ${status === "pendente" ? "selected" : ""}>Novo pedido</option><option value="preparando" ${status === "preparando" ? "selected" : ""}>Em preparo</option><option value="saiu_entrega" ${status === "saiu_entrega" ? "selected" : ""}>Saiu para entrega</option><option value="entregue" ${status === "entregue" ? "selected" : ""}>Entregue</option><option value="cancelado" ${status === "cancelado" ? "selected" : ""}>Cancelado</option></select></div><div style="margin-top:9px"><span class="order-status-label" style="background:${status === "entregue" ? "#dcfce7" : status === "cancelado" ? "#fee2e2" : status === "saiu_entrega" ? "#dbeafe" : "#fef3c7"};color:${status === "entregue" ? "#166534" : status === "cancelado" ? "#991b1b" : status === "saiu_entrega" ? "#1d4ed8" : "#92400e"}">${meta.icon} ${meta.label}</span></div>${orderTimeline(o)}<div class="order-admin-items">${(o.items || []).map((i) => `${i.qty}× ${esc(i.name)}`).join("<br>")}</div><div class="order-admin-top"><small>${esc(o.address || "Sem endereço")} </small><strong style="color:var(--orange)">${money(o.total)}</strong></div></article>`;
+        return `<article class="order-admin"><div class="order-admin-top"><div><strong>Pedido #${esc(o.id)}</strong><br><small>${fmtDate(o.createdAt)} · ${esc(o.userEmail || "cliente")}</small><br><small>Atualizado: ${fmtDate(o.updatedAt || o.createdAt)}</small></div><select class="status-select" data-order-id="${esc(o.id)}" aria-label="Status do pedido ${esc(o.id)}" onchange="Admin.updateOrder('${esc(o.id)}',this.value)"><option value="pendente" ${status === "pendente" ? "selected" : ""}>Novo pedido</option><option value="preparando" ${status === "preparando" ? "selected" : ""}>Em preparo</option><option value="saiu_entrega" ${status === "saiu_entrega" ? "selected" : ""}>Saiu para entrega</option><option value="entregue" ${status === "entregue" ? "selected" : ""}>Entregue</option><option value="cancelado" ${status === "cancelado" ? "selected" : ""}>Cancelado</option></select></div><div style="margin-top:9px"><span class="order-status-label" style="background:${status === "entregue" ? "#dcfce7" : status === "cancelado" ? "#fee2e2" : status === "saiu_entrega" ? "#dbeafe" : "#fef3c7"};color:${status === "entregue" ? "#166534" : status === "cancelado" ? "#991b1b" : status === "saiu_entrega" ? "#1d4ed8" : "#92400e"}">${meta.icon} ${meta.label}</span></div>${orderTimeline(o)}<div class="order-admin-items">${(o.items || []).map((i) => `${i.qty}× ${esc(i.name)}`).join("<br>")}</div><div class="order-admin-top"><small>${esc(o.address || "Sem endereço")} </small><strong style="color:var(--orange)">${money(o.total)}</strong></div></article>`;
       }
       const Accounts = {
         async update(id, changes) {
@@ -2781,6 +2993,10 @@
             await Pages.adminTab(next === "saiu_entrega" ? "delivery" : "orders");
             toast(`Pedido marcado como: ${statusMeta(next).label}.`);
           } catch (error) {
+            const select = [...document.querySelectorAll(".status-select")]
+              .find((element) => element.dataset.orderId === String(id));
+            const order = orders().find((item) => String(item.id) === String(id));
+            if (select && order) select.value = normalizeOrderStatus(order.status);
             toast(error.message);
           }
         },
@@ -2788,6 +3004,7 @@
       const App = {
         async go(page) {
           if (page !== "orders" && page !== "admin") stopOrderRefresh();
+          if (page !== "home") stopCatalogRefresh();
           if (page === "home") Pages.home();
           else if (page === "orders") await Pages.orders();
           else if (page === "admin") await Pages.admin();
@@ -2812,13 +3029,13 @@
           get("login-form").classList.toggle("hidden", tab !== "login");
           get("register-form").classList.toggle("hidden", tab !== "register");
         },
-        finishLogin(auth, message) {
+        finishLogin(auth, message, targetOverride = null) {
           State.user = auth.user;
           State.token = null;
           State.saveSession();
           this.closeAuth();
           renderHeader();
-          const target = State.redirect || "home";
+          const target = targetOverride || State.redirect || (State.isAdmin() ? "admin" : "home");
           State.redirect = null;
           this.go(target);
           toast(message);
@@ -2826,13 +3043,16 @@
         async demoLogin(role) {
           get("login-message").innerHTML = "";
           try {
-            const auth = await Api.request("/auth/demo-login", {
+            const auth = await Api.request(role === "quick-admin" ? "/auth/quick-admin" : "/auth/demo-login", {
               method: "POST",
-              body: JSON.stringify({ role }),
+              body: role === "quick-admin" ? undefined : JSON.stringify({ role }),
             });
             this.finishLogin(
               auth,
-              role === "admin" ? "Entrou como administrador." : "Entrou como cliente.",
+              role === "admin" || role === "quick-admin"
+                ? "Entrou como administrador."
+                : "Entrou como cliente.",
+              role === "quick-admin" ? "admin" : null,
             );
           } catch (error) {
             get("login-message").innerHTML = `<div class="message error">${esc(error.message)}</div>`;
@@ -2940,6 +3160,16 @@
           renderHeader();
           toast("Endereço salvo.");
         },
+        renderCheckoutSummary() {
+          get("checkout-summary").innerHTML =
+            State.cart
+              .map(
+                (i) =>
+                  `<div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:6px"><span>${i.qty}× ${esc(i.product.name)}${i.product.active === false ? ' · <strong style="color:var(--red)">Indisponível</strong>' : ""}</span><strong>${money(effectivePrice(i.product) * i.qty)}</strong></div>`,
+              )
+              .join("") +
+            `<div style="border-top:1px solid #ddd6c8;padding-top:10px;margin-top:8px;display:flex;justify-content:space-between;font-weight:800"><span>Total</span><strong style="color:var(--orange)">${money(State.total())}</strong></div>`;
+        },
         openCheckout() {
           if (!State.logged()) {
             State.redirect = "checkout";
@@ -2951,15 +3181,12 @@
             toast("Seu carrinho está vazio.");
             return;
           }
+          if (State.cart.some((item) => item.product.active === false)) {
+            toast("Remova do carrinho os produtos que estão indisponíveis.");
+            return;
+          }
           get("checkout-address").value = State.address || "";
-          get("checkout-summary").innerHTML =
-            State.cart
-              .map(
-                (i) =>
-                  `<div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:6px"><span>${i.qty}× ${esc(i.product.name)}</span><strong>${money(effectivePrice(i.product) * i.qty)}</strong></div>`,
-              )
-              .join("") +
-            `<div style="border-top:1px solid #ddd6c8;padding-top:10px;margin-top:8px;display:flex;justify-content:space-between;font-weight:800"><span>Total</span><strong style="color:var(--orange)">${money(State.total())}</strong></div>`;
+          this.renderCheckoutSummary();
           get("checkout-modal").classList.add("open");
           document.body.style.overflow = "hidden";
         },
@@ -2969,6 +3196,11 @@
         },
         async checkout(e) {
           e.preventDefault();
+          if (State.cart.some((item) => item.product.active === false)) {
+            get("checkout-message").innerHTML =
+              '<div class="message error">Remova do carrinho os produtos que estão indisponíveis.</div>';
+            return;
+          }
           const address = get("checkout-address").value.trim();
           if (!address) {
             get("checkout-message").innerHTML =
@@ -3028,10 +3260,11 @@
         body.innerHTML = State.cart
           .map(
             (i) =>
-              `<div class="cart-item"><div class="cart-img">${productImg(i.product)}</div><div class="cart-info"><strong>${esc(i.product.name)}</strong><small>${money(effectivePrice(i.product))} / un.</small></div><div class="qty"><button onclick="Cart.change(${Number(i.product.id)},-1)">−</button><span>${i.qty}</span><button onclick="Cart.change(${Number(i.product.id)},1)">+</button></div><span class="subtotal">${money(effectivePrice(i.product) * i.qty)}</span></div>`,
+              `<div class="cart-item"><div class="cart-img">${productImg(i.product)}</div><div class="cart-info"><strong>${esc(i.product.name)}</strong><small>${money(effectivePrice(i.product))} / un.${i.product.active === false ? ' · <strong style="color:var(--red)">Indisponível</strong>' : ""}</small></div><div class="qty"><button onclick="Cart.change(${Number(i.product.id)},-1)">−</button><span>${i.qty}</span><button onclick="Cart.change(${Number(i.product.id)},1)">+</button></div><span class="subtotal">${money(effectivePrice(i.product) * i.qty)}</span></div>`,
           )
           .join("");
-        foot.innerHTML = `<div class="total-row"><span>Total</span><strong>${money(State.total())}</strong></div><button class="btn-primary wide" onclick="App.openCheckout()">Finalizar pedido →</button>`;
+        const unavailable = State.cart.some((item) => item.product.active === false);
+        foot.innerHTML = `<div class="total-row"><span>Total</span><strong>${money(State.total())}</strong></div><button class="btn-primary wide" onclick="App.openCheckout()" ${unavailable ? "disabled" : ""}>Finalizar pedido →</button>`;
       }
       const Cart = {
         change(id, delta) {
