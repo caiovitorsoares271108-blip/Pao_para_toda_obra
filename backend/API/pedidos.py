@@ -6,6 +6,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, selectinload
 
 if __package__ and __package__.startswith("backend."):
@@ -96,7 +97,11 @@ def update_order_status(order_id: int, data: OrderStatusUpdate,
     if not order:
         raise HTTPException(404, "Pedido não encontrado")
     order.status = data.status
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(409, "Mudança de status não permitida para este pedido")
     db.refresh(order)
     return order
 
@@ -110,6 +115,10 @@ def cancel_order(order_id: int, user: Annotated[User, Depends(current_user)],
     if order.status != "pendente":
         raise HTTPException(409, "Somente pedidos pendentes podem ser cancelados")
     order.status = "cancelado"
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(409, "Somente pedidos pendentes podem ser cancelados")
     db.refresh(order)
     return order

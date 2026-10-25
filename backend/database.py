@@ -3,8 +3,10 @@ from __future__ import annotations
 import os
 from datetime import datetime, timezone
 
+from pathlib import Path
+
 from dotenv import load_dotenv
-from sqlalchemy import JSON, Boolean, DateTime, ForeignKey, Integer, Numeric, String, create_engine
+from sqlalchemy import JSON, Boolean, DateTime, ForeignKey, Integer, Numeric, String, create_engine, event
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, sessionmaker
 
 load_dotenv()
@@ -25,6 +27,30 @@ engine_options = {"connect_args": connect_args, "pool_pre_ping": True}
 if not DATABASE_URL.startswith("sqlite"):
     engine_options.update(pool_size=5, max_overflow=5, pool_recycle=1800)
 engine = create_engine(DATABASE_URL, **engine_options)
+
+
+if DATABASE_URL.startswith("sqlite"):
+    @event.listens_for(engine, "connect")
+    def _sqlite_pragmas(dbapi_connection, _record) -> None:
+        # SQLite ignora FOREIGN KEY por padrão; WAL permite leitura durante escrita
+        cursor = dbapi_connection.cursor()
+        cursor.execute("PRAGMA foreign_keys = ON")
+        cursor.execute("PRAGMA journal_mode = WAL")
+        cursor.execute("PRAGMA busy_timeout = 5000")
+        cursor.close()
+
+
+def init_sqlite_schema() -> None:
+    """Banco SQLite vazio: aplica schema.sql (constraints, triggers, views). No-op nos demais casos."""
+    if not DATABASE_URL.startswith("sqlite"):
+        return
+    with engine.begin() as conn:
+        raw = conn.connection.driver_connection
+        has_users = raw.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='users'").fetchone()
+        if not has_users:
+            raw.executescript(Path(__file__).with_name("schema.sql").read_text(encoding="utf-8"))
+
+
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
 
 
@@ -71,6 +97,8 @@ class Order(Base):
     status: Mapped[str] = mapped_column(String(30), default="pendente")
     total: Mapped[float] = mapped_column(Numeric(10, 2), default=0)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc),
+                                                 onupdate=lambda: datetime.now(timezone.utc))
     user: Mapped[User] = relationship(back_populates="orders")
     items: Mapped[list["OrderItem"]] = relationship(back_populates="order", cascade="all, delete-orphan")
 

@@ -15,10 +15,10 @@ from starlette.middleware.wsgi import WSGIMiddleware
 
 if __package__:
     from .API import cardapio, contas, pedidos
-    from .database import ENVIRONMENT, Base, Product, SessionLocal, User, engine, get_db
+    from .database import ENVIRONMENT, Base, Product, SessionLocal, User, engine, get_db, init_sqlite_schema
 else:
     from API import cardapio, contas, pedidos
-    from database import ENVIRONMENT, Base, Product, SessionLocal, User, engine, get_db
+    from database import ENVIRONMENT, Base, Product, SessionLocal, User, engine, get_db, init_sqlite_schema
 
 load_dotenv()
 
@@ -62,6 +62,7 @@ def _provision_initial_accounts(db: Session) -> None:
 
 
 def initialize_database() -> None:
+    init_sqlite_schema()
     Base.metadata.create_all(engine)
     with SessionLocal() as db:
         _provision_initial_accounts(db)
