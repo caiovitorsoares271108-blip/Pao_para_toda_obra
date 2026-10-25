@@ -12,10 +12,23 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship,
 load_dotenv()
 
 ENVIRONMENT = os.getenv("ENVIRONMENT", "development").lower()
-DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
-if not DATABASE_URL:
-    if ENVIRONMENT == "production":
-        raise RuntimeError("DATABASE_URL é obrigatória em produção")
+SUPABASE_URL = os.getenv("SUPABASE_URL", "").strip()
+SUPABASE_PUBLISHABLE_KEY = os.getenv("SUPABASE_PUBLISHABLE_KEY", "").strip()
+SUPABASE_SECRET_KEY = os.getenv("SUPABASE_SECRET_KEY", "").strip()
+DATABASE_URL = (os.getenv("DATABASE_URL", "") or os.getenv("SUPABASE_DB_URL", "")).strip()
+
+if SUPABASE_URL:
+    if not SUPABASE_URL.startswith("https://"):
+        raise RuntimeError("SUPABASE_URL deve usar https://")
+    if len(SUPABASE_URL.split("/")) < 3 or not SUPABASE_URL.split("/")[2]:
+        raise RuntimeError("SUPABASE_URL deve incluir um hostname válido")
+
+if DATABASE_URL:
+    if not DATABASE_URL.startswith(("postgres://", "postgresql://", "postgresql+psycopg://", "sqlite:")):
+        raise RuntimeError("DATABASE_URL deve ser uma conexão PostgreSQL ou SQLite")
+elif ENVIRONMENT == "production":
+    raise RuntimeError("Defina DATABASE_URL/SUPABASE_DB_URL para conectar ao banco PostgreSQL")
+else:
     DATABASE_URL = "sqlite:///./pao.db"
 if DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = "postgresql+psycopg://" + DATABASE_URL.removeprefix("postgres://")
