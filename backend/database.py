@@ -32,7 +32,7 @@ if DATABASE_URL:
 elif ENVIRONMENT == "production":
     raise RuntimeError("Defina DATABASE_URL/SUPABASE_DB_URL para conectar ao banco PostgreSQL")
 else:
-    DATABASE_URL = "sqlite:///./pao.db"
+    DATABASE_URL = f"sqlite:///{Path(__file__).resolve().parent / 'pao.db'}"
 if DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = "postgresql+psycopg://" + DATABASE_URL.removeprefix("postgres://")
 elif DATABASE_URL.startswith("postgresql://"):

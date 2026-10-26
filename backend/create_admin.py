@@ -3,8 +3,12 @@ from getpass import getpass
 
 from sqlalchemy import select
 
-from .database import SessionLocal, User
-from .API.contas import password_hash
+if __package__:
+    from .database import SessionLocal, User
+    from .API.contas import password_hash
+else:
+    from database import SessionLocal, User
+    from API.contas import password_hash
 
 
 def main() -> None:

@@ -21,4 +21,10 @@ if __name__ == "__main__":
 
     port = int(os.getenv("PORT", os.getenv("FLASK_PORT", "8000")))
     reload_enabled = os.getenv("ENVIRONMENT", "development") == "development"
-    uvicorn.run(app, host="0.0.0.0", port=port, reload=reload_enabled)
+    uvicorn.run(
+        "main:app",
+        app_dir=str(Path(__file__).resolve().parent),
+        host="0.0.0.0",
+        port=port,
+        reload=reload_enabled,
+    )
