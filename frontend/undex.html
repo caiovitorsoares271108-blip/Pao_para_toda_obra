@@ -1687,7 +1687,15 @@
           </div>
           <div id="login-message"></div>
           <button class="btn-primary wide" type="submit">Entrar</button>
-          <div id="demo-login-options" class="demo-login-options hidden" aria-label="Contas de demonstração"></div>
+          <div id="demo-login-options" class="demo-login-options" aria-label="Acesso rápido">
+            <button
+              class="btn-small admin-quick-login"
+              type="button"
+              onclick="App.prepareQuickAdminLogin('admin@pao.com')"
+            >
+              Acessar conta de administrador
+            </button>
+          </div>
         </form>
         <form id="register-form" class="hidden" onsubmit="App.register(event)">
           <div class="field">
@@ -2283,12 +2291,12 @@
           const { accounts } = await this.request("/auth/demo-accounts");
           const options = get("demo-login-options");
           if (!options) return;
+          if (!accounts?.length) return;
           options.innerHTML = (accounts || []).map((account) =>
             account.role === "quick-admin"
               ? `<button class="btn-small admin-quick-login" type="button" onclick="App.prepareQuickAdminLogin('${esc(account.email)}')">${esc(account.label)}</button>`
               : `<button class="btn-small secondary" type="button" onclick="App.demoLogin('${esc(account.role)}')">${esc(account.label)}</button>`,
           ).join("");
-          options.classList.toggle("hidden", !accounts?.length);
         },
         async loadProducts(admin = false) {
           State.products = await this.request(admin ? "/products/admin" : "/products");
