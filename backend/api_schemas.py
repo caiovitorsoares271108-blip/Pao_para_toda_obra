@@ -50,8 +50,18 @@ class UserResponse(BaseModel):
     id: int
     name: str
     email: str
+    address: str | None = None
     role: str
     active: bool = True
+
+
+class ProfileAddressUpdate(BaseModel):
+    address: str = Field(max_length=300)
+
+    @field_validator("address")
+    @classmethod
+    def normalize_address(cls, value: str) -> str:
+        return value.strip()
 
 
 class AuthResponse(BaseModel):

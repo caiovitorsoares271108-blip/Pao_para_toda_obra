@@ -19,10 +19,10 @@ python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env
-uvicorn main:app --reload
+uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-O comando inicia a API e o frontend juntos. Acesse o frontend em http://127.0.0.1:8000/undex.html e a documentação em http://127.0.0.1:8000/docs.
+O comando inicia a API e o frontend juntos. Acesse o frontend em http://127.0.0.1:8000/ e a documentação em http://127.0.0.1:8000/docs.
 
 O frontend é servido pelo Flask; não é necessário iniciar um `python -m http.server` separado.
 
@@ -38,10 +38,12 @@ As duas API keys não são enviadas ao navegador. Somente o backend pode usar `S
 
 Ao iniciar com banco vazio, o backend aplica o [schema SQL](schema.sql) no SQLite ou usa o schema PostgreSQL/Supabase já preparado e carrega [products_seed.json](products_seed.json) uma vez por `seed_key`. Alterações feitas no painel não são sobrescritas.
 
-As contas podem ser gerenciadas por `GET/PATCH /auth/accounts`. Usuários comuns não podem alterar papel ou acesso. O primeiro administrador pode ser provisionado por `INITIAL_ADMIN_*` no ambiente privado ou pela execução interativa de `python create_admin.py`.
+As contas podem ser gerenciadas por `GET/PATCH /auth/accounts`. Usuários comuns não podem alterar papel ou acesso. Cada pessoa autenticada pode atualizar seu próprio endereço com `PATCH /auth/me/address`; a rota exige sessão. O primeiro administrador pode ser provisionado por `INITIAL_ADMIN_*` no ambiente privado ou pela execução interativa de `python create_admin.py`.
+
+O botão **Acessar conta de administrador** aparece na tela de login quando `QUICK_ADMIN_EMAIL` corresponde a uma conta administrativa ativa. Ele preenche o e-mail e solicita a senha normal; não permite entrar sem senha. O login usa o cookie de sessão `HttpOnly`.
 
 Em bancos não vazios, `products_seed.json` é carregado uma vez por `seed_key`. Produtos já existentes não são substituídos. Configure o ambiente de produção sem contas demo e com `INITIAL_ADMIN_*` privado. Depois da primeira inicialização, remova o segredo da senha do provedor; a conta permanece no banco.
 
 Os produtos novos e promoções são administrados pelas rotas `/products`, `/products/admin` e `/products/{id}`. O preço enviado pelo navegador não participa do cálculo do pedido. Promoções podem ter início/fim opcionais e somente o backend aplica o valor vigente.
 
-Para a versão atual, aplique `migration_supabase_v3.sql` no SQL Editor antes de iniciar a API no Supabase; ela prepara as tabelas e o campo `orders.updated_at` usado pela resposta dos pedidos. A migração remota é uma ação manual: não a execute sem acesso autorizado ao projeto. Consulte `/health`, `/health/db` e `/docs` após iniciar. Nunca coloque `DATABASE_URL`, `JWT_SECRET` ou chaves privilegiadas no HTML, no JavaScript ou no Git.
+Para um banco Supabase existente que já recebeu `migration_supabase_v3.sql`, aplique `migration_profile_address.sql` no SQL Editor antes de iniciar a API; ela adiciona a coluna do endereço salvo no perfil. Em um banco novo, a coluna também é incluída em `migration_supabase_v3.sql`. A migração remota é uma ação manual: não a execute sem acesso autorizado ao projeto. Consulte `/health`, `/health/db` e `/docs` após iniciar. Nunca coloque `DATABASE_URL`, `JWT_SECRET` ou chaves privilegiadas no HTML, no JavaScript ou no Git.

@@ -13,10 +13,10 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 if __package__ and __package__.startswith("backend."):
-    from ..api_schemas import AuthResponse, DemoLoginRequest, LoginRequest, UserCreate, UserResponse, UserUpdate
+    from ..api_schemas import AuthResponse, DemoLoginRequest, LoginRequest, ProfileAddressUpdate, UserCreate, UserResponse, UserUpdate
     from ..database import ENVIRONMENT, User, get_db
 else:
-    from api_schemas import AuthResponse, DemoLoginRequest, LoginRequest, UserCreate, UserResponse, UserUpdate
+    from api_schemas import AuthResponse, DemoLoginRequest, LoginRequest, ProfileAddressUpdate, UserCreate, UserResponse, UserUpdate
     from database import ENVIRONMENT, User, get_db
 
 router = APIRouter(prefix="/auth", tags=["contas"])
@@ -52,6 +52,17 @@ def current_user(request: Request,
     if not user or not user.active:
         raise HTTPException(401, "Conta indisponível")
     return user
+
+
+def current_user_or_none(request: Request,
+                         credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer)],
+                         db: Annotated[Session, Depends(get_db)]) -> User | None:
+    try:
+        return current_user(request, credentials, db)
+    except HTTPException as error:
+        if error.status_code != status.HTTP_401_UNAUTHORIZED:
+            raise
+        return None
 
 
 def admin_user(user: Annotated[User, Depends(current_user)]) -> User:
@@ -101,15 +112,15 @@ def login(data: LoginRequest, response: Response, db: Annotated[Session, Depends
 @router.get("/demo-accounts")
 def list_demo_accounts(db: Annotated[Session, Depends(get_db)]) -> dict:
     accounts = []
-    if _quick_admin_enabled():
-        email = os.getenv("QUICK_ADMIN_EMAIL", "").strip().lower()
-        user = db.scalar(select(User).where(User.email == email)) if email else None
-        if user and user.active and user.role == "admin":
-            accounts.append({
-                "role": "quick-admin",
-                "action": "quick-admin",
-                "label": "Entrar como administrador",
-            })
+    email = os.getenv("QUICK_ADMIN_EMAIL", "").strip().lower()
+    user = db.scalar(select(User).where(User.email == email)) if email else None
+    if user and user.active and user.role == "admin":
+        accounts.append({
+            "role": "quick-admin",
+            "action": "quick-admin",
+            "label": "Acessar conta de administrador",
+            "email": user.email,
+        })
     if not _demo_enabled():
         return {"accounts": accounts}
     configs = {
@@ -152,8 +163,18 @@ def demo_login(data: DemoLoginRequest, response: Response, db: Annotated[Session
     return AuthResponse(access_token=token, user=user)
 
 
-@router.get("/me", response_model=UserResponse)
-def get_current_user(user: Annotated[User, Depends(current_user)]) -> User:
+@router.get("/me", response_model=UserResponse | None)
+def get_current_user(user: Annotated[User | None, Depends(current_user_or_none)]) -> User | None:
+    return user
+
+
+@router.patch("/me/address", response_model=UserResponse)
+def update_my_address(data: ProfileAddressUpdate,
+                      user: Annotated[User, Depends(current_user)],
+                      db: Annotated[Session, Depends(get_db)]) -> User:
+    user.address = data.address
+    db.commit()
+    db.refresh(user)
     return user
 
 

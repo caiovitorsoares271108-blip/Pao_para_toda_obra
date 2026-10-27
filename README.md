@@ -12,18 +12,18 @@ python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env
-uvicorn main:app --reload
+uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-Esse único comando inicia a API e o frontend juntos. Abra http://127.0.0.1:8000/undex.html e a documentação em http://127.0.0.1:8000/docs.
+Esse único comando inicia a API e o frontend juntos. Abra http://127.0.0.1:8000/ e a documentação em http://127.0.0.1:8000/docs.
 
 O frontend usa automaticamente a mesma origem da API. A API está separada em módulos de contas, cardápio e pedidos, mas mantém os caminhos públicos já usados pelo frontend. O servidor separado `python -m http.server 5500` não é necessário.
 
-O painel administrativo e a área de pedidos consultam os pedidos persistidos a cada 5 segundos; o cardápio aberto também consulta os produtos no backend nesse intervalo, refletindo alterações feitas em outras sessões. Cada atualização é lida da API e do banco compartilhado, não simulada no navegador. Os pedidos mantêm nome e preço dos itens no momento da compra e expõem a data da última atualização de status.
+Pedidos e cardápio são sincronizados a cada 2 segundos enquanto a página está visível. O admin também atualiza pedidos, produtos e contas nesse intervalo; assim, clientes veem mudanças de status e disponibilidade e o admin vê novos pedidos e alterações de endereço. A sincronização consulta a API e o banco compartilhado.
 
 Para desenvolvimento isolado, `DATABASE_URL` vazio usa SQLite local. Em produção, `DATABASE_URL` é obrigatória e não há fallback silencioso. Para o Supabase, abra **Connect** no painel, copie a connection string oficial PostgreSQL (direta ou Session Pooler), e coloque-a em `backend/.env` como `DATABASE_URL`, sem publicar esse arquivo. Se o Render não alcançar o endpoint direto por IPv6, use a string oficial do Session Pooler fornecida pelo próprio Supabase, sem montar o host manualmente.
 
-No SQLite local, o startup cria e atualiza o esquema. No Supabase, aplique `backend/migration_supabase_v3.sql` pelo SQL Editor antes de iniciar a versão atual da API; ela prepara as tabelas e o campo `orders.updated_at` usado para exibir a última atualização do pedido. Depois, confirme `users`, `products`, `orders` e `order_items` no Table Editor.
+No SQLite local, o startup cria e atualiza o esquema. No Supabase, aplique `backend/migration_supabase_v3.sql` pelo SQL Editor antes de iniciar a versão atual da API. Se o v3 já foi aplicado antes, execute também `backend/migration_profile_address.sql` para adicionar o endereço persistente da conta. Confirme `users`, `products`, `orders` e `order_items` no Table Editor.
 
 Defina `JWT_SECRET` com uma chave longa e aleatória, `ENVIRONMENT=development` ou `production`, e `CORS_ORIGINS` somente quando o frontend estiver em outra origem. Contas demo são opcionais e exigem credenciais privadas nas variáveis `DEMO_*`; não há senha publicada no código. A autenticação fica em cookie `HttpOnly` por 30 dias por padrão. O navegador não guarda conta nem catálogo como banco de dados. O arquivo `.env` é local e está no `.gitignore`; se algum segredo já tiver sido versionado, remova-o do índice e faça a rotação da credencial.
 
@@ -36,7 +36,9 @@ python create_admin.py
 
 A aplicação carrega os 21 produtos reais recuperados em `backend/products_seed.json` por uma chave `seed_key` estável. A carga é idempotente e não sobrescreve alterações feitas pelo administrador.
 
-Contas são persistidas no banco. O admin pode criar contas, alterar dados permitidos, promover ou remover o papel administrativo e ativar/desativar acessos pela aba Contas. Um usuário comum não pode alterar seu próprio papel.
+Contas são persistidas no banco. Cadastro e login usam e-mail e senha; a sessão é mantida por cookie protegido para evitar novo login a cada visita. O cliente pode salvar seu endereço na conta enquanto estiver autenticado; endereço de conta não pode ser alterado anonimamente. O admin pode criar contas, alterar dados permitidos, promover ou remover o papel administrativo e ativar/desativar acessos pela aba Contas. Um usuário comum não pode alterar seu próprio papel.
+
+O botão **Acessar conta de administrador** no login preenche o e-mail configurado e pede a senha normalmente. Configure `QUICK_ADMIN_EMAIL` em `backend/.env` para uma conta admin ativa; o botão não concede acesso sem senha.
 
 Contas demo são opcionais e exigem `ENVIRONMENT=development` com `SEED_DEMO_DATA=true` e credenciais privadas. Promoções são persistidas no banco e podem informar início/fim opcionais; o backend aplica o desconto somente no período vigente.
 

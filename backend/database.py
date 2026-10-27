@@ -75,6 +75,11 @@ def init_sqlite_schema() -> None:
             raw.execute(
                 "UPDATE orders SET updated_at = COALESCE(created_at, '1970-01-01 00:00:00')"
             )
+        has_user_address = raw.execute(
+            "SELECT 1 FROM pragma_table_info('users') WHERE name='address'"
+        ).fetchone()
+        if has_users and not has_user_address:
+            raw.execute("ALTER TABLE users ADD COLUMN address VARCHAR(300) NOT NULL DEFAULT ''")
 
 
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
@@ -91,6 +96,7 @@ class User(Base):
     name: Mapped[str] = mapped_column(String(120))
     email: Mapped[str] = mapped_column(String(180), unique=True, index=True)
     password_hash: Mapped[str] = mapped_column(String(255))
+    address: Mapped[str] = mapped_column(String(300), default="")
     role: Mapped[str] = mapped_column(String(20), default="user")
     active: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))

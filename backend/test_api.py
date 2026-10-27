@@ -1,6 +1,7 @@
 import os
 import tempfile
 import unittest
+from unittest.mock import patch
 
 _db_file = tempfile.NamedTemporaryFile(suffix=".db", delete=False)
 _db_file.close()
@@ -13,6 +14,7 @@ from fastapi.testclient import TestClient
 
 from backend.main import SessionLocal, app, _seed_catalog
 from backend.database import Product, User
+from backend.API import contas as contas_api
 
 
 class ApiTestCase(unittest.TestCase):
@@ -42,7 +44,49 @@ class ApiTestCase(unittest.TestCase):
             "/auth/login", json={"email": "test@example.com", "password": "wrong"}
         ).status_code, 401)
         self.assertEqual(self.client_context.post("/auth/logout").status_code, 200)
-        self.assertEqual(self.client_context.get("/auth/me").status_code, 401)
+        anonymous = self.client_context.get("/auth/me")
+        self.assertEqual(anonymous.status_code, 200)
+        self.assertIsNone(anonymous.json())
+
+    def test_customer_can_update_only_own_saved_address(self):
+        response = self.client_context.post("/auth/register", json={
+            "name": "Cliente Endereço", "email": "address@example.com", "password": "secret123",
+        })
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.json()["user"]["address"], "")
+        self.assertEqual(self.client_context.get("/auth/me").json()["address"], "")
+        self.client_context.post("/auth/logout")
+        self.assertEqual(self.client_context.patch(
+            "/auth/me/address", json={"address": "Rua sem login, 1"},
+        ).status_code, 401)
+        self.client_context.post("/auth/login", json={
+            "email": "address@example.com", "password": "secret123",
+        })
+
+        updated = self.client_context.patch("/auth/me/address", json={
+            "address": "  Rua da Padaria, 123  ",
+        })
+        self.assertEqual(updated.status_code, 200)
+        self.assertEqual(updated.json()["address"], "Rua da Padaria, 123")
+        self.assertEqual(self.client_context.get("/auth/me").json()["address"], "Rua da Padaria, 123")
+
+        with SessionLocal() as db:
+            user = db.query(User).filter_by(email="address@example.com").one()
+            self.assertEqual(user.address, "Rua da Padaria, 123")
+
+        admin_response = self.client_context.post("/auth/register", json={
+            "name": "Admin Endereço", "email": "address-admin@example.com", "password": "secret123",
+        })
+        admin_id = admin_response.json()["user"]["id"]
+        with SessionLocal() as db:
+            db.get(User, admin_id).role = "admin"
+            db.commit()
+        accounts = self.client_context.get("/auth/accounts").json()
+        saved_account = next(account for account in accounts if account["email"] == "address@example.com")
+        self.assertEqual(saved_account["address"], "Rua da Padaria, 123")
+
+        self.client_context.post("/auth/logout")
+        self.assertIsNone(self.client_context.get("/auth/me").json())
 
     def test_admin_manages_accounts_and_customer_cannot_escalate(self):
         admin = self.client_context.post("/auth/register", json={
@@ -67,7 +111,10 @@ class ApiTestCase(unittest.TestCase):
         )
         self.assertEqual(updated.status_code, 200)
         self.assertFalse(updated.json()["active"])
-        self.assertEqual(self.client_context.get("/auth/me", headers=customer_headers).status_code, 401)
+        anonymous = self.client_context.get("/auth/me", headers=customer_headers)
+        self.assertEqual(anonymous.status_code, 200)
+        self.assertIsNone(anonymous.json())
+        self.assertEqual(self.client_context.get("/auth/accounts", headers=customer_headers).status_code, 401)
 
     def test_demo_quick_login_is_disabled_outside_development(self):
         self.assertEqual(
@@ -77,6 +124,54 @@ class ApiTestCase(unittest.TestCase):
             self.client_context.post("/auth/demo-login", json={"role": "admin"}).status_code,
             404,
         )
+
+    def test_quick_admin_login_is_offered_for_existing_admin_in_development(self):
+        user = self.client_context.post("/auth/register", json={
+            "name": "Admin de teste", "email": "quick-admin@example.com", "password": "secret123"
+        }).json()
+        with SessionLocal() as db:
+            db.get(User, user["user"]["id"]).role = "admin"
+            db.commit()
+
+        with patch.dict(os.environ, {
+            "QUICK_ADMIN_EMAIL": "quick-admin@example.com",
+            "QUICK_ADMIN_PASSWORD": "secret123",
+        }), patch.object(contas_api, "ENVIRONMENT", "development"):
+            accounts = self.client_context.get("/auth/demo-accounts").json()["accounts"]
+            self.assertEqual(accounts, [{
+                "role": "quick-admin",
+                "action": "quick-admin",
+                "label": "Acessar conta de administrador",
+                "email": "quick-admin@example.com",
+            }])
+            response = self.client_context.post("/auth/quick-admin")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["user"]["email"], "quick-admin@example.com")
+        self.assertIn("httponly", response.headers.get("set-cookie", "").lower())
+
+    def test_quick_admin_button_prefills_email_without_bypassing_password(self):
+        user = self.client_context.post("/auth/register", json={
+            "name": "Admin atalho", "email": "quick-button@example.com", "password": "secret123",
+        }).json()
+        with SessionLocal() as db:
+            db.get(User, user["user"]["id"]).role = "admin"
+            db.commit()
+
+        with patch.dict(os.environ, {
+            "QUICK_ADMIN_EMAIL": "quick-button@example.com",
+            "QUICK_ADMIN_PASSWORD": "",
+        }):
+            accounts = self.client_context.get("/auth/demo-accounts").json()["accounts"]
+            self.assertEqual(accounts, [{
+                "role": "quick-admin",
+                "action": "quick-admin",
+                "label": "Acessar conta de administrador",
+                "email": "quick-button@example.com",
+            }])
+            self.assertEqual(
+                self.client_context.post("/auth/quick-admin").status_code, 404
+            )
 
     def test_seed_is_idempotent_and_does_not_overwrite_admin_changes(self):
         with SessionLocal() as db:

@@ -178,6 +178,23 @@
         font-size: 0.7rem;
         font-weight: 800;
       }
+      .nav-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 18px;
+        height: 18px;
+        padding: 0 5px;
+        border-radius: 999px;
+        background: var(--gold-2);
+        color: var(--brown);
+        font-size: 0.63rem;
+        font-weight: 800;
+        line-height: 1;
+      }
+      .nav-btn .nav-badge {
+        margin-left: 4px;
+      }
       .api-pill {
         display: inline-flex;
         align-items: center;
@@ -346,6 +363,39 @@
       .section {
         padding: 44px 0;
       }
+      .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+        margin-top: 26px;
+      }
+      .feature-card {
+        background: rgba(255, 255, 255, 0.8);
+        border: 1px solid rgba(61, 31, 10, 0.08);
+        border-radius: 16px;
+        box-shadow: var(--shadow);
+        padding: 20px 18px;
+      }
+      .feature-card .icon {
+        width: 42px;
+        height: 42px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        background: rgba(193, 68, 14, 0.1);
+        color: var(--orange);
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+      }
+      .feature-card h3 {
+        font: 600 1rem var(--title);
+        margin-bottom: 6px;
+      }
+      .feature-card p {
+        color: var(--muted);
+        font-size: 0.8rem;
+      }
       .section-head {
         display: flex;
         align-items: baseline;
@@ -353,6 +403,31 @@
         gap: 16px;
         flex-wrap: wrap;
         margin-bottom: 24px;
+      }
+      .order-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin: 18px 0 22px;
+        padding: 12px 14px;
+        background: rgba(255, 255, 255, 0.72);
+        border: 1px solid rgba(61, 31, 10, 0.08);
+        border-radius: 14px;
+        box-shadow: 0 8px 18px rgba(61, 31, 10, 0.03);
+      }
+      .order-toolbar .search {
+        width: min(360px, 100%);
+      }
+      .order-toolbar select {
+        min-width: 180px;
+        padding: 10px 12px;
+        border: 1px solid #ddd6c8;
+        border-radius: 10px;
+        background: var(--white);
+        color: var(--brown);
+        font-size: 0.8rem;
       }
       .section-head h2 {
         font: 600 2rem var(--title);
@@ -369,12 +444,13 @@
         display: flex;
         align-items: center;
         gap: 10px;
-        background: linear-gradient(90deg, var(--gold), var(--gold-2));
+        background: linear-gradient(90deg, #f9d07e, #f6c65f 55%, #f0b05f);
         border-radius: var(--radius);
         padding: 14px 18px;
         margin-bottom: 26px;
         box-shadow: var(--shadow);
         font-size: 0.9rem;
+        border: 1px solid rgba(61, 31, 10, 0.06);
       }
       .filters {
         display: flex;
@@ -382,10 +458,11 @@
         gap: 8px;
         flex-wrap: wrap;
         margin-bottom: 20px;
-        padding: 8px;
+        padding: 10px;
         border: 1px solid #ddd6c8;
-        border-radius: 12px;
+        border-radius: 14px;
         background: rgba(255, 255, 255, 0.72);
+        box-shadow: 0 8px 18px rgba(61, 31, 10, 0.04);
       }
       .cat-btn {
         padding: 8px 18px;
@@ -432,7 +509,7 @@
         border: 1px solid rgba(61, 31, 10, 0.07);
         flex-direction: column;
         overflow: hidden;
-        background: var(--white);
+        background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(251,246,238,0.96));
         border-radius: var(--radius);
         box-shadow: var(--shadow);
         transition: 0.25s;
@@ -768,6 +845,13 @@
         color: var(--muted);
         font-size: 0.86rem;
         margin-bottom: 20px;
+      }
+      .logout-actions {
+        display: flex;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 22px;
       }
       .tabs {
         display: grid;
@@ -1313,6 +1397,9 @@
         font-weight: 800;
       }
       @media (max-width: 780px) {
+        .feature-grid {
+          grid-template-columns: 1fr;
+        }
         .api-pill {
           display: none;
         }
@@ -1509,7 +1596,7 @@
             id="nav-admin"
             onclick="App.go('admin')"
           >
-            <span>⚙</span><span class="label">Painel</span>
+            <span>⚙</span><span class="label">Painel</span><span class="nav-badge hidden" id="nav-admin-badge">0</span>
           </button>
           <button class="nav-btn cart" onclick="App.openCart()">
             🛒 <span id="cart-badge" class="badge hidden">0</span>
@@ -1626,6 +1713,38 @@
       </div>
     </div>
 
+    <div class="modal-wrap" id="logout-confirm-modal">
+      <section
+        class="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="logout-confirm-title"
+        aria-describedby="logout-confirm-description"
+      >
+        <h2 id="logout-confirm-title">Sair da sua conta?</h2>
+        <p class="modal-sub" id="logout-confirm-description">
+          Você precisará entrar novamente para acessar seus pedidos e sua conta.
+        </p>
+        <div class="logout-actions">
+          <button
+            class="btn-small secondary"
+            id="logout-cancel"
+            type="button"
+            onclick="App.cancelLogout()"
+          >
+            Continuar conectado
+          </button>
+          <button
+            class="btn-small danger"
+            type="button"
+            onclick="App.confirmLogout()"
+          >
+            Sair da conta
+          </button>
+        </div>
+      </section>
+    </div>
+
     <div class="modal-wrap" id="product-modal">
       <div class="modal">
         <button
@@ -1694,6 +1813,7 @@
               id="address-input"
               type="text"
               placeholder="Rua, número, bairro"
+              maxlength="300"
               required
             />
           </div>
@@ -1956,6 +2076,7 @@
             "https://images.unsplash.com/photo-1589367920969-ab8e050bbb04?auto=format&fit=crop&w=900&q=82",
         },
       ];
+      const DATA_REFRESH_INTERVAL_MS = 2000;
       let orderRefreshTimer = null;
       let orderRefreshInFlight = false;
       let orderRefreshFailed = false;
@@ -1964,6 +2085,28 @@
       let catalogRefreshFailed = false;
       let activeAdminTab = "products";
       let previousPendingOrderCount = null;
+      const orderNoticeState = {
+        pendingCount: null,
+        seenIds: new Set(),
+      };
+      function countPendingOrders(list = orders()) {
+        return list.filter((order) => normalizeOrderStatus(order.status) === "pendente").length;
+      }
+      function maybeNotifyPendingOrders(list = orders()) {
+        const pending = list.filter((order) => normalizeOrderStatus(order.status) === "pendente");
+        const newPendingIds = pending
+          .filter((order) => !orderNoticeState.seenIds.has(String(order.id)))
+          .map((order) => String(order.id));
+
+        if (newPendingIds.length > 0) {
+          const total = newPendingIds.length;
+          orderNoticeState.seenIds = new Set([...orderNoticeState.seenIds, ...newPendingIds]);
+          if (orderNoticeState.pendingCount !== null && orderNoticeState.pendingCount < pending.length) {
+            toast(total === 1 ? `Novo pedido recebido #${newPendingIds[0]}.` : `${total} novos pedidos recebidos.`);
+          }
+        }
+        orderNoticeState.pendingCount = pending.length;
+      }
       function stopOrderRefresh() {
         clearInterval(orderRefreshTimer);
         orderRefreshTimer = null;
@@ -1987,7 +2130,7 @@
           } finally {
             orderRefreshInFlight = false;
           }
-        }, 5000);
+        }, DATA_REFRESH_INTERVAL_MS);
       }
       function startCatalogRefresh() {
         stopCatalogRefresh();
@@ -2027,7 +2170,7 @@
           }
         };
         void refresh();
-        catalogRefreshTimer = setInterval(refresh, 5000);
+        catalogRefreshTimer = setInterval(refresh, DATA_REFRESH_INTERVAL_MS);
       }
       const State = {
         user: null,
@@ -2063,8 +2206,8 @@
                 })
                 .filter(Boolean)
             : [];
-          const savedAddress = DB.get("address");
-          this.address = typeof savedAddress === "string" ? savedAddress : "";
+          this.address = "";
+          DB.remove("address");
           this.saveCart();
         },
         saveSession() {
@@ -2140,6 +2283,7 @@
           } catch (_) {
             State.user = null;
           }
+          State.address = State.user?.address || "";
           State.token = null;
           DB.remove("session");
         },
@@ -2148,7 +2292,9 @@
           const options = get("demo-login-options");
           if (!options) return;
           options.innerHTML = (accounts || []).map((account) =>
-            `<button class="btn-small ${account.role === "quick-admin" ? "admin-quick-login" : "secondary"}" type="button" onclick="App.demoLogin('${esc(account.role)}')">${esc(account.label)}</button>`,
+            account.role === "quick-admin"
+              ? `<button class="btn-small admin-quick-login" type="button" onclick="App.prepareQuickAdminLogin('${esc(account.email)}')">${esc(account.label)}</button>`
+              : `<button class="btn-small secondary" type="button" onclick="App.demoLogin('${esc(account.role)}')">${esc(account.label)}</button>`,
           ).join("");
           options.classList.toggle("hidden", !accounts?.length);
         },
@@ -2596,12 +2742,22 @@
           State.address || "Informar endereço de entrega";
         const nav = get("nav-account"),
           label = get("nav-account-text"),
-          adminNav = get("nav-admin");
-        if (adminNav) adminNav.classList.toggle("hidden", !State.isAdmin());
+          adminNav = get("nav-admin"),
+          adminBadge = get("nav-admin-badge");
+
+        const pendingOrders = State.isAdmin() ? countPendingOrders(orders()) : 0;
+        if (adminNav) {
+          adminNav.classList.toggle("hidden", !State.isAdmin());
+          if (adminBadge) {
+            adminBadge.textContent = String(pendingOrders);
+            adminBadge.classList.toggle("hidden", pendingOrders === 0);
+          }
+        }
+
         if (State.logged()) {
           label.textContent = State.isAdmin() ? "Painel admin" : (State.user.name || "Conta").split(" ")[0];
           nav.title = State.isAdmin() ? "Abrir painel administrativo" : "Sair da conta";
-          nav.onclick = State.isAdmin() ? () => App.go("admin") : App.logout;
+          nav.onclick = State.isAdmin() ? () => App.go("admin") : () => App.logout();
         } else {
           label.textContent = "Entrar";
           nav.title = "";
@@ -2651,6 +2807,22 @@
           return acc;
         }, {});
       }
+      function filterOrdersForView(list, statusFilter = "all", searchTerm = "") {
+        const term = String(searchTerm || "").trim().toLowerCase();
+        return list.filter((order) => {
+          const status = normalizeOrderStatus(order.status);
+          const matchesStatus = statusFilter === "all" || status === statusFilter;
+          const haystack = [
+            String(order.id || ""),
+            String(order.address || ""),
+            String(order.notes || ""),
+            String(order.userEmail || order.user_id || ""),
+            (order.items || []).map((item) => item.name).join(" "),
+          ].join(" ").toLowerCase();
+          const matchesTerm = !term || haystack.includes(term);
+          return matchesStatus && matchesTerm;
+        });
+      }
       function orderTimeline(o) {
         const current = normalizeOrderStatus(o.status);
         if (current === "cancelado")
@@ -2680,7 +2852,7 @@
           const cats = ["Todos", ...new Set(list.map((p) => p.category))];
           const promo = activePromos()[0];
           get("main").innerHTML =
-            `<section class="hero"><div class="hero-inner"><span class="eyebrow">🍞 Padaria artesanal</span><h1>Pão fresquinho, <em>entrega rápida</em></h1><p>Escolha seus produtos favoritos, monte seu pedido e receba em casa com todo o carinho.</p><a class="hero-cta" href="#catalogo">Ver cardápio ↓</a><div class="hero-stats"><div class="hero-stat"><strong>4.8★</strong><span>Avaliação média</span></div><div class="hero-stat"><strong>30 min</strong><span>Entrega média</span></div><div class="hero-stat"><strong>100%</strong><span>Assados no dia</span></div></div></div></section><section class="section container" id="catalogo">${promo ? `<div class="promo-banner">🎉 <strong>Promoção ativa:</strong> ${esc(promo.name)} por ${money(effectivePrice(promo))}</div>` : '<div class="promo-banner">🎉 <strong>Frete grátis</strong> em pedidos acima de R$ 50,00</div>'}<div class="section-head"><h2>Nosso cardápio</h2><span class="count">${list.length} itens</span></div><div class="filters" id="filters">${cats.map((c, i) => `<button class="cat-btn ${i === 0 ? "active" : ""}" data-cat="${esc(c)}">${esc(c)}</button>`).join("")}</div><input class="search" id="product-search" placeholder="🔍 Buscar produto..." oninput="Pages.filter()"><div style="height:22px"></div><div class="grid" id="product-grid"></div></section>`;
+            `<section class="hero"><div class="hero-inner"><span class="eyebrow">🍞 Padaria artesanal</span><h1>Pão fresquinho, <em>entrega rápida</em></h1><p>Escolha seus produtos favoritos, monte seu pedido e receba em casa com todo o carinho.</p><a class="hero-cta" href="#catalogo">Ver cardápio ↓</a><div class="hero-stats"><div class="hero-stat"><strong>4.8★</strong><span>Avaliação média</span></div><div class="hero-stat"><strong>30 min</strong><span>Entrega média</span></div><div class="hero-stat"><strong>100%</strong><span>Assados no dia</span></div></div></div></section><section class="section container"><div class="feature-grid"><div class="feature-card"><div class="icon">🥐</div><h3>Receita artesanal</h3><p>Produtos feitos com massa, tradição e sabor de padaria de verdade.</p></div><div class="feature-card"><div class="icon">🚚</div><h3>Entrega prática</h3><p>Seu pedido chega com agilidade, organizando o dia e a rotina da casa.</p></div><div class="feature-card"><div class="icon">✨</div><h3>Qualidade premium</h3><p>Ingredientes escolhidos com cuidado para manter o sabor acolhedor e o conforto.</p></div></div></section><section class="section container" id="catalogo">${promo ? `<div class="promo-banner">🎉 <strong>Promoção ativa:</strong> ${esc(promo.name)} por ${money(effectivePrice(promo))}</div>` : '<div class="promo-banner">🎉 <strong>Frete grátis</strong> em pedidos acima de R$ 50,00</div>'}<div class="section-head"><h2>Nosso cardápio</h2><span class="count">${list.length} itens</span></div><div class="filters" id="filters">${cats.map((c, i) => `<button class="cat-btn ${i === 0 ? "active" : ""}" data-cat="${esc(c)}">${esc(c)}</button>`).join("")}</div><input class="search" id="product-search" placeholder="🔍 Buscar produto..." oninput="Pages.filter()"><div style="height:22px"></div><div class="grid" id="product-grid"></div></section>`;
           document.querySelectorAll("#filters .cat-btn").forEach((btn) =>
             btn.addEventListener("click", () => {
               document
@@ -2737,8 +2909,13 @@
           }
           if (refreshing && previousOrders === JSON.stringify(orders())) return;
           const list = orders();
+          const statusFilter = get("orders-status-filter")?.value || "all";
+          const searchTerm = get("orders-search")?.value || "";
+          const filteredList = filterOrdersForView(list, statusFilter, searchTerm);
           get("main").innerHTML =
-            `<section class="section container"><div class="section-head"><h2>▣ Meus pedidos</h2><span class="count">${list.length} pedidos</span></div><div>${list.length ? list.map(cardOrder).join("") : `<div class="empty"><strong>📭</strong><p>Você ainda não fez nenhum pedido.</p><button class="hero-cta" style="margin-top:18px" onclick="App.go('home')">Ver cardápio →</button></div>`}</div></section>`;
+            `<section class="section container"><div class="section-head"><h2>▣ Meus pedidos</h2><span class="count">${filteredList.length} pedidos</span></div><div class="order-toolbar"><input id="orders-search" class="search" placeholder="Buscar pedido, endereço ou item..." value="${esc(searchTerm)}"><select id="orders-status-filter" aria-label="Filtrar pedidos por status"><option value="all" ${statusFilter === "all" ? "selected" : ""}>Todos</option>${ORDER_STAGES.map((stage) => `<option value="${stage.key}" ${statusFilter === stage.key ? "selected" : ""}>${stage.label}</option>`).join("")}</select></div><div>${filteredList.length ? filteredList.map(cardOrder).join("") : `<div class="empty"><strong>📭</strong><p>${list.length ? "Nenhum pedido corresponde ao filtro atual." : "Você ainda não fez nenhum pedido."}</p><button class="hero-cta" style="margin-top:18px" onclick="App.go('home')">Ver cardápio →</button></div>`}</div></section>`;
+          get("orders-search")?.addEventListener("input", () => Pages.orders(true));
+          get("orders-status-filter")?.addEventListener("change", () => Pages.orders(true));
           if (!refreshing) startOrderRefresh(() => Pages.orders(true));
         },
         async admin() {
@@ -2763,10 +2940,11 @@
             .filter((o) => normalizeOrderStatus(o.status) !== "cancelado")
             .reduce((s, o) => s + Number(o.total || 0), 0);
           get("main").innerHTML =
-            `<section class="admin-shell container"><div class="admin-hero"><div><span class="chip">Área restrita</span><h1>Painel administrativo</h1><p>Gerencie o cardápio e acompanhe cada pedido até a entrega.</p></div><div class="admin-hero-actions"><button class="btn-small" onclick="Pages.adminTab('products');setTimeout(()=>get('admin-name')?.focus(),0)">＋ Adicionar produto</button><button class="btn-outline" onclick="App.logout()">Sair da conta</button></div></div><div class="kpis"><div class="kpi"><small>Produtos</small><strong>${list.length}</strong></div><div class="kpi"><small>Novos pedidos</small><strong>${pending}</strong></div><div class="kpi"><small>Em preparo</small><strong>${counts.preparando}</strong></div><div class="kpi"><small>Saiu para entrega</small><strong>${counts.saiu_entrega}</strong></div></div><div id="api-status-box" class="api-status"><div><strong data-api-title>API não confirmada</strong><p data-api-text>${esc(State.api.message)}</p></div><button class="btn-small" onclick="Api.check()">Verificar novamente</button></div><div class="admin-card"><div class="admin-tabs"><button class="admin-tab active" data-admin-tab="products" onclick="Pages.adminTab('products')">Cardápio e promoções</button><button class="admin-tab" data-admin-tab="orders" onclick="Pages.adminTab('orders')">Pedidos</button><button class="admin-tab" data-admin-tab="accounts" onclick="Pages.adminTab('accounts')">Contas</button><button class="admin-tab" data-admin-tab="delivery" onclick="Pages.adminTab('delivery')">🛵 Saiu para entrega <span class="badge">${counts.saiu_entrega}</span></button></div><div id="admin-content"></div></div><div class="admin-card"><div class="admin-card-head"><h2>Contas persistidas no banco</h2></div><p style="color:var(--muted);font-size:.73rem">Gerencie os acessos na aba Contas.</p></div></section>`;
+            `<section class="admin-shell container"><div class="admin-hero"><div><span class="chip">Área restrita</span><h1>Painel administrativo</h1><p>Gerencie o cardápio e acompanhe cada pedido até a entrega.</p></div><div class="admin-hero-actions"><button class="btn-small" onclick="Pages.adminTab('products');setTimeout(()=>get('admin-name')?.focus(),0)">＋ Adicionar produto</button><button class="btn-small secondary" onclick="void (async () => { await Api.loadOrders(); renderHeader(); if (activeAdminTab === 'orders' || activeAdminTab === 'delivery') await Pages.adminTab(activeAdminTab, true); toast('Lista de pedidos atualizada.'); })();">Atualizar pedidos</button><button class="btn-outline" onclick="App.logout()">Sair da conta</button></div></div><div class="kpis"><div class="kpi"><small>Produtos</small><strong>${list.length}</strong></div><div class="kpi"><small>Novos pedidos</small><strong>${pending}</strong></div><div class="kpi"><small>Em preparo</small><strong>${counts.preparando}</strong></div><div class="kpi"><small>Saiu para entrega</small><strong>${counts.saiu_entrega}</strong></div></div><div id="api-status-box" class="api-status"><div><strong data-api-title>API não confirmada</strong><p data-api-text>${esc(State.api.message)}</p></div><button class="btn-small" onclick="Api.check()">Verificar novamente</button></div><div class="admin-card"><div class="admin-tabs"><button class="admin-tab active" data-admin-tab="products" onclick="Pages.adminTab('products')">Cardápio e promoções</button><button class="admin-tab" data-admin-tab="orders" onclick="Pages.adminTab('orders')">Pedidos <span class="badge ${pending > 0 ? '' : 'hidden'}">${pending}</span></button><button class="admin-tab" data-admin-tab="accounts" onclick="Pages.adminTab('accounts')">Contas</button><button class="admin-tab" data-admin-tab="delivery" onclick="Pages.adminTab('delivery')">🛵 Saiu para entrega <span class="badge">${counts.saiu_entrega}</span></button></div><div id="admin-content"></div></div><div class="admin-card"><div class="admin-card-head"><h2>Contas persistidas no banco</h2></div><p style="color:var(--muted);font-size:.73rem">Gerencie os acessos na aba Contas.</p></div></section>`;
           Pages.adminTab("products");
           updateApiUi();
           previousPendingOrderCount = pending;
+          maybeNotifyPendingOrders(orderList);
           startOrderRefresh(async () => {
             if (!State.isAdmin()) {
               stopOrderRefresh();
@@ -2784,13 +2962,30 @@
               '[data-admin-tab="delivery"] .badge',
             );
             if (deliveryBadge) deliveryBadge.textContent = updatedCounts.saiu_entrega;
-            if (
-              previousPendingOrderCount !== null &&
-              updatedCounts.pendente > previousPendingOrderCount
-            ) {
-              toast("Novo pedido recebido.");
+            const ordersTabBadge = document.querySelector('[data-admin-tab="orders"] .badge');
+            if (ordersTabBadge) {
+              ordersTabBadge.textContent = updatedCounts.pendente;
+              ordersTabBadge.classList.toggle('hidden', updatedCounts.pendente === 0);
             }
+            maybeNotifyPendingOrders(updatedOrders);
             previousPendingOrderCount = updatedCounts.pendente;
+            renderHeader();
+            if (activeAdminTab === "products") {
+              const previousProducts = JSON.stringify(products());
+              await Api.loadProducts(true);
+              if (previousProducts !== JSON.stringify(products())) {
+                const productList = get("admin-product-list");
+                if (productList) productList.innerHTML = products().map(adminProduct).join("");
+                const productCount = get("admin-product-count");
+                if (productCount) productCount.textContent = `${products().length} itens`;
+              }
+            } else if (activeAdminTab === "accounts") {
+              const previousAccounts = JSON.stringify(State.accounts || []);
+              await Api.loadAccounts();
+              if (previousAccounts !== JSON.stringify(State.accounts)) {
+                await Pages.adminTab("accounts", true);
+              }
+            }
             if (
               ordersChanged &&
               (activeAdminTab === "orders" || activeAdminTab === "delivery")
@@ -2810,8 +3005,9 @@
           if (!el) return;
           if (tab === "accounts") {
             try {
-              const accounts = await Api.loadAccounts();
-              el.innerHTML = `<div class="admin-card-head"><div><h2>Contas do sistema</h2><small style="color:var(--muted)">Somente o administrador pode alterar papéis e acesso.</small></div></div><div class="admin-product-list">${accounts.map((account) => `<div class="admin-product"><div class="admin-product-main"><strong>${esc(account.name)}</strong><small>${esc(account.email)} · ${account.role === "admin" ? "Administrador" : "Cliente"}</small><small>${account.active ? "Conta ativa" : "Conta desativada"}</small></div><div class="admin-product-actions"><button class="btn-small secondary" onclick="Accounts.toggleRole(${Number(account.id)}, '${account.role === "admin" ? "user" : "admin"}')">${account.role === "admin" ? "Remover admin" : "Tornar admin"}</button><button class="btn-small ${account.active ? "danger" : "secondary"}" onclick="Accounts.toggleActive(${Number(account.id)}, ${account.active ? "false" : "true"})">${account.active ? "Desativar" : "Ativar"}</button></div></div>`).join("")}</div>`;
+              if (!refreshing) await Api.loadAccounts();
+              const accounts = State.accounts || [];
+              el.innerHTML = `<div class="admin-card-head"><div><h2>Contas do sistema</h2><small style="color:var(--muted)">Somente o administrador pode alterar papéis e acesso.</small></div></div><div class="admin-product-list">${accounts.map((account) => `<div class="admin-product"><div class="admin-product-main"><strong>${esc(account.name)}</strong><small>${esc(account.email)} · ${account.role === "admin" ? "Administrador" : "Cliente"}</small><small>Endereço: ${esc(account.address || "Não informado")}</small><small>${account.active ? "Conta ativa" : "Conta desativada"}</small></div><div class="admin-product-actions"><button class="btn-small secondary" onclick="Accounts.toggleRole(${Number(account.id)}, '${account.role === "admin" ? "user" : "admin"}')">${account.role === "admin" ? "Remover admin" : "Tornar admin"}</button><button class="btn-small ${account.active ? "danger" : "secondary"}" onclick="Accounts.toggleActive(${Number(account.id)}, ${account.active ? "false" : "true"})">${account.active ? "Desativar" : "Ativar"}</button></div></div>`).join("")}</div>`;
             } catch (error) {
               el.innerHTML = `<div class="message error">${esc(error.message)}</div>`;
             }
@@ -2827,16 +3023,21 @@
             const all = orders().sort((a, b) =>
               String(b.createdAt).localeCompare(String(a.createdAt)),
             );
-            const list =
+            const statusFilter = get("admin-order-filter")?.value || "all";
+            const searchTerm = get("admin-order-search")?.value || "";
+            const filteredList = filterOrdersForView(
               tab === "delivery"
-                ? all.filter(
-                    (o) => normalizeOrderStatus(o.status) === "saiu_entrega",
-                  )
-                : all;
-            el.innerHTML = `<div class="admin-card-head"><div><h2>${tab === "delivery" ? "Pedidos que saíram para entrega" : "Todos os pedidos"}</h2><small style="color:var(--muted)">${tab === "delivery" ? "Aparecem aqui somente após o status ser marcado como “Saiu para entrega”." : "Atualize o status de cada pedido sem sair desta tela."}</small></div><button class="btn-small secondary" onclick="Pages.adminTab('${tab}')">Atualizar</button></div>${list.length ? list.map(adminOrder).join("") : `<div class="empty"><strong>${tab === "delivery" ? "🛵" : "📭"}</strong><p>${tab === "delivery" ? "Nenhum pedido saiu para entrega ainda." : "Nenhum pedido registrado."}</p></div>`}`;
+                ? all.filter((o) => normalizeOrderStatus(o.status) === "saiu_entrega")
+                : all,
+              statusFilter,
+              searchTerm,
+            );
+            el.innerHTML = `<div class="admin-card-head"><div><h2>${tab === "delivery" ? "Pedidos que saíram para entrega" : "Todos os pedidos"}</h2><small style="color:var(--muted)">${tab === "delivery" ? "Aparecem aqui somente após o status ser marcado como “Saiu para entrega”." : "Atualize o status de cada pedido sem sair desta tela."}</small></div><button class="btn-small secondary" onclick="Pages.adminTab('${tab}')">Atualizar</button></div><div class="order-toolbar"><input id="admin-order-search" class="search" placeholder="Buscar pedido, cliente ou item..." value="${esc(searchTerm)}"><select id="admin-order-filter" aria-label="Filtrar pedidos por status"><option value="all" ${statusFilter === "all" ? "selected" : ""}>Todos</option>${ORDER_STAGES.map((stage) => `<option value="${stage.key}" ${statusFilter === stage.key ? "selected" : ""}>${stage.label}</option>`).join("")}</select></div>${filteredList.length ? filteredList.map(adminOrder).join("") : `<div class="empty"><strong>${tab === "delivery" ? "🛵" : "📭"}</strong><p>${tab === "delivery" ? "Nenhum pedido saiu para entrega ainda." : "Nenhum pedido registrado ou disponível para esse filtro."}</p></div>`}`;
+            get("admin-order-search")?.addEventListener("input", () => Pages.adminTab(tab, true));
+            get("admin-order-filter")?.addEventListener("change", () => Pages.adminTab(tab, true));
             return;
           }
-          el.innerHTML = `<div class="admin-products"><div><div class="admin-card-head"><h2>Adicionar produto</h2><button class="btn-small secondary" onclick="Admin.clearForm()">Limpar</button></div><form id="admin-product-form" onsubmit="Admin.save(event)"><input type="hidden" id="admin-id"><div class="field"><label for="admin-name">Nome</label><input id="admin-name" required></div><div class="field"><label for="admin-description">Descrição</label><textarea id="admin-description" required></textarea></div><div class="form-grid"><div class="field"><label for="admin-price">Preço (R$)</label><input id="admin-price" type="number" min="0" step="0.01" required></div><div class="field"><label for="admin-category">Categoria</label><select id="admin-category"><option>Pães</option><option>Doces</option><option>Salgados</option><option>Bebidas</option><option>Outros</option></select></div><div class="field full"><label for="admin-image">URL da imagem</label><input id="admin-image" type="url" placeholder="https://..."></div><div class="field"><label for="admin-promo-type">Tipo de promoção</label><select id="admin-promo-type"><option value="percent">Percentual (%)</option><option value="fixed">Desconto fixo (R$)</option></select></div><div class="field"><label for="admin-promo-value">Desconto</label><input id="admin-promo-value" type="number" min="0" step="0.01" value="0"></div><div class="field full"><label><input id="admin-promo-active" type="checkbox" style="width:auto;margin-right:7px"> Ativar promoção neste produto</label></div><div class="field"><label for="admin-promo-start">Início da promoção</label><input id="admin-promo-start" type="datetime-local"></div><div class="field"><label for="admin-promo-end">Fim da promoção</label><input id="admin-promo-end" type="datetime-local"></div></div><div id="admin-form-message"></div><button class="btn-primary wide" type="submit">Salvar produto</button></form></div><div><div class="admin-card-head"><h2>Produtos cadastrados</h2><span class="count">${products().length} itens</span></div><div class="admin-product-list">${products().map(adminProduct).join("")}</div></div></div>`;
+          el.innerHTML = `<div class="admin-products"><div><div class="admin-card-head"><h2>Adicionar produto</h2><button class="btn-small secondary" onclick="Admin.clearForm()">Limpar</button></div><form id="admin-product-form" onsubmit="Admin.save(event)"><input type="hidden" id="admin-id"><div class="field"><label for="admin-name">Nome</label><input id="admin-name" required></div><div class="field"><label for="admin-description">Descrição</label><textarea id="admin-description" required></textarea></div><div class="form-grid"><div class="field"><label for="admin-price">Preço (R$)</label><input id="admin-price" type="number" min="0" step="0.01" required></div><div class="field"><label for="admin-category">Categoria</label><select id="admin-category"><option>Pães</option><option>Doces</option><option>Salgados</option><option>Bebidas</option><option>Outros</option></select></div><div class="field full"><label for="admin-image">URL da imagem</label><input id="admin-image" type="url" placeholder="https://..."></div><div class="field"><label for="admin-promo-type">Tipo de promoção</label><select id="admin-promo-type"><option value="percent">Percentual (%)</option><option value="fixed">Desconto fixo (R$)</option></select></div><div class="field"><label for="admin-promo-value">Desconto</label><input id="admin-promo-value" type="number" min="0" step="0.01" value="0"></div><div class="field full"><label><input id="admin-promo-active" type="checkbox" style="width:auto;margin-right:7px"> Ativar promoção neste produto</label></div><div class="field"><label for="admin-promo-start">Início da promoção</label><input id="admin-promo-start" type="datetime-local"></div><div class="field"><label for="admin-promo-end">Fim da promoção</label><input id="admin-promo-end" type="datetime-local"></div></div><div id="admin-form-message"></div><button class="btn-primary wide" type="submit">Salvar produto</button></form></div><div><div class="admin-card-head"><h2>Produtos cadastrados</h2><span class="count" id="admin-product-count">${products().length} itens</span></div><div class="admin-product-list" id="admin-product-list">${products().map(adminProduct).join("")}</div></div></div>`;
         },
       };
       function cardProduct(p) {
@@ -3002,6 +3203,7 @@
         },
       };
       const App = {
+        logoutTrigger: null,
         async go(page) {
           if (page !== "orders" && page !== "admin") stopOrderRefresh();
           if (page !== "home") stopCatalogRefresh();
@@ -3031,14 +3233,28 @@
         },
         finishLogin(auth, message, targetOverride = null) {
           State.user = auth.user;
+          State.address = auth.user.address || "";
           State.token = null;
           State.saveSession();
           this.closeAuth();
           renderHeader();
           const target = targetOverride || State.redirect || (State.isAdmin() ? "admin" : "home");
           State.redirect = null;
-          this.go(target);
+          if (target === "address") {
+            this.go("home");
+            this.setAddress();
+          } else {
+            this.go(target);
+          }
           toast(message);
+        },
+        prepareQuickAdminLogin(email) {
+          this.authTab("login");
+          get("login-email").value = email;
+          get("login-password").value = "";
+          get("login-password").focus();
+          get("login-message").innerHTML =
+            '<div class="message">Informe a senha da conta admin para continuar.</div>';
         },
         async demoLogin(role) {
           get("login-message").innerHTML = "";
@@ -3089,12 +3305,30 @@
               `<div class="message error">${esc(error.message)}</div>`;
           }
         },
-        async logout() {
+        logout() {
+          this.logoutTrigger = document.activeElement;
+          get("logout-confirm-modal").classList.add("open");
+          document.body.style.overflow = "hidden";
+          get("logout-cancel").focus();
+        },
+        cancelLogout() {
+          get("logout-confirm-modal").classList.remove("open");
+          document.body.style.overflow = "";
+          const trigger = this.logoutTrigger;
+          this.logoutTrigger = null;
+          if (trigger?.isConnected && typeof trigger.focus === "function") trigger.focus();
+        },
+        async confirmLogout() {
+          get("logout-confirm-modal").classList.remove("open");
+          document.body.style.overflow = "";
+          this.logoutTrigger = null;
           try {
             await Api.request("/auth/logout", { method: "POST" });
           } catch (_) {}
           State.user = null;
           State.token = null;
+          State.address = "";
+          DB.remove("address");
           State.saveSession();
           renderHeader();
           this.go("home");
@@ -3144,6 +3378,11 @@
           toast(`${p.name} adicionado ao carrinho.`);
         },
         setAddress() {
+          if (!State.logged()) {
+            State.redirect = "address";
+            this.openAuth();
+            return;
+          }
           get("address-input").value = State.address || "";
           get("address-modal").classList.add("open");
           document.body.style.overflow = "hidden";
@@ -3152,13 +3391,21 @@
           get("address-modal").classList.remove("open");
           document.body.style.overflow = "";
         },
-        saveAddress(e) {
+        async saveAddress(e) {
           e.preventDefault();
-          State.address = get("address-input").value.trim();
-          DB.set("address", State.address);
-          this.closeAddress();
-          renderHeader();
-          toast("Endereço salvo.");
+          const address = get("address-input").value.trim();
+          try {
+            State.user = await Api.request("/auth/me/address", {
+              method: "PATCH",
+              body: JSON.stringify({ address }),
+            });
+            State.address = State.user.address || "";
+            this.closeAddress();
+            renderHeader();
+            toast("Endereço salvo na sua conta.");
+          } catch (error) {
+            toast(error.message);
+          }
         },
         renderCheckoutSummary() {
           get("checkout-summary").innerHTML =
@@ -3217,8 +3464,6 @@
                 items: State.cart.map((i) => ({ product_id: Number(i.product.id), quantity: i.qty })),
               }),
             });
-            State.address = address;
-            DB.set("address", address);
             State.cart = [];
             State.saveCart();
             this.closeCheckout();
@@ -3283,13 +3528,19 @@
         },
       };
       document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") App.closeAll();
+        if (e.key === "Escape") {
+          if (get("logout-confirm-modal").classList.contains("open")) App.cancelLogout();
+          else App.closeAll();
+        }
       });
       document.querySelectorAll(".modal-wrap").forEach((m) =>
         m.addEventListener("click", (e) => {
           if (e.target === m) {
-            m.classList.remove("open");
-            document.body.style.overflow = "";
+            if (m.id === "logout-confirm-modal") App.cancelLogout();
+            else {
+              m.classList.remove("open");
+              document.body.style.overflow = "";
+            }
           }
         }),
       );

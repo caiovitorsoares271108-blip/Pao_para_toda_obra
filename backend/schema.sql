@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS users (
   name VARCHAR(120) NOT NULL,
   email VARCHAR(180) NOT NULL UNIQUE,
   password_hash VARCHAR(255) NOT NULL,
+  address VARCHAR(300) NOT NULL DEFAULT '',
   role VARCHAR(20) NOT NULL DEFAULT 'user' CHECK (role IN ('user', 'admin')),
   active BOOLEAN NOT NULL DEFAULT 1,
   created_at DATETIME NOT NULL
