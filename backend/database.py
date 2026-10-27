@@ -26,17 +26,28 @@ if SUPABASE_URL:
     if len(SUPABASE_URL.split("/")) < 3 or not SUPABASE_URL.split("/")[2]:
         raise RuntimeError("SUPABASE_URL deve incluir um hostname válido")
 
-if DATABASE_URL:
-    if not DATABASE_URL.startswith(("postgres://", "postgresql://", "postgresql+psycopg://", "sqlite:")):
-        raise RuntimeError("DATABASE_URL deve ser uma conexão PostgreSQL ou SQLite")
-elif ENVIRONMENT == "production":
-    raise RuntimeError("Defina DATABASE_URL/SUPABASE_DB_URL para conectar ao banco PostgreSQL")
-else:
-    DATABASE_URL = f"sqlite:///{Path(__file__).resolve().parent / 'pao.db'}"
+if not DATABASE_URL:
+    if ENVIRONMENT == "test":
+        raise RuntimeError("DATABASE_URL deve apontar para o SQLite temporário dos testes")
+    raise RuntimeError("Defina DATABASE_URL/SUPABASE_DB_URL com a conexão PostgreSQL do Supabase")
+
+if DATABASE_URL.startswith("sqlite:"):
+    if ENVIRONMENT != "test":
+        raise RuntimeError("SQLite só é permitido nos testes; configure a conexão PostgreSQL do Supabase")
+elif not DATABASE_URL.startswith(("postgres://", "postgresql://", "postgresql+psycopg://")):
+    raise RuntimeError("DATABASE_URL deve ser uma conexão PostgreSQL do Supabase")
+
 if DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = "postgresql+psycopg://" + DATABASE_URL.removeprefix("postgres://")
 elif DATABASE_URL.startswith("postgresql://"):
     DATABASE_URL = "postgresql+psycopg://" + DATABASE_URL.removeprefix("postgresql://")
+
+if not DATABASE_URL.startswith("sqlite:"):
+    from sqlalchemy.engine import make_url
+
+    database_host = make_url(DATABASE_URL).host or ""
+    if not database_host.endswith((".supabase.co", ".pooler.supabase.com")):
+        raise RuntimeError("A conexão configurada não aponta para um host PostgreSQL oficial do Supabase")
 
 connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
 engine_options = {"connect_args": connect_args, "pool_pre_ping": True}

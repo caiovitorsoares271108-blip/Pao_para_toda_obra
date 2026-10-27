@@ -54,6 +54,8 @@ def _provision_initial_accounts(db: Session) -> None:
         password = os.getenv(password_key, "")
         if not email or len(password) < 6:
             continue
+        if role == "admin" and db.scalar(select(User.id).where(User.role == "admin")):
+            continue
         if db.scalar(select(User).where(User.email == email)):
             continue
         db.add(User(name=os.getenv(name_key, default_name).strip() or default_name,
@@ -116,7 +118,7 @@ def health() -> dict[str, str]:
 def health_db(db=Depends(get_db)) -> dict[str, str]:
     try:
         db.execute(text("SELECT 1"))
-        return {"status": "ok", "database": "reachable"}
+        return {"status": "ok", "database": "reachable", "engine": engine.dialect.name}
     except Exception:
         from fastapi import HTTPException
         raise HTTPException(status_code=503, detail="Banco de dados indisponível")

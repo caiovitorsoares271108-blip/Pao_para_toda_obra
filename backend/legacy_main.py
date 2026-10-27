@@ -25,15 +25,7 @@ from . import database as modular_database
 load_dotenv()
 
 ENVIRONMENT = os.getenv("ENVIRONMENT", "development").lower()
-DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
-if not DATABASE_URL:
-    if ENVIRONMENT == "production":
-        raise RuntimeError("DATABASE_URL é obrigatória em produção")
-    DATABASE_URL = "sqlite:///./pao.db"
-if DATABASE_URL.startswith("postgres://"):
-    DATABASE_URL = "postgresql+psycopg://" + DATABASE_URL.removeprefix("postgres://")
-elif DATABASE_URL.startswith("postgresql://"):
-    DATABASE_URL = "postgresql+psycopg://" + DATABASE_URL.removeprefix("postgresql://")
+DATABASE_URL = modular_database.DATABASE_URL
 JWT_SECRET = os.getenv("JWT_SECRET", "dev-secret-change-me")
 JWT_EXPIRE_MINUTES = int(os.getenv("JWT_EXPIRE_MINUTES", "43200"))
 AUTH_COOKIE_NAME = "pao_session"

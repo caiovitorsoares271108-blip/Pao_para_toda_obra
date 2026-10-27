@@ -10,5 +10,5 @@
     }
   },
   "postCreateCommand": "bash -lc 'cd /workspaces/Pao_para_toda_obra/backend && if [ ! -d .venv ]; then python3 -m venv .venv; fi && . .venv/bin/activate && python -m pip install -r requirements.txt && cp -n .env.example .env 2>/dev/null || true'",
-  "postStartCommand": "bash -lc 'cd /workspaces/Pao_para_toda_obra/backend && if ! curl -fsS http://127.0.0.1:8000/health 2>/dev/null | grep -qx \"{\\\"status\\\":\\\"ok\\\"}\"; then . .venv/bin/activate && ENVIRONMENT=development uvicorn main:app --host 0.0.0.0 --port 8000 --reload > /tmp/pao-para-toda-obra.log 2>&1 & fi'"
+  "postStartCommand": "bash -lc 'cd /workspaces/Pao_para_toda_obra/backend && if ! curl -fsS http://127.0.0.1:8000/health/db 2>/dev/null | grep -q \"\\\"engine\\\":\\\"postgresql\\\"\"; then . .venv/bin/activate && ENVIRONMENT=development uvicorn main:app --host 0.0.0.0 --port 8000 --reload > /tmp/pao-para-toda-obra.log 2>&1 & fi'"
 }

@@ -26,17 +26,17 @@ O comando inicia a API e o frontend juntos. Acesse o frontend em http://127.0.0.
 
 O frontend é servido pelo Flask; não é necessário iniciar um `python -m http.server` separado.
 
-Com `DATABASE_URL` vazio em desenvolvimento, o banco isolado é `backend/pao.db`. Em produção, `DATABASE_URL` é obrigatória. Copie a string oficial em Supabase > Connect; use a string do Session Pooler se a infraestrutura futura não alcançar o endpoint direto.
+Todos os ambientes de execução exigem a connection string PostgreSQL oficial do Supabase em `DATABASE_URL` ou `SUPABASE_DB_URL`; sem ela, ou se ela apontar a SQLite/outro host, o backend não inicia. Obtenha a URL em Supabase > Connect e use o Session Pooler se necessário. SQLite só é usado pelos testes automatizados com banco temporário. O endpoint `/health/db` informa o dialect efetivamente conectado em `engine`.
 
 Contas demo são opcionais e exigem `ENVIRONMENT=development`, `SEED_DEMO_DATA=true` e credenciais privadas nas variáveis `DEMO_*`. Elas nunca usam senhas publicadas no código. Sessões usam cookie `HttpOnly`; `JWT_EXPIRE_MINUTES` controla sua duração.
 
 ## Codespaces Secrets do Supabase
 
-Cadastre no Codespaces: `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY` e `DATABASE_URL`. `SUPABASE_URL` identifica o projeto REST e não substitui a conexão SQL; `DATABASE_URL` deve ser a connection string PostgreSQL da opção Supabase **Connect**. O backend aceita também `SUPABASE_DB_URL` no lugar de `DATABASE_URL`.
+Cadastre no Codespaces a connection string PostgreSQL do Supabase como `DATABASE_URL` (ou `SUPABASE_DB_URL`). `SUPABASE_URL` identifica o projeto REST e não substitui a conexão SQL.
 
 As duas API keys não são enviadas ao navegador. Somente o backend pode usar `SUPABASE_SECRET_KEY`; o frontend recebe apenas o resultado das rotas autenticadas.
 
-Ao iniciar com banco vazio, o backend aplica o [schema SQL](schema.sql) no SQLite ou usa o schema PostgreSQL/Supabase já preparado e carrega [products_seed.json](products_seed.json) uma vez por `seed_key`. Alterações feitas no painel não são sobrescritas.
+O backend usa o schema PostgreSQL/Supabase já preparado e carrega [products_seed.json](products_seed.json) uma vez por `seed_key`. Alterações feitas no painel não são sobrescritas. O esquema não é migrado automaticamente no startup.
 
 As contas podem ser gerenciadas por `GET/PATCH /auth/accounts`. Usuários comuns não podem alterar papel ou acesso. Cada pessoa autenticada pode atualizar seu próprio endereço com `PATCH /auth/me/address`; a rota exige sessão. O primeiro administrador pode ser provisionado por `INITIAL_ADMIN_*` no ambiente privado ou pela execução interativa de `python create_admin.py`.
 

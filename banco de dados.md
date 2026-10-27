@@ -1,6 +1,8 @@
 # Relatório de Banco de Dados
 
 > Escopo: inspeção somente leitura do código e de `backend/pao.db`, em 2026-10-22. O relatório não contém valores de credenciais, tokens, URLs de conexão, hashes nem dados pessoais. Cada conclusão está marcada como **FATO**, **INFERÊNCIA** ou **NÃO VERIFICADO**.
+>
+> Atualização em 2026-10-27: a aplicação agora exige `DATABASE_URL` ou `SUPABASE_DB_URL` com PostgreSQL hospedado em domínio oficial do Supabase em todos os ambientes de execução; SQLite só é permitido nos testes. As descrições de fallback e estado do workspace abaixo são um retrato histórico da inspeção de 2026-10-22, não a política atual.
 
 ## Índice
 

@@ -12,7 +12,7 @@ os.environ["JWT_SECRET"] = "test-secret"
 
 from fastapi.testclient import TestClient
 
-from backend.main import SessionLocal, app, _seed_catalog
+from backend.main import SessionLocal, app, _provision_initial_accounts, _seed_catalog
 from backend.database import Product, User
 from backend.API import contas as contas_api
 
@@ -27,6 +27,34 @@ class ApiTestCase(unittest.TestCase):
     def tearDownClass(cls):
         cls.client_context.__exit__(None, None, None)
         os.unlink(_db_file.name)
+
+    def test_database_health_reports_active_engine(self):
+        response = self.client_context.get("/health/db")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {
+            "status": "ok",
+            "database": "reachable",
+            "engine": "sqlite",
+        })
+
+    def test_initial_admin_is_not_duplicated_when_an_admin_exists(self):
+        with SessionLocal() as db:
+            db.add(User(
+                name="Admin existente",
+                email="existing-admin@example.com",
+                password_hash=contas_api.password_hash.hash("secret123"),
+                role="admin",
+            ))
+            db.commit()
+            with patch.dict(os.environ, {
+                "INITIAL_ADMIN_NAME": "Outro administrador",
+                "INITIAL_ADMIN_EMAIL": "bootstrap-admin@example.com",
+                "INITIAL_ADMIN_PASSWORD": "secret123",
+            }, clear=True):
+                _provision_initial_accounts(db)
+            self.assertIsNone(db.query(User).filter_by(
+                email="bootstrap-admin@example.com"
+            ).one_or_none())
 
     def test_registration_login_and_duplicate_email(self):
         response = self.client_context.post(

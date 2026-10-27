@@ -15,10 +15,5 @@ if [[ ! -f .env ]]; then
 fi
 
 export ENVIRONMENT=development
-export DATABASE_URL=
-export SUPABASE_DB_URL=
-export SUPABASE_URL=
-export SUPABASE_PUBLISHABLE_KEY=
-export SUPABASE_SECRET_KEY=
 
 exec uvicorn main:app --host 0.0.0.0 --port 8000 --reload
