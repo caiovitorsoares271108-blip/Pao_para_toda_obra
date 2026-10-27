@@ -1,10 +1,11 @@
 # Backend
 
-API FastAPI organizada nos módulos `API/contas.py`, `API/cardapio.py` e `API/pedidos.py`. O Flask serve o frontend no mesmo processo. SQLAlchemy/psycopg persistem dados no PostgreSQL/Supabase ou em SQLite isolado durante desenvolvimento.
+API FastAPI com rotas Supabase REST em `API/supabase_routes.py`; `API/contas.py`, `API/cardapio.py`, `API/pedidos.py` e `database.py` são mantidos para os testes temporários de compatibilidade. O Flask serve o frontend no mesmo processo. Dados de execução vão exclusivamente para o Supabase.
 
 ## Estrutura
 
-- `database.py`: modelos compartilhados e sessão SQLAlchemy.
+- `supabase_rest.py`: cliente REST privado para o Supabase usado pela aplicação em execução.
+- `database.py`: modelos SQLAlchemy usados somente pelo conjunto de testes legado.
 - `api_schemas.py`: contratos Pydantic de entrada e saída.
 - `API/contas.py`: autenticação, sessão e administração de contas.
 - `API/cardapio.py`: catálogo, disponibilidade e promoções.
@@ -26,15 +27,15 @@ O comando inicia a API e o frontend juntos. Acesse o frontend em http://127.0.0.
 
 O frontend é servido pelo Flask; não é necessário iniciar um `python -m http.server` separado.
 
-Todos os ambientes de execução exigem a connection string PostgreSQL oficial do Supabase em `DATABASE_URL` ou `SUPABASE_DB_URL`; sem ela, ou se ela apontar a SQLite/outro host, o backend não inicia. Obtenha a URL em Supabase > Connect e use o Session Pooler se necessário. SQLite só é usado pelos testes automatizados com banco temporário. O endpoint `/health/db` informa o dialect efetivamente conectado em `engine`.
+Todos os ambientes de execução usam a API REST do Supabase. Configure `SUPABASE_URL` e `SUPABASE_KEY` (chave privada de servidor) no ambiente do backend; não é necessário `DATABASE_URL`. SQLite é usado somente pelos testes automatizados com banco temporário. O endpoint `/health/db` valida uma consulta REST autenticada.
 
 Contas demo são opcionais e exigem `ENVIRONMENT=development`, `SEED_DEMO_DATA=true` e credenciais privadas nas variáveis `DEMO_*`. Elas nunca usam senhas publicadas no código. Sessões usam cookie `HttpOnly`; `JWT_EXPIRE_MINUTES` controla sua duração.
 
 ## Codespaces Secrets do Supabase
 
-Cadastre no Codespaces a connection string PostgreSQL do Supabase como `DATABASE_URL` (ou `SUPABASE_DB_URL`). `SUPABASE_URL` identifica o projeto REST e não substitui a conexão SQL.
+Cadastre no ambiente de execução `SUPABASE_URL` e `SUPABASE_KEY`. A chave deve ser privada e ficar somente no backend; uma chave publishable/anon não tem as permissões necessárias porque o RLS não tem policies públicas.
 
-As duas API keys não são enviadas ao navegador. Somente o backend pode usar `SUPABASE_SECRET_KEY`; o frontend recebe apenas o resultado das rotas autenticadas.
+Nenhuma API key é enviada ao navegador. O backend usa `SUPABASE_KEY` para acessar o banco pela camada de servidor; a chave publishable/anon não tem permissão para acessar as tabelas sem policies.
 
 O backend usa o schema PostgreSQL/Supabase já preparado e carrega [products_seed.json](products_seed.json) uma vez por `seed_key`. Alterações feitas no painel não são sobrescritas. O esquema não é migrado automaticamente no startup.
 
@@ -46,4 +47,4 @@ Em bancos não vazios, `products_seed.json` é carregado uma vez por `seed_key`.
 
 Os produtos novos e promoções são administrados pelas rotas `/products`, `/products/admin` e `/products/{id}`. O preço enviado pelo navegador não participa do cálculo do pedido. Promoções podem ter início/fim opcionais e somente o backend aplica o valor vigente.
 
-Para um banco Supabase existente que já recebeu `migration_supabase_v3.sql`, aplique `migration_profile_address.sql` no SQL Editor antes de iniciar a API; ela adiciona a coluna do endereço salvo no perfil. Em um banco novo, a coluna também é incluída em `migration_supabase_v3.sql`. A migração remota é uma ação manual: não a execute sem acesso autorizado ao projeto. Consulte `/health`, `/health/db` e `/docs` após iniciar. Nunca coloque `DATABASE_URL`, `JWT_SECRET` ou chaves privilegiadas no HTML, no JavaScript ou no Git.
+Para um banco Supabase existente, aplique `migration_supabase_rest_orders.sql` pelo SQL Editor para criar a função atômica de checkout. Aplique também `migration_profile_address.sql` se `users.address` ainda não existir. Em um banco novo, aplique primeiro `migration_supabase_v3.sql` e depois as duas migrações adicionais. O backend não executa DDL automaticamente. Consulte `/health`, `/health/db` e `/docs` após iniciar. Nunca coloque `JWT_SECRET` ou chaves privilegiadas no HTML, no JavaScript ou no Git.

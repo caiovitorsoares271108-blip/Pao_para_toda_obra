@@ -11,11 +11,7 @@ services:
         value: production
       - key: SUPABASE_URL
         sync: false
-      - key: SUPABASE_PUBLISHABLE_KEY
-        sync: false
-      - key: SUPABASE_SECRET_KEY
-        sync: false
-      - key: DATABASE_URL
+      - key: SUPABASE_KEY
         sync: false
       - key: JWT_SECRET
         generateValue: true

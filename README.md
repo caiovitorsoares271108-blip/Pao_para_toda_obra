@@ -4,7 +4,7 @@ Site de delivery de uma padaria artesanal, com frontend em HTML/CSS/JavaScript e
 
 ## Backend e Supabase
 
-O backend usa FastAPI, Flask, SQLAlchemy e PostgreSQL via `psycopg`. O FastAPI fornece a API e o Flask serve o frontend no mesmo processo. O catálogo, autenticação e pedidos são persistidos no banco; o navegador mantém apenas sessão, carrinho e preferências auxiliares.
+O backend usa FastAPI, Flask e a API REST do Supabase. O FastAPI fornece a API e o Flask serve o frontend no mesmo processo. O catálogo, autenticação e pedidos são persistidos no Supabase; o navegador mantém apenas sessão, carrinho e preferências auxiliares.
 
 ```bash
 cd backend
@@ -21,9 +21,9 @@ O frontend usa automaticamente a mesma origem da API. A API está separada em m�
 
 Pedidos e cardápio são sincronizados a cada 2 segundos enquanto a página está visível. O admin também atualiza pedidos, produtos e contas nesse intervalo; assim, clientes veem mudanças de status e disponibilidade e o admin vê novos pedidos e alterações de endereço. A sincronização consulta a API e o banco compartilhado.
 
-O projeto usa exclusivamente PostgreSQL no Supabase em todos os ambientes de execução. Configure `DATABASE_URL` (ou `SUPABASE_DB_URL`) antes de iniciar: no painel Supabase, abra **Connect**, copie a connection string PostgreSQL oficial (direta ou Session Pooler) e guarde-a em `backend/.env` ou no secret manager da hospedagem. A aplicação rejeita a inicialização se a URL estiver ausente, apontar para SQLite ou não usar um host oficial Supabase. Não publique a connection string. SQLite é permitido somente nos testes automatizados, com banco temporário.
+O projeto usa exclusivamente o Supabase em execução, por meio da API REST. Configure `SUPABASE_URL` com a URL HTTPS do projeto e `SUPABASE_KEY` com uma chave privada de servidor no ambiente do backend. O backend não exige `DATABASE_URL` nem conexão SQL direta. Nunca coloque a chave privada no frontend, em commits ou em mensagens.
 
-No Supabase, aplique `backend/migration_supabase_v3.sql` pelo SQL Editor antes de iniciar a versão atual da API. Se o v3 já foi aplicado antes, execute também `backend/migration_profile_address.sql` para adicionar o endereço persistente da conta. Confirme `users`, `products`, `orders` e `order_items` no Table Editor.
+No Supabase, aplique `backend/migration_supabase_v3.sql` e `backend/migration_supabase_rest_orders.sql` pelo SQL Editor antes de iniciar a versão atual da API; a segunda cria a função transacional `create_order_with_items` usada no checkout. Se o v3 já foi aplicado antes, execute também `backend/migration_profile_address.sql` quando necessário e aplique a migração da função REST. Confirme `users`, `products`, `orders` e `order_items` no Table Editor.
 
 Defina `JWT_SECRET` com uma chave longa e aleatória, `ENVIRONMENT=development` ou `production`, e `CORS_ORIGINS` somente quando o frontend estiver em outra origem. Contas demo são opcionais e exigem credenciais privadas nas variáveis `DEMO_*`; não há senha publicada no código. A autenticação fica em cookie `HttpOnly` por 30 dias por padrão. O navegador não guarda conta nem catálogo como banco de dados. O arquivo `.env` é local e está no `.gitignore`; se algum segredo já tiver sido versionado, remova-o do índice e faça a rotação da credencial.
 
