@@ -12,7 +12,9 @@ os.environ["JWT_SECRET"] = "test-secret"
 
 from fastapi.testclient import TestClient
 
-from backend.main import SessionLocal, app, _provision_initial_accounts, _seed_catalog
+from backend.main import (
+    SessionLocal, app, initialize_database, _provision_initial_accounts, _seed_catalog,
+)
 from backend.database import Product, User
 from backend.API import contas as contas_api
 
@@ -55,6 +57,43 @@ class ApiTestCase(unittest.TestCase):
             self.assertIsNone(db.query(User).filter_by(
                 email="bootstrap-admin@example.com"
             ).one_or_none())
+
+    def test_supabase_startup_checks_database_before_seeding(self):
+        class FakeSupabase:
+            def __init__(self):
+                self.queries = []
+
+            def select(self, table, **params):
+                self.queries.append((table, params))
+                return []
+
+        client = FakeSupabase()
+        with patch("backend.main.ENVIRONMENT", "production"), \
+             patch("backend.main.get_supabase", return_value=client, create=True), \
+             patch("backend.main._provision_initial_accounts") as provision, \
+             patch("backend.main._seed_catalog") as seed:
+            initialize_database()
+        self.assertEqual(client.queries, [("users", {"select": "id", "limit": "1"})])
+        provision.assert_called_once_with(client)
+        seed.assert_called_once_with(client)
+
+    def test_supabase_startup_does_not_mask_permission_failure(self):
+        from fastapi import HTTPException
+
+        class FailingSupabase:
+            def select(self, table, **params):
+                raise HTTPException(503, "Supabase negou acesso (HTTP 403, código 42501)")
+
+        with patch("backend.main.ENVIRONMENT", "production"), \
+             patch("backend.main.get_supabase", return_value=FailingSupabase(), create=True), \
+             patch("backend.main._provision_initial_accounts") as provision, \
+             patch("backend.main._seed_catalog") as seed:
+            with self.assertRaises(HTTPException) as error:
+                initialize_database()
+        self.assertEqual(error.exception.status_code, 503)
+        self.assertIn("42501", error.exception.detail)
+        provision.assert_not_called()
+        seed.assert_not_called()
 
     def test_registration_login_and_duplicate_email(self):
         response = self.client_context.post(
