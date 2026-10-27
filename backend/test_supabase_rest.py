@@ -20,7 +20,6 @@ class SupabaseRestTestCase(unittest.TestCase):
             base_url="https://unit-test.supabase.co/rest/v1/",
             headers={
                 "apikey": "unit-test-private-key",
-                "Authorization": "Bearer unit-test-private-key",
                 "Accept": "application/json",
             },
             transport=httpx.MockTransport(handler),
@@ -34,7 +33,7 @@ class SupabaseRestTestCase(unittest.TestCase):
             self.assertEqual(request.url.params["select"], "*")
             self.assertEqual(request.url.params["email"], "eq.user@example.com")
             self.assertEqual(request.headers["apikey"], "unit-test-private-key")
-            self.assertEqual(request.headers["Authorization"], "Bearer unit-test-private-key")
+            self.assertNotIn("Authorization", request.headers)
             return httpx.Response(200, json=[{"id": 8, "email": "user@example.com"}])
 
         self.assertEqual(

@@ -17,6 +17,8 @@ uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 
 Esse único comando inicia a API e o frontend juntos. Abra http://127.0.0.1:8000/ e a documentação em http://127.0.0.1:8000/docs.
 
+Para executar localmente, forneça `SUPABASE_URL` e `SUPABASE_KEY` ao processo por um gerenciador de segredos ou arquivo `.env` local ignorado pelo Git. Sem essas variáveis, o backend encerra com erro em vez de usar banco local. O deploy do Render recebe as mesmas variáveis na configuração Environment do serviço.
+
 O frontend usa automaticamente a mesma origem da API. A API está separada em módulos de contas, cardápio e pedidos, mas mantém os caminhos públicos já usados pelo frontend. O servidor separado `python -m http.server 5500` não é necessário.
 
 Pedidos e cardápio são sincronizados a cada 2 segundos enquanto a página está visível. O admin também atualiza pedidos, produtos e contas nesse intervalo; assim, clientes veem mudanças de status e disponibilidade e o admin vê novos pedidos e alterações de endereço. A sincronização consulta a API e o banco compartilhado.

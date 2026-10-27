@@ -25,7 +25,6 @@ class SupabaseRest:
             base_url=f"{SUPABASE_URL}/rest/v1/",
             headers={
                 "apikey": SUPABASE_KEY,
-                "Authorization": f"Bearer {SUPABASE_KEY}",
                 "Accept": "application/json",
             },
             timeout=15,

@@ -31,9 +31,9 @@ Todos os ambientes de execução usam a API REST do Supabase. Configure `SUPABAS
 
 Contas demo são opcionais e exigem `ENVIRONMENT=development`, `SEED_DEMO_DATA=true` e credenciais privadas nas variáveis `DEMO_*`. Elas nunca usam senhas publicadas no código. Sessões usam cookie `HttpOnly`; `JWT_EXPIRE_MINUTES` controla sua duração.
 
-## Codespaces Secrets do Supabase
+## Configuração do Render
 
-Cadastre no ambiente de execução `SUPABASE_URL` e `SUPABASE_KEY`. A chave deve ser privada e ficar somente no backend; uma chave publishable/anon não tem as permissões necessárias porque o RLS não tem policies públicas.
+Configure `SUPABASE_URL` e `SUPABASE_KEY` nas variáveis do serviço Render. A chave deve ser privada e ficar somente no backend; uma chave publishable/anon não tem as permissões necessárias porque o RLS não tem policies públicas. Não é necessário cadastrar as chaves neste Codespace se o objetivo for executar somente o deploy do Render.
 
 Nenhuma API key é enviada ao navegador. O backend usa `SUPABASE_KEY` para acessar o banco pela camada de servidor; a chave publishable/anon não tem permissão para acessar as tabelas sem policies.
 
