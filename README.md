@@ -17,13 +17,13 @@ uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 
 Esse único comando inicia a API e o frontend juntos. Abra http://127.0.0.1:8000/ e a documentação em http://127.0.0.1:8000/docs.
 
-Para executar localmente, forneça `SUPABASE_URL` e `SUPABASE_KEY` ao processo por um gerenciador de segredos ou arquivo `.env` local ignorado pelo Git. Sem essas variáveis, o backend encerra com erro em vez de usar banco local. O deploy do Render recebe as mesmas variáveis na configuração Environment do serviço.
+Para executar localmente, forneça `SUPABASE_URL` e `SUPABASE_SECRET_KEY` (`sb_secret_...`) ou `SUPABASE_SERVICE_ROLE_KEY` (JWT legado `service_role`) por um gerenciador de segredos ou arquivo `.env` local ignorado pelo Git. `SUPABASE_KEY` só é fallback quando seu valor é uma dessas credenciais privadas. Sem uma chave privada válida, o backend encerra com erro em vez de usar banco local. O deploy do Render recebe essas variáveis na configuração Environment do serviço.
 
 O frontend usa automaticamente a mesma origem da API. A API está separada em módulos de contas, cardápio e pedidos, mas mantém os caminhos públicos já usados pelo frontend. O servidor separado `python -m http.server 5500` não é necessário.
 
 Pedidos e cardápio são sincronizados a cada 2 segundos enquanto a página está visível. O admin também atualiza pedidos, produtos e contas nesse intervalo; assim, clientes veem mudanças de status e disponibilidade e o admin vê novos pedidos e alterações de endereço. A sincronização consulta a API e o banco compartilhado.
 
-O projeto usa exclusivamente o Supabase em execução, por meio da API REST. Configure `SUPABASE_URL` com a URL HTTPS do projeto e `SUPABASE_KEY` com uma chave privada de servidor no ambiente do backend. O backend não exige `DATABASE_URL` nem conexão SQL direta. Nunca coloque a chave privada no frontend, em commits ou em mensagens.
+O projeto usa exclusivamente o Supabase em execução, por meio da API REST. Configure `SUPABASE_URL` com a URL HTTPS do projeto e uma chave privada de servidor em `SUPABASE_SECRET_KEY` (`sb_secret_...`) ou `SUPABASE_SERVICE_ROLE_KEY` (JWT legado). `SUPABASE_KEY` é somente fallback se contiver uma chave privada válida. O backend não exige `DATABASE_URL` nem conexão SQL direta. Nunca coloque a chave privada no frontend, em commits ou em mensagens.
 
 No Supabase, aplique `backend/migration_supabase_v3.sql` e `backend/migration_supabase_rest_orders.sql` pelo SQL Editor antes de iniciar a versão atual da API; a segunda cria a função transacional `create_order_with_items` usada no checkout. Se o v3 já foi aplicado antes, execute também `backend/migration_profile_address.sql` quando necessário e aplique a migração da função REST. Confirme `users`, `products`, `orders` e `order_items` no Table Editor.
 

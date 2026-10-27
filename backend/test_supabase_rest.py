@@ -9,7 +9,7 @@ from fastapi import HTTPException
 
 with patch.dict(os.environ, {
     "SUPABASE_URL": "https://unit-test.supabase.co",
-    "SUPABASE_KEY": "unit-test-private-key",
+    "SUPABASE_KEY": "sb_secret_unit_test",
 }):
     from backend.supabase_rest import SupabaseRest
 
@@ -21,7 +21,7 @@ class SupabaseRestTestCase(unittest.TestCase):
         client.client = httpx.Client(
             base_url="https://unit-test.supabase.co/rest/v1/",
             headers={
-                "apikey": "unit-test-private-key",
+                "apikey": "sb_secret_unit_test",
                 "Accept": "application/json",
             },
             transport=httpx.MockTransport(handler),
@@ -34,7 +34,7 @@ class SupabaseRestTestCase(unittest.TestCase):
             self.assertEqual(request.url.path, "/rest/v1/users")
             self.assertEqual(request.url.params["select"], "*")
             self.assertEqual(request.url.params["email"], "eq.user@example.com")
-            self.assertEqual(request.headers["apikey"], "unit-test-private-key")
+            self.assertEqual(request.headers["apikey"], "sb_secret_unit_test")
             self.assertNotIn("Authorization", request.headers)
             return httpx.Response(200, json=[{"id": 8, "email": "user@example.com"}])
 
@@ -56,7 +56,7 @@ class SupabaseRestTestCase(unittest.TestCase):
         self.assertIn("HTTP 403", error.exception.detail)
         self.assertIn("42501", error.exception.detail)
         self.assertIn("permission denied for table users", error.exception.detail)
-        self.assertIn("secret/service_role", error.exception.detail)
+        self.assertIn("chave privada", error.exception.detail)
 
     def test_authentication_error_preserves_supabase_diagnostic(self):
         client = self.make_client(
@@ -83,7 +83,9 @@ class SupabaseRestTestCase(unittest.TestCase):
             client = SupabaseRest()
         try:
             self.assertEqual(client.client.headers["apikey"], token)
-            self.assertEqual(client.client.headers["Authorization"], f"Bearer {token}")
+            authorization = client.client.headers["Authorization"]
+            self.assertTrue(authorization.startswith("Bearer "))
+            self.assertEqual(authorization.removeprefix("Bearer "), token)
         finally:
             client.close()
 
@@ -107,19 +109,49 @@ class SupabaseRestTestCase(unittest.TestCase):
     def test_environment_uses_only_supabase_key_without_public_fallback(self):
         from backend.supabase_rest import _server_key_from_env
 
-        with self.assertRaisesRegex(RuntimeError, "SUPABASE_KEY"):
+        with self.assertRaisesRegex(RuntimeError, "SUPABASE_SECRET_KEY"):
             _server_key_from_env({
-                "SUPABASE_SECRET_KEY": "private",
-                "SUPABASE_SERVICE_ROLE_KEY": "private",
                 "SUPABASE_PUBLISHABLE_KEY": "public",
+                "SUPABASE_KEY": "sb_publishable_public",
             })
         self.assertEqual(
             _server_key_from_env({
-                "SUPABASE_KEY": "  private  ",
-                "SUPABASE_SECRET_KEY": "ignored",
+                "SUPABASE_SECRET_KEY": "sb_secret_private",
+                "SUPABASE_KEY": "sb_publishable_public",
             }),
-            "private",
+            "sb_secret_private",
         )
+
+    def test_secret_key_has_priority_over_public_generic_key(self):
+        from backend.supabase_rest import _server_key_from_env
+
+        self.assertEqual(
+            _server_key_from_env({
+                "SUPABASE_KEY": "sb_publishable_public",
+                "SUPABASE_SECRET_KEY": "  sb_secret_private  ",
+                "SUPABASE_SERVICE_ROLE_KEY": "legacy-private",
+            }),
+            "sb_secret_private",
+        )
+
+    def test_legacy_service_role_key_variable_is_supported(self):
+        from backend.supabase_rest import _server_key_from_env
+
+        payload = base64.urlsafe_b64encode(
+            json.dumps({"role": "service_role"}).encode()
+        ).decode().rstrip("=")
+        token = f"header.{payload}.signature"
+        self.assertEqual(
+            _server_key_from_env({"SUPABASE_SERVICE_ROLE_KEY": token}),
+            token,
+        )
+
+    def test_publishable_key_is_not_a_privileged_credential(self):
+        from backend.supabase_rest import _is_server_key, _server_key_from_env
+
+        self.assertFalse(_is_server_key("sb_publishable_public"))
+        with self.assertRaisesRegex(RuntimeError, "SUPABASE_SECRET_KEY"):
+            _server_key_from_env({"SUPABASE_KEY": "sb_publishable_public"})
 
     def test_table_not_found_preserves_postgrest_code(self):
         client = self.make_client(

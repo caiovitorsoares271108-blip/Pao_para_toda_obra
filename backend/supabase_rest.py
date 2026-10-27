@@ -12,16 +12,6 @@ from fastapi import HTTPException
 SUPABASE_URL = os.getenv("SUPABASE_URL", "").strip().rstrip("/")
 
 
-def _server_key_from_env(environ: Mapping[str, str]) -> str:
-    key = environ.get("SUPABASE_KEY", "").strip()
-    if not key:
-        raise RuntimeError("Defina SUPABASE_KEY com a chave privada de servidor do Supabase")
-    return key
-
-
-SUPABASE_KEY = _server_key_from_env(os.environ)
-
-
 def _legacy_jwt_role(key: str) -> str | None:
     parts = key.split(".")
     if len(parts) != 3:
@@ -37,18 +27,29 @@ def _legacy_jwt_role(key: str) -> str | None:
     return role if isinstance(role, str) else None
 
 
+def _is_server_key(key: str) -> bool:
+    return (key.startswith("sb_secret_") and len(key) > len("sb_secret_")) or (
+        _legacy_jwt_role(key) == "service_role"
+    )
+
+
+def _server_key_from_env(environ: Mapping[str, str]) -> str:
+    for name in ("SUPABASE_SECRET_KEY", "SUPABASE_SERVICE_ROLE_KEY", "SUPABASE_KEY"):
+        candidate = environ.get(name, "").strip()
+        if candidate and _is_server_key(candidate):
+            return candidate
+    raise RuntimeError(
+        "Defina SUPABASE_SECRET_KEY ou SUPABASE_SERVICE_ROLE_KEY com uma chave "
+        "sb_secret_ privada ou JWT service_role. SUPABASE_KEY só é aceita quando "
+        "contém uma dessas credenciais privadas."
+    )
+
+
+SUPABASE_KEY = _server_key_from_env(os.environ)
 LEGACY_JWT_ROLE = _legacy_jwt_role(SUPABASE_KEY)
 IS_LEGACY_JWT_KEY = LEGACY_JWT_ROLE == "service_role"
 if not SUPABASE_URL:
     raise RuntimeError("Defina SUPABASE_URL com o endereço do projeto Supabase")
-if SUPABASE_KEY.startswith("sb_publishable_"):
-    raise RuntimeError(
-        "SUPABASE_KEY é publishable; use uma chave secret/service_role privada no backend"
-    )
-if SUPABASE_KEY.startswith("eyJ") and not IS_LEGACY_JWT_KEY:
-    raise RuntimeError(
-        "SUPABASE_KEY é um JWT sem role service_role; use uma chave secret/service_role privada no backend"
-    )
 if not SUPABASE_URL.startswith("https://"):
     raise RuntimeError("SUPABASE_URL deve usar https://")
 if SUPABASE_URL.endswith("/rest/v1"):
@@ -59,7 +60,7 @@ class SupabaseRest:
     def __init__(self) -> None:
         headers = {"apikey": SUPABASE_KEY, "Accept": "application/json"}
         if IS_LEGACY_JWT_KEY:
-            headers["Authorization"] = f"Bearer {SUPABASE_KEY}"
+            headers["Authorization"] = "Bearer " + SUPABASE_KEY
         self.client = httpx.Client(
             base_url=f"{SUPABASE_URL}/rest/v1/",
             headers=headers,
@@ -99,7 +100,7 @@ class SupabaseRest:
             if response.status_code == 401:
                 raise HTTPException(
                     503,
-                    "Supabase recusou SUPABASE_KEY (HTTP 401"
+                    "Supabase recusou a credencial privada (HTTP 401"
                     f"{f', código {code}' if code else ''}): {message}. "
                     "Confirme que a chave é privada e pertence ao mesmo projeto que SUPABASE_URL.",
                 )
@@ -110,7 +111,7 @@ class SupabaseRest:
                     503,
                     "Supabase negou acesso (HTTP 403"
                     f"{f', código {code}' if code else ''}): {diagnostic}. "
-                    "Se SUPABASE_KEY for secret/service_role, verifique os grants da role nas tabelas.",
+                    "Se estiver usando uma chave privada, verifique os grants da role nas tabelas.",
                 )
             if response.status_code == 404:
                 raise HTTPException(

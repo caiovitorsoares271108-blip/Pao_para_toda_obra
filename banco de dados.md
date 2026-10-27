@@ -2,7 +2,7 @@
 
 > Escopo: inspeção somente leitura do código e de `backend/pao.db`, em 2026-10-22. O relatório não contém valores de credenciais, tokens, URLs de conexão, hashes nem dados pessoais. Cada conclusão está marcada como **FATO**, **INFERÊNCIA** ou **NÃO VERIFICADO**.
 >
-> Atualização em 2026-10-27: a aplicação em execução usa a API REST do Supabase com `SUPABASE_URL` e `SUPABASE_KEY` privada de servidor; não requer `DATABASE_URL`. SQLite só permanece nos testes automatizados. As descrições de fallback e estado do workspace abaixo são um retrato histórico da inspeção de 2026-10-22, não a política atual.
+> Atualização em 2026-10-27: a aplicação em execução usa a API REST do Supabase com `SUPABASE_URL` e uma credencial privada selecionada nesta ordem: `SUPABASE_SECRET_KEY`, `SUPABASE_SERVICE_ROLE_KEY` e `SUPABASE_KEY` (esta última somente se tiver formato privado reconhecido). Não requer `DATABASE_URL`. SQLite só permanece nos testes automatizados. As descrições de fallback e estado do workspace abaixo são um retrato histórico da inspeção de 2026-10-22, não a política atual.
 
 ## Índice
 
@@ -27,7 +27,7 @@
 - **FATO** — Neste workspace há `backend/pao.db`, consultado em modo somente leitura; o módulo SQLite usado nesta consulta reportou versão 3.45.1. O arquivo contém as quatro tabelas deste relatório. A aplicação também suporta PostgreSQL via `psycopg` (`backend/pao.db`, consulta SELECT em 2026-10-22; `backend/main.py:21-47`; `backend/requirements.txt:1-8`).
 - **FATO** — A configuração Render declara `DATABASE_URL` como variável externa e configura execução Python no diretório `backend` (`render.yaml:1-14`).
 - **NÃO VERIFICADO** — Não foi possível confirmar se existe um PostgreSQL/Supabase remoto ativo, sua versão ou se o serviço Render já está publicado: não havia variável de conexão no ambiente de inspeção nem arquivo local `.env`. Para confirmar, seria necessário acesso autorizado à configuração do Render/Supabase; uma eventual consulta remota deve ser somente `SELECT`.
-- **FATO (histórico)** — Na inspeção de 2026-10-22, a variável consumida pelo caminho SQL era `DATABASE_URL`. A implementação atual usa `SUPABASE_URL` e `SUPABASE_KEY` pelo cliente REST (`backend/supabase_rest.py:10-18`).
+- **FATO (histórico)** — Na inspeção de 2026-10-22, a variável consumida pelo caminho SQL era `DATABASE_URL`. A implementação atual usa `SUPABASE_URL` e uma das variáveis de chave privada pelo cliente REST (`backend/supabase_rest.py:12-48`).
 
 ## 2. Esquema atual
 
@@ -275,11 +275,12 @@ O wrapper acrescenta o prefixo `pao_v2_` às chaves do navegador (`frontend/unde
 
 ### Variáveis relacionadas ao banco/configuração
 
-**FATO** — Nomes existentes em `backend/.env.example`; valores omitidos deliberadamente (`backend/.env.example:1-7`, `backend/.env.example:8-25`):
+**FATO** — Nomes de configuração documentados em `backend/.env.example`; valores omitidos deliberadamente:
 
 ```text
-DATABASE_URL
 SUPABASE_URL
+SUPABASE_SECRET_KEY
+SUPABASE_SERVICE_ROLE_KEY
 SUPABASE_KEY
 ENVIRONMENT
 SEED_DEMO_DATA
@@ -291,7 +292,7 @@ INITIAL_CUSTOMER_EMAIL
 INITIAL_CUSTOMER_PASSWORD
 ```
 
-**FATO** — Para conexão SQL, o backend consome `DATABASE_URL`; não usa as três variáveis `SUPABASE_*` no caminho de acesso atual (`backend/main.py:21-31`). A listagem acima contém nomes, nunca valores.
+**FATO** — O backend de execução consome `SUPABASE_URL` e escolhe a chave privada na ordem `SUPABASE_SECRET_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_KEY`; a última só é aceita quando contém chave secreta ou JWT legado com role `service_role` (`backend/supabase_rest.py:12-48`). `DATABASE_URL` permanece apenas no caminho dos testes SQLAlchemy. A listagem acima contém nomes, nunca valores.
 
 ### Dependências de banco
 

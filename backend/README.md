@@ -27,15 +27,15 @@ O comando inicia a API e o frontend juntos. Acesse o frontend em http://127.0.0.
 
 O frontend é servido pelo Flask; não é necessário iniciar um `python -m http.server` separado.
 
-Todos os ambientes de execução usam a API REST do Supabase. Configure `SUPABASE_URL` e `SUPABASE_KEY` (chave privada de servidor) no ambiente do backend; não é necessário `DATABASE_URL`. SQLite é usado somente pelos testes automatizados com banco temporário. O endpoint `/health/db` valida uma consulta REST autenticada.
+Todos os ambientes de execução usam a API REST do Supabase. Configure `SUPABASE_URL` e uma credencial privada (`SUPABASE_SECRET_KEY` para `sb_secret_...`, ou `SUPABASE_SERVICE_ROLE_KEY` para o JWT legado). `SUPABASE_KEY` é somente fallback e também precisa conter uma dessas chaves privadas. Não é necessário `DATABASE_URL`. SQLite é usado somente pelos testes automatizados com banco temporário. O endpoint `/health/db` valida uma consulta REST autenticada.
 
 Contas demo são opcionais e exigem `ENVIRONMENT=development`, `SEED_DEMO_DATA=true` e credenciais privadas nas variáveis `DEMO_*`. Elas nunca usam senhas publicadas no código. Sessões usam cookie `HttpOnly`; `JWT_EXPIRE_MINUTES` controla sua duração.
 
 ## Configuração do Render
 
-Configure `SUPABASE_URL` e `SUPABASE_KEY` nas variáveis do serviço Render. A chave deve ser privada e ficar somente no backend; uma chave publishable/anon não tem as permissões necessárias porque o RLS não tem policies públicas. Não é necessário cadastrar as chaves neste Codespace se o objetivo for executar somente o deploy do Render.
+Configure `SUPABASE_URL` e uma das chaves privadas `SUPABASE_SECRET_KEY` (`sb_secret_...`) ou `SUPABASE_SERVICE_ROLE_KEY` (JWT legado `service_role`) no Render. `SUPABASE_KEY` só é fallback se contiver uma chave privada válida; chave publishable/anon não é aceita. Em caso de conflito, as duas variáveis privadas têm prioridade na ordem indicada acima. A credencial fica somente no backend.
 
-Nenhuma API key é enviada ao navegador. O backend usa `SUPABASE_KEY` para acessar o banco pela camada de servidor; a chave publishable/anon não tem permissão para acessar as tabelas sem policies.
+Nenhuma API key é enviada ao navegador. O backend usa a credencial privada selecionada para acessar o banco; a chave publishable/anon não tem permissão para acessar as tabelas sem policies.
 
 O backend usa o schema PostgreSQL/Supabase já preparado e carrega [products_seed.json](products_seed.json) uma vez por `seed_key`. Alterações feitas no painel não são sobrescritas. O esquema não é migrado automaticamente no startup.
 
