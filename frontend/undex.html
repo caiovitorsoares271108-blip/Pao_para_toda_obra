@@ -1832,15 +1832,7 @@
 
     <script>
       "use strict";
-      const forwardedApiHost = window.location.hostname.replace(
-        /-\d+(?=\.app\.github\.dev$)/,
-        "-8000",
-      );
-      const apiBaseUrl = window.location.hostname.endsWith(".app.github.dev")
-        ? `${window.location.protocol}//${forwardedApiHost}`
-        : window.location.port === "8000"
-          ? window.location.origin
-          : "http://127.0.0.1:8000";
+      const apiBaseUrl = window.location.origin;
       const API_CONFIG = {
         baseUrl: apiBaseUrl,
         docsUrl: `${apiBaseUrl}/openapi.json`,
