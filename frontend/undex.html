@@ -2771,6 +2771,13 @@
         { key: "entregue", label: "Entregue", icon: "✅" },
         { key: "cancelado", label: "Cancelado", icon: "✕" },
       ];
+      const ORDER_STATUS_TRANSITIONS = {
+        pendente: ["preparando", "saiu_entrega", "entregue", "cancelado"],
+        preparando: ["saiu_entrega", "entregue", "cancelado"],
+        saiu_entrega: ["entregue", "cancelado"],
+        entregue: [],
+        cancelado: [],
+      };
       function normalizeOrderStatus(status) {
         const key = String(status || "pendente")
           .toLowerCase()
@@ -2798,6 +2805,15 @@
           ORDER_STAGES.find((s) => s.key === normalizeOrderStatus(status)) ||
           ORDER_STAGES[0]
         );
+      }
+      function orderStatusOptions(status) {
+        const current = normalizeOrderStatus(status);
+        return [current, ...(ORDER_STATUS_TRANSITIONS[current] || [])]
+          .map((key) => {
+            const stage = statusMeta(key);
+            return `<option value="${stage.key}" ${stage.key === current ? "selected" : ""}>${esc(stage.label)}</option>`;
+          })
+          .join("");
       }
       function statusCounts(list = orders()) {
         return ORDER_STAGES.reduce((acc, s) => {
@@ -3069,7 +3085,8 @@
       function adminOrder(o) {
         const status = normalizeOrderStatus(o.status);
         const meta = statusMeta(status);
-        return `<article class="order-admin"><div class="order-admin-top"><div><strong>Pedido #${esc(o.id)}</strong><br><small>${fmtDate(o.createdAt)} · ${esc(o.userEmail || "cliente")}</small><br><small>Atualizado: ${fmtDate(o.updatedAt || o.createdAt)}</small></div><select class="status-select" data-order-id="${esc(o.id)}" aria-label="Status do pedido ${esc(o.id)}" onchange="Admin.updateOrder('${esc(o.id)}',this.value)"><option value="pendente" ${status === "pendente" ? "selected" : ""}>Novo pedido</option><option value="preparando" ${status === "preparando" ? "selected" : ""}>Em preparo</option><option value="saiu_entrega" ${status === "saiu_entrega" ? "selected" : ""}>Saiu para entrega</option><option value="entregue" ${status === "entregue" ? "selected" : ""}>Entregue</option><option value="cancelado" ${status === "cancelado" ? "selected" : ""}>Cancelado</option></select></div><div style="margin-top:9px"><span class="order-status-label" style="background:${status === "entregue" ? "#dcfce7" : status === "cancelado" ? "#fee2e2" : status === "saiu_entrega" ? "#dbeafe" : "#fef3c7"};color:${status === "entregue" ? "#166534" : status === "cancelado" ? "#991b1b" : status === "saiu_entrega" ? "#1d4ed8" : "#92400e"}">${meta.icon} ${meta.label}</span></div>${orderTimeline(o)}<div class="order-admin-items">${(o.items || []).map((i) => `${i.qty}× ${esc(i.name)}`).join("<br>")}</div><div class="order-admin-top"><small>${esc(o.address || "Sem endereço")} </small><strong style="color:var(--orange)">${money(o.total)}</strong></div></article>`;
+        const canAdvance = (ORDER_STATUS_TRANSITIONS[status] || []).length > 0;
+        return `<article class="order-admin"><div class="order-admin-top"><div><strong>Pedido #${esc(o.id)}</strong><br><small>${fmtDate(o.createdAt)} · ${esc(o.userEmail || "cliente")}</small><br><small>Atualizado: ${fmtDate(o.updatedAt || o.createdAt)}</small></div><select class="status-select" data-order-id="${esc(o.id)}" aria-label="Status do pedido ${esc(o.id)}" onchange="Admin.updateOrder('${esc(o.id)}',this.value)" ${canAdvance ? "" : "disabled"}>${orderStatusOptions(status)}</select></div><div style="margin-top:9px"><span class="order-status-label" style="background:${status === "entregue" ? "#dcfce7" : status === "cancelado" ? "#fee2e2" : status === "saiu_entrega" ? "#dbeafe" : "#fef3c7"};color:${status === "entregue" ? "#166534" : status === "cancelado" ? "#991b1b" : status === "saiu_entrega" ? "#1d4ed8" : "#92400e"}">${meta.icon} ${meta.label}</span></div>${orderTimeline(o)}<div class="order-admin-items">${(o.items || []).map((i) => `${i.qty}× ${esc(i.name)}`).join("<br>")}</div><div class="order-admin-top"><small>${esc(o.address || "Sem endereço")} </small><strong style="color:var(--orange)">${money(o.total)}</strong></div></article>`;
       }
       const Accounts = {
         async update(id, changes) {
@@ -3185,19 +3202,28 @@
         },
         async updateOrder(id, status) {
           const next = normalizeOrderStatus(status);
+          const currentOrder = orders().find((item) => String(item.id) === String(id));
+          const current = currentOrder ? normalizeOrderStatus(currentOrder.status) : null;
+          if (!current || (next !== current && !(ORDER_STATUS_TRANSITIONS[current] || []).includes(next))) {
+            toast("Essa mudança de status não é permitida.");
+            await Pages.adminTab(activeAdminTab, true);
+            return;
+          }
+          if (next === current) return;
+          const select = [...document.querySelectorAll(".status-select")]
+            .find((element) => element.dataset.orderId === String(id));
+          if (select) select.disabled = true;
           try {
             await Api.request(`/orders/${id}/status`, {
               method: "PATCH",
               body: JSON.stringify({ status: next }),
             });
-            await Pages.admin();
-            await Pages.adminTab(next === "saiu_entrega" ? "delivery" : "orders");
+            await Api.loadOrders();
+            await Pages.adminTab(activeAdminTab, true);
             toast(`Pedido marcado como: ${statusMeta(next).label}.`);
           } catch (error) {
-            const select = [...document.querySelectorAll(".status-select")]
-              .find((element) => element.dataset.orderId === String(id));
-            const order = orders().find((item) => String(item.id) === String(id));
-            if (select && order) select.value = normalizeOrderStatus(order.status);
+            if (select) select.value = current;
+            if (select) select.disabled = false;
             toast(error.message);
           }
         },
